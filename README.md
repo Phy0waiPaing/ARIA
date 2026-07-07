@@ -15,6 +15,7 @@ Included:
 - ARIA responsibilities and boundaries.
 - A requirement-to-design-proposal workflow.
 - An existing-page refactor workflow.
+- A renderer-agnostic Visual Review workflow with HTML Preview as the default.
 - A human-facing Design Proposal contract.
 - A fillable UISpec v1 contract.
 - Role prompts for analysis, design, and review.
@@ -24,7 +25,6 @@ Not included yet:
 
 - Production frontend code.
 - CLI tools or schema validators.
-- Figma generation.
 - Visual validation automation.
 - Example UISpecs.
 
@@ -36,10 +36,11 @@ New feature:
 Requirement
   -> Discovery
   -> Design Proposal
+  -> Render HTML Preview (optional but recommended)
   -> Human Approval
-  -> UISpec
+  -> UISpec Compilation
   -> Codex Implementation
-  -> Optional ARIA Review
+  -> ARIA Review
 ```
 
 Existing page refactor:
@@ -48,8 +49,9 @@ Existing page refactor:
 Existing Page
   -> Current-State Capture
   -> Refactor Design Proposal
+  -> Render HTML Preview (optional but recommended)
   -> Human Approval
-  -> Target UISpec
+  -> Target UISpec Compilation
   -> Codex Refactor
   -> ARIA Review
 ```
@@ -67,6 +69,8 @@ The user should not need to understand UISpec schemas. ARIA compiles the UISpec 
 ## Artifact Audiences
 
 - Design Proposal: human-facing design conversation between the user and ARIA.
+- HTML Preview: rendered human-facing visual review artifact, not production code or source truth.
+- Optional renderer output: Figma or future tools when a team needs them, not source of truth.
 - UISpec: machine-facing implementation contract between ARIA and Codex.
 
 ## Responsibilities
@@ -93,6 +97,7 @@ Codex:
 ARIA/
   README.md
   workflow.md
+  visual-review-workflow.md
   prompts/
     analyst.md
     designer.md
@@ -108,6 +113,7 @@ ARIA/
 ## Document Map
 
 - `workflow.md` defines the full ARIA lifecycle.
+- `visual-review-workflow.md` defines the optional visual review layer, with HTML Preview as the default renderer and Figma as an optional renderer.
 - `schemas/design-proposal-v1.md` defines the human-facing design approval artifact.
 - `schemas/uispec-v1.md` defines the handoff contract between ARIA and Codex.
 - `prompts/analyst.md` guides requirement discovery and clarification.
@@ -128,8 +134,10 @@ ARIA/
 - Define role prompts.
 - Define design principles and component guidance.
 
-### v0.2 - Examples and Patterns
+### v0.2 - Visual Review and Examples
 
+- Add optional Render HTML Preview quality gate.
+- Keep Figma as an optional plugin-based renderer.
 - Add example UISpecs.
 - Add reusable page patterns.
 - Refine prompts from real usage.
@@ -142,6 +150,5 @@ ARIA/
 
 ### Later
 
-- Explore Figma-oriented output.
 - Explore schema validation.
 - Explore automation around ARIA handoffs.

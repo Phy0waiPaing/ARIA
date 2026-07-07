@@ -56,7 +56,7 @@ Not included yet:
 
 - Production frontend code.
 - CLI tools or schema validators.
-- Figma generation.
+- Visual renderer automation.
 - Visual validation automation.
 - Example UISpecs.
 
@@ -141,7 +141,7 @@ ARIA/
 
 ### Later
 
-- Explore Figma-oriented output.
+- Explore automated visual renderer output.
 - Explore schema validation.
 - Explore automation around ARIA handoffs.
 ```

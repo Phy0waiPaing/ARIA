@@ -191,7 +191,27 @@ Rules:
 - If open questions materially affect the design, stop and ask before approval.
 - If questions are low-risk assumptions, label them clearly.
 
-## 12. Approval Notes
+## 12. Visual Review
+
+Purpose: capture optional visual review context before approval.
+
+Include:
+
+- Whether visual review was used.
+- Renderer used, such as HTML Preview or Figma.
+- Preview reference, when available.
+- Visual confidence rating and reason.
+- Visual review feedback that affected the proposal.
+
+Rules:
+
+- HTML Preview is preferred for developer workflows.
+- Visual review is optional, not mandatory.
+- Visual review artifacts are rendered from the Design Proposal and are not production code.
+- Do not edit HTML Preview directly. Update the Design Proposal, then re-render the preview.
+- Do not include production implementation details.
+
+## 13. Approval Notes
 
 Purpose: capture the human approval decision.
 

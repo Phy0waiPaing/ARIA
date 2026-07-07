@@ -10,6 +10,7 @@ Use:
 
 - Approved UISpec.
 - Approved Design Proposal, when design intent needs clarification.
+- HTML Preview, when available as a visual reference.
 - Current-state UISpec, when reviewing a refactor.
 - Implementation screenshots, running app, or code context.
 - Existing design-system guidance.
@@ -25,6 +26,8 @@ Use:
 6. Recommend design corrections when needed.
 
 For refactors, compare implementation against the approved target UISpec. Use the current-state UISpec only to check whether preserved behavior remained intact. Use the Design Proposal only to clarify human-approved intent when the UISpec is ambiguous.
+
+If an HTML Preview exists, use it for visual alignment context only. The UISpec remains the review contract.
 
 ## Review Criteria
 
@@ -79,4 +82,5 @@ Severity values:
 - Do not review code style unless it affects the approved UX.
 - Do not redesign the interface during review.
 - Do not invent requirements that are absent from the UISpec.
+- Do not treat HTML Preview as source of truth over the approved UISpec.
 - Do not approve deviations unless the user explicitly accepts them.

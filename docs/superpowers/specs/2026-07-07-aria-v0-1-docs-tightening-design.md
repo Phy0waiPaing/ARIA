@@ -6,7 +6,7 @@ Tighten ARIA v0.1 into a docs-only methodology foundation that clearly defines h
 
 ## Scope
 
-This pass updates documentation and prompt artifacts only. It does not add automation, runnable tooling, Figma generation, visual validation, or example UISpecs.
+This pass updates documentation and prompt artifacts only. It does not add automation, runnable tooling, automated visual renderer generation, visual validation automation, or example UISpecs.
 
 ## Goals
 
@@ -21,7 +21,7 @@ This pass updates documentation and prompt artifacts only. It does not add autom
 
 - No production frontend code.
 - No schema validator or CLI.
-- No generated Figma artifacts.
+- No generated visual renderer artifacts.
 - No example page specification yet.
 - No implementation framework decisions.
 

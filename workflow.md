@@ -1,6 +1,6 @@
 # ARIA Workflow
 
-This document defines how ARIA turns a business problem or existing page into an approved Design Proposal, then compiles that proposal into a UISpec that Codex can implement.
+This document defines how ARIA turns a business problem or existing page into an approved Design Proposal, optionally validates the design through an HTML Preview, then compiles that proposal into a UISpec that Codex can implement.
 
 ARIA is not a prompt engine. ARIA is a design partner with a repeatable handoff process.
 
@@ -8,10 +8,10 @@ ARIA is not a prompt engine. ARIA is a design partner with a repeatable handoff 
 
 ARIA supports two v0.1 workflows:
 
-- New feature workflow: requirements become an approved Design Proposal, then a UISpec.
+- New feature workflow: requirements become an approved Design Proposal, optionally pass through visual review, then become a UISpec.
 - Existing page refactor workflow: the current page is captured first, then a refactor Design Proposal is approved and compiled into a target UISpec.
 
-The user reviews the Design Proposal. Codex consumes the UISpec.
+The user reviews the Design Proposal and, when useful, an HTML Preview. Codex consumes the UISpec.
 
 ## New Feature Workflow
 
@@ -19,10 +19,11 @@ The user reviews the Design Proposal. Codex consumes the UISpec.
 Requirement
   -> Discovery
   -> Design Proposal
+  -> Render HTML Preview (optional but recommended)
   -> Human Approval
   -> UISpec Compilation
   -> Codex Implementation
-  -> Optional ARIA Review
+  -> ARIA Review
 ```
 
 ## Existing Page Refactor Workflow
@@ -31,6 +32,7 @@ Requirement
 Existing Page
   -> Current-State Capture
   -> Refactor Design Proposal
+  -> Render HTML Preview (optional but recommended)
   -> Human Approval
   -> Target UISpec Compilation
   -> Codex Refactor
@@ -47,7 +49,7 @@ The user should only need to:
 
 1. Describe the business problem.
 2. Answer ARIA's questions if clarification is needed.
-3. Review and approve the Design Proposal.
+3. Review and approve the Design Proposal, with a rendered HTML Preview when visual review is useful.
 
 The user does not review the UISpec as the primary collaboration artifact.
 
@@ -127,9 +129,41 @@ Output:
 - Trade-offs or alternatives when useful.
 - Open questions if approval would be premature.
 
-## 5. Human Approval
+## 5. HTML Preview
 
-The user reviews the Design Proposal, not the UISpec.
+ARIA may render an HTML Preview from the latest Design Proposal when visual review would improve confidence.
+
+HTML Preview is optional but recommended for layout-heavy pages, dense operational screens, navigation changes, and existing page refactors.
+
+The HTML Preview is a rendered visual review artifact. It is a render of the Design Proposal, not an independently authored source document.
+
+HTML Preview demonstrates:
+
+- Layout.
+- Information hierarchy.
+- Section placement.
+- Component placement.
+- Important interaction states.
+
+HTML Preview must avoid:
+
+- Backend logic.
+- API calls.
+- Authentication.
+- Production architecture.
+- Framework-specific code.
+
+The preview is not production code. It is a disposable visual review artifact.
+
+Output:
+
+- `preview/[feature-name]/index.html`
+- `preview/[feature-name]/styles.css`
+- Optional assets under `preview/[feature-name]/assets/`
+
+## 6. Human Approval
+
+The user reviews the Design Proposal and, if available, the HTML Preview. The user does not review the UISpec as the primary artifact.
 
 The user may:
 
@@ -144,7 +178,9 @@ Output:
 
 - Approved Design Proposal, or revised Design Proposal for another review.
 
-## 6. UISpec Compilation
+If revisions are needed, ARIA updates the Design Proposal and re-renders the HTML Preview before requesting approval again.
+
+## 7. UISpec Compilation
 
 After the Design Proposal is approved, ARIA compiles a UISpec using `schemas/uispec-v1.md`.
 
@@ -232,11 +268,13 @@ Rules:
 
 Codex should implement only from the approved target UISpec.
 
-## 7. Codex Implementation
+## 8. Codex Implementation
 
 Codex consumes the approved UISpec and builds the UI in the target application.
 
 For refactors, Codex consumes the approved target UISpec.
+
+If an HTML Preview exists, Codex may use it as a visual reference only. The UISpec remains the implementation contract.
 
 No additional UX decisions should be made during implementation unless the user reopens design review.
 
@@ -259,7 +297,7 @@ Output:
 
 - Working application changes based on the approved UISpec.
 
-## 8. Optional ARIA Review
+## 9. ARIA Review
 
 ARIA may review the implemented UI against the approved UISpec.
 
@@ -280,9 +318,13 @@ Output:
 
 - ARIA designs; Codex builds.
 - Design Proposal is the human approval artifact.
+- HTML Preview is the preferred rendered visual review artifact for developer workflows.
 - UISpec is the implementation contract between ARIA and Codex.
+- Figma is optional and should be treated as a renderer, not a core workflow dependency.
 - ARIA asks before assuming when ambiguity affects UX.
 - ARIA compiles UISpec only after Design Proposal approval.
 - Codex asks before changing approved UX.
+- If the preview and UISpec disagree, use the approved Design Proposal to resolve intent before implementation continues.
+- Never edit the HTML Preview directly. Any design change must update the Design Proposal, then re-render the preview.
 - For refactors, current-state capture documents the baseline, Design Proposal defines the human-approved change, and target UISpec defines the Codex contract.
 - Implementation notes may describe constraints, but they must not smuggle in design decisions.

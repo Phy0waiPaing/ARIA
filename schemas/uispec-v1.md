@@ -31,6 +31,7 @@ updated:
 owner:
 sourceRequest:
 sourceDesignProposal:
+visualReference:
 ```
 
 Rules:
@@ -41,6 +42,8 @@ Rules:
 - `proposed` describes a target design that still needs human approval.
 - `sourceRequest` should briefly capture the original business request.
 - `sourceDesignProposal` should point to the approved proposal used to compile this UISpec.
+- `visualReference` may point to a rendered HTML Preview or optional renderer output when one was approved for visual alignment.
+- If `visualReference` and the UISpec disagree, use the approved Design Proposal to resolve intent before implementation continues.
 
 ## 2. Design Summary
 
