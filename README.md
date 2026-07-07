@@ -2,137 +2,146 @@
 
 **AI Requirements & Interface Architect**
 
-ARIA is an AI-powered design orchestrator that bridges the gap between product requirements and frontend implementation.
+ARIA is a docs-first design workflow for turning business requirements into structured UI specifications that implementation agents such as Codex can build from.
 
-Instead of asking a coding model to both *design* and *implement* a user interface, ARIA separates those responsibilities into a structured workflow.
+ARIA is not a coding assistant. It designs the user experience, defines the interface contract, and reviews implementation fidelity.
 
-## Vision
+## v0.1 Focus
 
-Modern coding models are excellent software engineers, but they are not always reliable UX or UI designers.
+v0.1 establishes the methodology before automation.
 
-ARIA exists to answer questions like:
+Included:
 
-* What should this page contain?
-* What is the user's primary goal?
-* How should information be organized?
-* Which actions should be primary or secondary?
-* How should the layout adapt across screen sizes?
+- ARIA responsibilities and boundaries.
+- A requirement-to-design-proposal workflow.
+- An existing-page refactor workflow.
+- A human-facing Design Proposal contract.
+- A fillable UISpec v1 contract.
+- Role prompts for analysis, design, and review.
+- Design principles and component guidance.
 
-The output is a structured **UI Specification (UISpec)** that any coding model can implement consistently.
+Not included yet:
 
-## Philosophy
+- Production frontend code.
+- CLI tools or schema validators.
+- Figma generation.
+- Visual validation automation.
+- Example UISpecs.
 
-**Design before implementation.**
+## Core Workflow
 
-A well-defined specification produces more consistent code, reduces iteration, and makes UI development predictable.
-
-ARIA does **not** replace coding models.
-
-Instead, it works alongside them.
+New feature:
 
 ```text
-Feature Request
-        │
-        ▼
-      ARIA
-Requirements Analysis
-UX Design
-UI Specification
-Figma Guidance
-        │
-        ▼
-Approved UISpec
-        │
-        ▼
-     Codex
-Implementation
-        │
-        ▼
-Running Application
-        │
-        ▼
-      ARIA
-UI Review
-Design Validation
+Requirement
+  -> Discovery
+  -> Design Proposal
+  -> Human Approval
+  -> UISpec
+  -> Codex Implementation
+  -> Optional ARIA Review
 ```
 
-## Core Responsibilities
+Existing page refactor:
 
-ARIA is responsible for:
+```text
+Existing Page
+  -> Current-State Capture
+  -> Refactor Design Proposal
+  -> Human Approval
+  -> Target UISpec
+  -> Codex Refactor
+  -> ARIA Review
+```
 
-* Understanding business requirements
-* Clarifying ambiguous requirements
-* Defining user goals
-* Designing page layouts
-* Establishing information hierarchy
-* Producing reusable UI specifications
-* Maintaining consistency with the design system
-* Reviewing implemented interfaces
+## User Workflow
 
-ARIA is **not** responsible for:
+The user should only need to do three things:
 
-* Writing production frontend code
-* Choosing implementation frameworks
-* Refactoring application logic
-* Replacing frontend engineers
+1. Describe the business problem.
+2. Answer ARIA's questions when clarification is needed.
+3. Review the Design Proposal.
 
-Those responsibilities belong to implementation-focused coding models such as Codex.
+The user should not need to understand UISpec schemas. ARIA compiles the UISpec after the Design Proposal is approved.
+
+## Artifact Audiences
+
+- Design Proposal: human-facing design conversation between the user and ARIA.
+- UISpec: machine-facing implementation contract between ARIA and Codex.
+
+## Responsibilities
+
+ARIA:
+
+- Understands business requirements.
+- Asks clarifying questions when requirements are incomplete.
+- Produces human-facing Design Proposals.
+- Compiles approved Design Proposals into implementation-independent UISpecs.
+- Documents existing UI as current-state UISpecs before refactors.
+- Reviews implemented UI against approved UISpecs.
+
+Codex:
+
+- Reads approved UISpecs.
+- Implements the UI in the target project.
+- Follows project architecture and design-system constraints.
+- Avoids changing UX decisions unless asked.
 
 ## Repository Structure
 
-```
-aria/
-
-├── prompts/
-│   analyst.md
-│   designer.md
-│   reviewer.md
-│
-├── schemas/
-│   uispec-v1.md
-│
-├── design-system/
-│   principles.md
-│   components.md
-│
-├── examples/
-│   camera-detail.md
-│   camera-list.md
-│
-└── README.md
+```text
+ARIA/
+  README.md
+  workflow.md
+  prompts/
+    analyst.md
+    designer.md
+    reviewer.md
+  schemas/
+    design-proposal-v1.md
+    uispec-v1.md
+  design-system/
+    principles.md
+    components.md
 ```
 
-## Development Roadmap
+## Document Map
 
-### v0.1 — Foundation
+- `workflow.md` defines the full ARIA lifecycle.
+- `schemas/design-proposal-v1.md` defines the human-facing design approval artifact.
+- `schemas/uispec-v1.md` defines the handoff contract between ARIA and Codex.
+- `prompts/analyst.md` guides requirement discovery and clarification.
+- `prompts/designer.md` guides UX design and UISpec generation.
+- `prompts/reviewer.md` guides review of implemented UI against an approved UISpec.
+- `design-system/principles.md` defines ARIA's design principles.
+- `design-system/components.md` defines framework-agnostic component guidance.
 
-* Define ARIA's responsibilities
-* Create the UISpec schema
-* Define design principles
-* Build prompt templates
-* Produce example page specifications
+## Roadmap
 
-### v0.2 — Design Workflow
+### v0.1 - Foundation
 
-* Improve layout generation
-* Add reusable design patterns
-* Add Figma-oriented output
-* Expand component guidance
+- Define ARIA's responsibilities.
+- Define the design workflow.
+- Define Design Proposal v1.
+- Define UISpec v1.
+- Define existing-page refactor mode.
+- Define role prompts.
+- Define design principles and component guidance.
 
-### v0.3 — Validation
+### v0.2 - Examples and Patterns
 
-* Review implemented pages
-* Compare implementation with UISpec
-* Identify inconsistencies
-* Recommend design improvements
+- Add example UISpecs.
+- Add reusable page patterns.
+- Refine prompts from real usage.
 
-### Future Vision
+### v0.3 - Review and Validation
 
-ARIA aims to become a reusable design layer between human intent and AI implementation.
+- Add implementation review workflows.
+- Add UISpec-to-implementation checklists.
+- Explore visual validation support.
 
-In the future, multiple coding models, design tools, and review systems should be able to consume the same UISpec without changing the development workflow.
+### Later
 
-## License
-
-This project is currently under active development.
-The specification, prompts, and design methodology are expected to evolve as ARIA matures.
+- Explore Figma-oriented output.
+- Explore schema validation.
+- Explore automation around ARIA handoffs.

@@ -1,194 +1,371 @@
 # UISpec v1
 
-UISpec is the structured representation of a user interface design.
+UISpec is the implementation-independent contract between ARIA and Codex.
 
-It is implementation-independent and serves as the contract between ARIA and Codex.
+A UISpec describes what interface should be built and why. It should not prescribe framework-specific implementation details.
 
----
+The UISpec is not the primary human review artifact. Humans approve the Design Proposal; ARIA compiles the UISpec after approval.
 
-# Document Structure
+## Core Rule
 
-A UISpec consists of:
+A complete UISpec must let Codex implement the UI without making new UX decisions.
 
-```text
-Metadata
-Design Summary
-Purpose
-User Context
-User Goals
-Information Architecture
-Layout
-Sections
-Components
-User Flows
-Actions
-States
-Permissions
-Responsive Rules
-Accessibility
-Implementation Notes
-```
+Every target UISpec must be compiled from an approved Design Proposal.
 
----
+## Required Structure
 
-# 1. Metadata
+Every UISpec v1 document must include these sections in order.
+
+## 1. Metadata
+
+Purpose: identify the specification and its review status.
+
+Required fields:
 
 ```yaml
 name:
 version:
+status: draft | current-state | proposed | approved | revised
 created:
 updated:
-author:
+owner:
+sourceRequest:
+sourceDesignProposal:
 ```
 
----
+Rules:
 
-# 2. Design Summary
+- `name` should describe the interface, not the implementation route.
+- `status` must be `approved` before Codex treats a target UISpec as source of truth.
+- `current-state` documents an existing interface before refactor and is not an implementation target.
+- `proposed` describes a target design that still needs human approval.
+- `sourceRequest` should briefly capture the original business request.
+- `sourceDesignProposal` should point to the approved proposal used to compile this UISpec.
 
-High-level understanding of the page.
+## 2. Design Summary
+
+Purpose: summarize the design direction in a compact form.
+
+Required fields:
 
 ```yaml
 purpose:
 primaryUser:
 primaryGoal:
-complexity:
+complexity: low | medium | high
 keyDesignPrinciple:
 ```
 
----
+Rules:
 
-# 3. Purpose
+- `purpose` must be one sentence.
+- `primaryGoal` should describe the user's outcome, not a button click.
 
-One sentence describing why the page exists.
+## 3. Purpose
 
----
+Purpose: explain why the interface exists.
 
-# 4. User Context
+Include:
 
-Defines who is using the page.
+- One primary purpose statement.
+- What problem this interface solves.
+- What this interface intentionally does not solve.
 
-* primaryUser
-* secondaryUsers
-* usageFrequency
+Rules:
 
----
+- Do not list actions as the purpose.
+- If the page has multiple unrelated purposes, split the design.
 
-# 5. User Goals
+## 4. User Context
 
-What users are trying to achieve.
+Purpose: define who uses the interface and under what conditions.
 
----
+Include:
 
-# 6. Information Architecture
+- Primary user.
+- Secondary users.
+- Usage frequency.
+- Environment or workflow context.
+- User knowledge level.
 
-Logical grouping of information.
+Rules:
 
-Not layout yet.
+- Prefer real roles over generic labels like "user" when known.
+- Note unknowns explicitly if they affect design confidence.
 
----
+## 5. User Goals
 
-# 7. Layout
+Purpose: list outcomes users need from the interface.
 
-High-level structure only.
+Format:
 
-Example:
+```markdown
+- Goal: [outcome]
+  Priority: primary | secondary
+  Notes: [constraints or context]
+```
 
-* Top Bar
-* Main Content
-* Sidebar
-* Footer
+Rules:
 
----
+- Goals are outcomes, not UI controls.
+- Each primary action should support at least one user goal.
 
-# 8. Sections
+## 6. Information Architecture
 
-Functional grouping of UI content.
+Purpose: define logical information groups before layout.
 
-Each section includes:
+Include:
 
-* Purpose
-* Content
-* Priority
+- Information groups.
+- Relative priority.
+- Relationships between groups.
+- Data that should be hidden until needed.
 
----
+Rules:
 
-# 9. Components
+- This section should not define columns, breakpoints, or component names.
+- Group information by user meaning, not backend structure.
 
-Reusable UI concepts.
+## 7. Layout
 
-Examples:
+Purpose: describe the screen structure.
 
-* Table
-* Card
-* Timeline
-* Video Player
-* Tabs
+Include:
 
----
+- Overall layout model.
+- Main regions.
+- Region priority.
+- Scanning order.
+- Persistent or sticky areas, if any.
 
-# 10. User Flows
+Rules:
 
-Step-by-step interaction patterns.
+- Keep this framework-agnostic.
+- Describe spatial intent, not CSS implementation.
 
----
+## 8. Sections
 
-# 11. Actions
+Purpose: define the functional areas of the interface.
 
-All possible user operations.
+Format:
 
-Categorized:
+```markdown
+### [Section Name]
 
-* Primary
-* Secondary
-* Dangerous
+Purpose:
+Priority: primary | secondary | supporting
+Contains:
+- [content or control]
+Behavior:
+- [interaction or visibility rule]
+```
 
----
+Rules:
 
-# 12. States
+- Every section must support the page purpose.
+- Avoid decorative sections without user value.
+
+## 9. Components
+
+Purpose: identify reusable UI concepts needed by the design.
+
+Format:
+
+```markdown
+### [Component Concept]
+
+Used For:
+Content:
+Behavior:
+States:
+```
+
+Rules:
+
+- Use design-level names such as table, status indicator, dialog, filter bar, tabs, or form.
+- Do not require a specific component library.
+
+## 10. User Flows
+
+Purpose: describe important interaction paths.
+
+Format:
+
+```markdown
+### [Flow Name]
+
+Trigger:
+Steps:
+1. [step]
+2. [step]
+Success Result:
+Failure Result:
+```
+
+Rules:
+
+- Include common flows and critical edge flows.
+- Do not describe implementation events unless the user experiences them.
+
+## 11. Actions
+
+Purpose: define all user operations and their priority.
+
+Format:
+
+```markdown
+| Action | Priority | Trigger Location | Result | Confirmation |
+| --- | --- | --- | --- | --- |
+| [name] | primary | [where] | [outcome] | yes/no |
+```
+
+Priority values:
+
+- Primary: main action that advances the user's goal.
+- Secondary: useful supporting action.
+- Dangerous: destructive or irreversible action.
+
+Rules:
+
+- Dangerous actions must define confirmation and recovery expectations.
+- Do not create actions that do not map to a user goal.
+
+## 12. States
+
+Purpose: define what the interface shows outside the ideal loaded state.
 
 Must include:
 
-* Loading
-* Empty
-* Error
-* Offline
-* Permission Denied
+- Loading.
+- Empty.
+- Error.
+- Offline or unavailable.
+- Permission denied.
+- Success or completion, when relevant.
 
----
+Format:
 
-# 13. Permissions
+```markdown
+### [State Name]
 
-Role-based access rules.
+When:
+User Sees:
+Available Actions:
+Recovery Path:
+```
 
----
+Rules:
 
-# 14. Responsive Rules
+- Empty states should guide the next useful action.
+- Error states should explain what happened and what the user can do.
 
-Defines behavior across screen sizes:
+## 13. Permissions
 
-* Desktop
-* Tablet
-* Mobile
+Purpose: define role-based visibility and action access.
 
----
+Include:
 
-# 15. Accessibility
+- Roles.
+- Visible sections per role.
+- Available actions per role.
+- Disabled or hidden behavior.
 
-* Keyboard navigation
-* Screen reader support
-* Focus order
-* Contrast requirements
+Rules:
 
----
+- If permissions are unknown, state what must be clarified before implementation.
+- Do not leave permission-sensitive actions unspecified.
 
-# 16. Implementation Notes
+## 14. Responsive Rules
 
-Optional technical constraints.
+Purpose: define how the interface adapts across viewport sizes.
 
-Not design decisions.
+Include:
 
----
+- Desktop behavior.
+- Tablet behavior.
+- Mobile behavior.
+- Content priority when space is constrained.
+- Navigation or action changes by size.
 
-# Core Rule
+Rules:
 
-UISpec must be sufficient for implementation **without additional design decisions**.
+- Responsive rules should preserve the primary workflow.
+- Do not hide critical information without an alternate access path.
+
+## 15. Accessibility
+
+Purpose: define accessibility expectations.
+
+Include:
+
+- Keyboard navigation.
+- Focus order.
+- Screen reader labels and landmarks.
+- Contrast expectations.
+- Error messaging behavior.
+- Motion or animation constraints.
+
+Rules:
+
+- Interactive elements must be keyboard reachable.
+- State and status changes must be perceivable without relying on color alone.
+
+## 16. Implementation Notes
+
+Purpose: capture constraints Codex should know without changing the design.
+
+May include:
+
+- Existing app conventions to follow.
+- Known data availability constraints.
+- Integration boundaries.
+- Copy or terminology constraints.
+
+Rules:
+
+- Do not place UX decisions here.
+- Do not choose frameworks, libraries, or internal architecture unless the target project already requires them.
+
+## Refactor UISpec Rules
+
+When ARIA is used for an existing page refactor, use two UISpecs:
+
+```text
+docs/uispecs/[page-name].current.uispec.md
+docs/uispecs/[page-name].target.uispec.md
+```
+
+### Current-State UISpec
+
+Use `status: current-state`.
+
+Purpose:
+
+- Document what the existing page currently does.
+- Capture observed sections, components, actions, states, permissions, and responsive behavior.
+- Identify UX gaps or unclear behavior as observations.
+
+Rules:
+
+- Describe the current page faithfully.
+- Do not improve the design in this artifact.
+- Label inferred behavior when the source does not prove intent.
+- This document is a baseline, not a Codex implementation target.
+
+### Target UISpec
+
+Use `status: approved` after compiling from an approved Design Proposal.
+
+Purpose:
+
+- Define the desired post-refactor experience.
+- Preserve existing behavior unless the target UISpec explicitly changes it.
+- Explain which current-state gaps the approved Design Proposal addresses.
+
+Rules:
+
+- Reference the approved Design Proposal.
+- Codex implements from the approved target UISpec only.
+- Do not introduce unrelated workflows.
+- Do not remove existing user value unless the refactor intent explicitly calls for it.
+- Implementation notes may reference existing code constraints but must not override the target UX.

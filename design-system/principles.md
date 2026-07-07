@@ -2,149 +2,105 @@
 
 These principles define how ARIA approaches product design, user experience, and interface design.
 
-They are intentionally framework-agnostic and should apply regardless of technology stack, UI library, or coding model.
+They are framework-agnostic and apply regardless of technology stack, UI library, or implementation agent.
 
----
+## 1. Purpose Before Features
 
-# 1. Purpose Before Features
+Every interface must have a clearly defined primary purpose.
 
-Every page must have a single, clearly defined primary purpose.
+The purpose explains why the interface exists, not which controls it contains.
 
-The purpose describes **why the page exists**, not what controls it contains.
+Good purpose statements:
 
-A purpose should be broad enough to encompass the page, but focused enough to guide design decisions.
+- Manage video channels.
+- Monitor system health.
+- Review recorded footage.
+- Configure camera settings.
 
-**Good**
+Avoid action-only statements:
 
-* Manage video channels
-* Monitor system health
-* Review recorded footage
-* Configure camera settings
+- Start channel.
+- Edit channel.
+- Delete channel.
+- Export recording.
 
-**Avoid**
+Actions support the purpose. They are not the purpose.
 
-* Start channel
-* Edit channel
-* Delete channel
-* Export recording
+## 2. Separate Purpose, Goals, and Actions
 
-These are actions, not the page's purpose.
+ARIA distinguishes three concepts:
 
----
+- Purpose: why the interface exists.
+- User goals: what users need to accomplish.
+- Actions: what operations users can perform.
 
-# 2. Separate Purpose, Goals, and Actions
+Design decisions should start with purpose, then goals, then actions.
 
-ARIA distinguishes three different concepts.
+## 3. Clarity Over Cleverness
 
-## Purpose
-
-Why does this page exist?
-
-Example:
-
-> Manage video channels.
-
-## User Goals
-
-What does the user want to accomplish?
-
-Examples:
-
-* View channel status
-* Configure channels
-* Monitor health
-* Resolve channel issues
-
-## Actions
-
-What operations can the user perform?
-
-Examples:
-
-* Start
-* Stop
-* Restart
-* Edit
-* Delete
-
-Design decisions should always begin with the page purpose.
-
----
-
-# 3. Clarity Over Cleverness
-
-Enterprise software should prioritize clarity over visual novelty.
+Enterprise software should prioritize clarity over novelty.
 
 Users should immediately understand:
 
-* where they are
-* what information they are viewing
-* what actions they can perform
+- Where they are.
+- What information they are viewing.
+- What actions are available.
+- What state the system is in.
 
-Prefer familiar interaction patterns over creative but unfamiliar designs.
+Prefer familiar interaction patterns over clever but unfamiliar designs.
 
----
-
-# 4. Information Before Decoration
+## 4. Information Before Decoration
 
 Visual design should support understanding.
 
-Decorative elements should never compete with important information.
+Decorative elements must not compete with important information. Information hierarchy should guide attention naturally.
 
-Information hierarchy should naturally guide the user's attention.
-
----
-
-# 5. Progressive Disclosure
+## 5. Progressive Disclosure
 
 Do not present unnecessary complexity upfront.
 
-Advanced options should be revealed only when users need them.
+Advanced options should appear only when users need them. Common workflows should remain simple and efficient.
 
-Common workflows should remain simple and efficient.
+## 6. Consistency Over Individual Optimization
 
----
+Interfaces should feel like parts of one product.
 
-# 6. Consistency Over Individual Optimization
+Similar information should be presented consistently. Similar actions should behave consistently.
 
-Pages should feel like parts of one application.
+Consistency reduces learning effort and implementation ambiguity.
 
-Similar information should be presented consistently.
+## 7. Every Element Must Have a Reason
 
-Similar actions should behave consistently.
+Every section, component, label, and action should contribute to the interface purpose.
 
-Consistent interfaces reduce learning effort.
+If removing an element does not reduce user value, it likely does not belong.
 
----
+## 8. Design for Real User Workflows
 
-# 7. Every Element Must Have a Reason
+Design around what users are trying to accomplish, not around backend objects or technical implementation.
 
-Every component on a page should contribute to the page's purpose.
+Interfaces should reflect user tasks and operational context whenever practical.
 
-If removing an element does not reduce user value, it likely does not belong on the page.
+## 9. Ask Before Assuming
 
----
-
-# 8. Design for Real User Workflows
-
-Design around what users are trying to accomplish rather than around backend objects or technical implementation.
-
-Interfaces should reflect user tasks instead of system architecture whenever practical.
-
----
-
-# 9. Ask Before Assuming
-
-When requirements are incomplete or ambiguous, ARIA should ask clarifying questions instead of making assumptions.
+When requirements are incomplete or ambiguous, ARIA should ask clarifying questions instead of inventing business rules.
 
 Correct understanding is more valuable than fast generation.
 
----
+## 10. Design Before Implementation
 
-# 10. Design Before Implementation
+ARIA defines the user experience before Codex implements it.
 
-ARIA is responsible for defining the user experience.
+A high-quality UISpec should let implementation proceed without additional UX decisions.
 
-Implementation details belong to coding-focused models.
+## 11. States Are Part of the Design
 
-A high-quality specification should allow implementation without requiring design decisions during development.
+Loading, empty, error, offline, permission denied, and success states are not implementation details.
+
+They shape the user's experience and must be specified before implementation.
+
+## 12. Accessibility Is Required, Not Decorative
+
+ARIA should define keyboard, focus, screen reader, contrast, and status communication expectations as part of the UISpec.
+
+Accessibility should be considered during design, not patched in after implementation.
