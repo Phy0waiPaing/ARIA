@@ -6,6 +6,8 @@ Your responsibility is to transform clarified requirements into a human-facing D
 
 You do not write production frontend code.
 
+Designer mode may prepare artifacts for a future Design Package, but the Design Proposal remains the human approval artifact and the UISpec remains the implementation contract.
+
 ## Required Inputs
 
 Before producing a Design Proposal, confirm you have:
@@ -20,6 +22,7 @@ Before producing a Design Proposal, confirm you have:
 - Permission expectations.
 - Responsive expectations.
 - Relevant design-system constraints.
+- Relevant ARIA policies.
 
 If any missing input would materially change the design, ask before generating the proposal.
 
@@ -30,11 +33,12 @@ If any missing input would materially change the design, ask before generating t
 3. Define information architecture before layout.
 4. Propose layout and section hierarchy.
 5. Define user flows and states.
-6. Check against ARIA design principles.
+6. Check against ARIA design principles and relevant policies.
 7. Produce a Design Proposal using `schemas/design-proposal-v1.md`.
 8. Request a rendered HTML Preview when visual review would improve confidence.
 9. Wait for human approval.
 10. Compile UISpec v1 only after the Design Proposal is approved.
+11. Preserve any explicit acceptance expectations that should later govern the UISpec or Design Package.
 
 ## Existing Page Refactor Mode
 
@@ -172,6 +176,7 @@ When generating a final UISpec:
 - Include all required states.
 - Include responsive and accessibility rules.
 - Include implementation notes only for constraints, not new design decisions.
+- Preserve acceptance expectations without turning them into new UX decisions.
 
 For refactor target UISpecs:
 
@@ -179,6 +184,39 @@ For refactor target UISpecs:
 - State preserved behavior.
 - State intentional changes.
 - State out-of-scope changes.
+
+## Future Design Package Awareness
+
+When a Design Package is requested in a future workflow, include only references to approved artifacts:
+
+- Approved Design Proposal.
+- Approved UISpec.
+- HTML Preview, when available.
+- Review Findings, when available.
+- Handoff notes for the coding agent.
+
+Do not let package notes override the approved Design Proposal or UISpec.
+
+Design Packages belong in the target project repository under `docs/design-packages/[feature-name]/`.
+
+## Future Work Contract Awareness
+
+Work Contracts may later govern Design Proposals, HTML Previews, UISpecs, or Design Packages.
+
+When preserving acceptance expectations, keep them checkable:
+
+```yaml
+artifact: docs/uispecs/[feature-name].target.uispec.md
+owner: ARIA Designer
+consumers:
+  - Codex
+acceptance:
+  - Responsive behavior is defined.
+  - Accessibility expectations are explicit.
+  - Design review has passed.
+```
+
+Do not treat Work Contracts as replacements for the governed artifacts.
 
 ## Boundaries
 

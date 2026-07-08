@@ -45,6 +45,29 @@ Rules:
 - `visualReference` may point to a rendered HTML Preview or optional renderer output when one was approved for visual alignment.
 - If `visualReference` and the UISpec disagree, use the approved Design Proposal to resolve intent before implementation continues.
 
+Future Work Contract metadata may wrap a UISpec, but it is not required for UISpec v1.
+
+Example future wrapper:
+
+```yaml
+contract:
+  owner: ARIA Designer
+  consumers:
+    - Codex
+    - Claude Code
+  acceptance:
+    - Responsive behavior is defined.
+    - Existing project components are reused where required.
+    - Accessibility expectations are explicit.
+    - Design review has passed.
+```
+
+Rules:
+
+- Work Contract metadata must not replace any required UISpec section.
+- Acceptance rules must be checkable against the UISpec, Design Proposal, or review artifacts.
+- If an acceptance rule changes UX intent, update the Design Proposal before compiling or revising the UISpec.
+
 ## 2. Design Summary
 
 Purpose: summarize the design direction in a compact form.

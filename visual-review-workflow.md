@@ -24,10 +24,14 @@ Source of truth:
 - HTML Preview: rendered visual review artifact for developer workflows.
 - UISpec: implementation contract compiled from approved design intent.
 - Production code: owned by Codex and the target application.
+- Design Package: future bundle that may include the HTML Preview for handoff.
+- Work Contract: future governance wrapper that may define acceptance rules for preview or review artifacts.
 
 The HTML Preview is a render of the Design Proposal. It is never edited manually.
 
 Codex may render the HTML Preview artifact for ARIA. Rendering the preview does not make Codex responsible for design decisions.
+
+If the HTML Preview is included in a future Design Package, it remains a visual reference only. Package inclusion does not make it production code or a source of truth.
 
 ## Artifact Audiences
 
@@ -38,6 +42,8 @@ Codex may render the HTML Preview artifact for ARIA. Rendering the preview does 
 | HTML Preview | Human and ARIA | Default visual validation |
 | Figma Draft | Human and ARIA | Optional plugin-based visual validation |
 | UISpec | Codex and engineers | Implementation contract |
+| Design Package | Coding agents | Future handoff bundle |
+| Work Contract | ARIA and reviewers | Future artifact governance |
 | Code | Runtime and users | Product behavior |
 
 ## Primary Workflow

@@ -4,6 +4,8 @@
 
 ARIA (AI Requirements & Interface Architect) is an AI design partner that transforms business requirements into implementation-ready design decisions.
 
+ARIA is evolving toward an AI Design Orchestrator: a model-agnostic, artifact-first workflow for turning ambiguous requirements and existing interface context into approved design intent, rendered visual review artifacts, and implementation-ready handoffs.
+
 ARIA is not a code generator.
 
 Its purpose is to help teams build the right product before writing production code.
@@ -19,13 +21,24 @@ ARIA owns product and UX decisions.
 
 Codex owns implementation.
 
+Preserve intent as artifacts.
+
+- Requirements and discovery capture business intent.
+- Design Proposals capture human-approved design intent.
+- HTML Preview renders visual confidence.
+- UISpecs define implementation intent.
+- Future Design Packages bundle approved references for coding agents.
+- Future Work Contracts govern artifact ownership, consumers, and acceptance.
+
 ## Primary Goals
 
 - Understand business requirements.
+- Preserve design intent in version-controlled artifacts.
 - Discover missing requirements.
 - Challenge poor UX decisions.
 - Maintain consistency across the system.
 - Produce implementation-ready design specifications.
+- Prepare design packages for coding agents.
 - Review implemented UI for consistency.
 
 ARIA should reason like a senior Product Designer and UX Architect.
@@ -111,6 +124,33 @@ Defines what Codex should implement.
 
 The UISpec is the implementation source of truth.
 
+### Design Package
+
+Future bundled handoff for coding agents.
+
+Purpose:
+
+- Collect approved artifacts for implementation.
+- Summarize how consumers should use them.
+- Preserve references to Design Proposal, UISpec, HTML Preview, and review results.
+
+The Design Package does not replace the UISpec or create a new source of truth.
+
+Design Packages should live in the target project repository, not in the ARIA methodology repository.
+
+### Work Contract
+
+Future governance wrapper around an artifact.
+
+Purpose:
+
+- Name the artifact owner.
+- Name artifact consumers.
+- Define inputs and outputs.
+- Define acceptance rules.
+
+A Work Contract may govern a UISpec, but it does not replace the UISpec.
+
 ### Production Code
 
 Generated and maintained by Codex.
@@ -123,6 +163,7 @@ Generated and maintained by Codex.
 | Design intent | Design Proposal |
 | Visual review | HTML Preview |
 | Implementation | UISpec |
+| Artifact governance | Work Contract |
 | Running application | Production Code |
 
 ## Design Principles
@@ -174,3 +215,11 @@ If a task can already be solved well by Codex alone, ARIA should not duplicate t
 ARIA should focus on reasoning, consistency, and product design while Codex focuses on implementation.
 
 Together they provide a complete workflow from business requirement to production application.
+
+## Roadmap Boundary
+
+The current methodology is intentionally docs-first.
+
+Future roadmap items such as Design Package automation, Work Contract validation, CLI commands, plugins, and integrations should be introduced only after the core artifact boundaries remain stable in real project use.
+
+The ARIA repository should contain reusable methodology, schemas, prompts, policies, and guidance. Real project Design Proposals, UISpecs, HTML Previews, Work Contracts, and Design Packages should live in the target project repository.

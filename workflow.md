@@ -2,6 +2,8 @@
 
 This document defines how ARIA turns a business problem or existing page into an approved Design Proposal, optionally validates the design through an HTML Preview rendered by Codex, then compiles that proposal into a UISpec that Codex can implement.
 
+ARIA may later bundle approved artifacts into a Design Package. The package is a handoff bundle, not a new source of truth.
+
 ARIA is not a prompt engine. ARIA is a design partner with a repeatable handoff process.
 
 ## Overview
@@ -13,6 +15,8 @@ ARIA supports two v0.1 workflows:
 
 The user reviews the Design Proposal and, when useful, an HTML Preview. Codex renders the preview artifact and consumes the UISpec.
 
+Future Work Contracts may govern major artifacts by defining owners, consumers, inputs, outputs, and acceptance rules. Work Contracts wrap artifacts; they do not replace Design Proposal, HTML Preview, or UISpec.
+
 ## New Feature Workflow
 
 ```text
@@ -22,6 +26,7 @@ Requirement
   -> Render HTML Preview (optional but recommended)
   -> Human Approval
   -> UISpec Compilation
+  -> Design Package (future)
   -> Codex Implementation
   -> ARIA Review
 ```
@@ -35,6 +40,7 @@ Existing Page
   -> Render HTML Preview (optional but recommended)
   -> Human Approval
   -> Target UISpec Compilation
+  -> Design Package (future)
   -> Codex Refactor
   -> ARIA Review
 ```
@@ -270,6 +276,21 @@ Codex should implement only from the approved target UISpec.
 
 ## 8. Codex Implementation
 
+Before implementation, future ARIA workflows may export a Design Package.
+
+The package may include:
+
+- Approved Design Proposal.
+- Approved UISpec.
+- HTML Preview, when available.
+- Review Findings, when available.
+- Handoff notes for the coding agent.
+- Work Contracts, when available.
+
+The package must not contradict the approved artifacts. If package notes conflict with the UISpec or Design Proposal, resolve the conflict before implementation begins.
+
+Design Packages should be stored in the target project repository under `docs/design-packages/[feature-name]/`.
+
 Codex consumes the approved UISpec and builds the UI in the target application.
 
 For refactors, Codex consumes the approved target UISpec.
@@ -321,6 +342,8 @@ Output:
 - Design Proposal is the human approval artifact.
 - HTML Preview is the preferred rendered visual review artifact for developer workflows.
 - UISpec is the implementation contract between ARIA and Codex.
+- Design Package is a future handoff bundle, not a source of truth.
+- Work Contract is a future artifact governance wrapper, not a replacement for UISpec.
 - Figma is optional and should be treated as a renderer, not a core workflow dependency.
 - ARIA asks before assuming when ambiguity affects UX.
 - ARIA compiles UISpec only after Design Proposal approval.
@@ -329,3 +352,4 @@ Output:
 - Never edit the HTML Preview directly. Any design change must update the Design Proposal, then Codex re-renders the preview.
 - For refactors, current-state capture documents the baseline, Design Proposal defines the human-approved change, and target UISpec defines the Codex contract.
 - Implementation notes may describe constraints, but they must not smuggle in design decisions.
+- Real project artifacts belong in the target project repository. The ARIA repository owns reusable methodology, schemas, prompts, and policies.
