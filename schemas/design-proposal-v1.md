@@ -208,7 +208,7 @@ Rules:
 - HTML Preview is preferred for developer workflows.
 - Visual review is optional, not mandatory.
 - Visual review artifacts are rendered from the Design Proposal and are not production code.
-- Do not edit HTML Preview directly. Update the Design Proposal, then re-render the preview.
+- Do not edit HTML Preview directly. Update the Design Proposal, then have Codex re-render the preview.
 - Do not include production implementation details.
 
 ## 13. Approval Notes

@@ -27,6 +27,8 @@ Source of truth:
 
 The HTML Preview is a render of the Design Proposal. It is never edited manually.
 
+Codex may render the HTML Preview artifact for ARIA. Rendering the preview does not make Codex responsible for design decisions.
+
 ## Artifact Audiences
 
 | Artifact | Audience | Purpose |
@@ -138,7 +140,7 @@ Core rules:
 - Git provides history.
 - The preview only represents the latest design.
 - Never edit the preview directly.
-- Any design change must be made in the Design Proposal, then the preview should be re-rendered.
+- Any design change must be made in the Design Proposal, then Codex should re-render the preview.
 
 ## HTML Preview Input
 
@@ -283,14 +285,14 @@ Use this loop:
 
 ```text
 Design Proposal
-  -> Re-render HTML Preview
+  -> Codex re-renders HTML Preview
   -> Review Again
 ```
 
 Rules:
 
 - Feedback that changes UX intent must update the Design Proposal.
-- Feedback that only changes visual presentation may update the Design Proposal's visual direction, then re-render the HTML Preview.
+- Feedback that only changes visual presentation may update the Design Proposal's visual direction, then Codex re-renders the HTML Preview.
 - UISpec compilation happens only after design approval.
 - If feedback creates new ambiguity, ARIA asks before revising.
 
@@ -354,12 +356,12 @@ If the preview and UISpec disagree, the approved Design Proposal should be used 
 
 ## Prompt Pattern
 
-Use this when asking ARIA to render an HTML Preview:
+Use this when asking Codex to render ARIA's HTML Preview artifact:
 
 ```text
 Use ARIA from D:\Nemo\Projects\ARIA.
 
-Render HTML Preview from:
+Render ARIA's HTML Preview from:
 docs/design-proposals/[feature-name].proposal.md
 
 Follow the Visual Review workflow in:
@@ -372,6 +374,7 @@ preview/[feature-name]/styles.css
 Do not change product behavior.
 Do not compile or modify the UISpec.
 Do not implement production code.
+Do not make new UX decisions.
 Do not add backend logic, API calls, authentication, production architecture, or framework-specific code.
 Do not create versioned preview folders.
 Do not edit the preview as source; render it from the latest Design Proposal.

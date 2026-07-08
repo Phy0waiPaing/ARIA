@@ -2,22 +2,24 @@
 
 **AI Requirements & Interface Architect**
 
-ARIA is a docs-first design workflow for turning business requirements into structured UI specifications that implementation agents such as Codex can build from.
+ARIA is an AI design partner that turns business requirements into implementation-ready design decisions.
 
-ARIA is not a coding assistant. It designs the user experience, defines the interface contract, and reviews implementation fidelity.
+ARIA is not a code generator. It helps teams decide what should be built before Codex decides how to build it.
+
+Start with [manifest.md](manifest.md). It is the conceptual source for ARIA v0.1.
 
 ## v0.1 Focus
 
-v0.1 establishes the methodology before automation.
+v0.1 establishes a docs-first methodology before automation.
 
 Included:
 
-- ARIA responsibilities and boundaries.
-- A requirement-to-design-proposal workflow.
-- An existing-page refactor workflow.
-- A renderer-agnostic Visual Review workflow with HTML Preview as the default.
-- A human-facing Design Proposal contract.
-- A fillable UISpec v1 contract.
+- Project manifest and responsibility boundaries.
+- Requirement-to-Design-Proposal workflow.
+- Existing-page refactor workflow.
+- Optional Visual Review workflow with HTML Preview as the default renderer.
+- Human-facing Design Proposal contract.
+- UISpec v1 implementation contract.
 - Role prompts for analysis, design, and review.
 - Design principles and component guidance.
 
@@ -26,75 +28,42 @@ Not included yet:
 - Production frontend code.
 - CLI tools or schema validators.
 - Visual validation automation.
-- Example UISpecs.
+- Official examples.
 
 ## Core Workflow
 
-New feature:
-
 ```text
-Requirement
+Business Requirement
   -> Discovery
   -> Design Proposal
-  -> Render HTML Preview (optional but recommended)
+  -> Visual Review (optional)
   -> Human Approval
-  -> UISpec Compilation
+  -> UISpec
   -> Codex Implementation
   -> ARIA Review
 ```
 
-Existing page refactor:
-
-```text
-Existing Page
-  -> Current-State Capture
-  -> Refactor Design Proposal
-  -> Render HTML Preview (optional but recommended)
-  -> Human Approval
-  -> Target UISpec Compilation
-  -> Codex Refactor
-  -> ARIA Review
-```
-
-## User Workflow
-
-The user should only need to do three things:
-
-1. Describe the business problem.
-2. Answer ARIA's questions when clarification is needed.
-3. Review the Design Proposal.
-
-The user should not need to understand UISpec schemas. ARIA compiles the UISpec after the Design Proposal is approved.
-
-## Artifact Audiences
-
-- Design Proposal: human-facing design conversation between the user and ARIA.
-- HTML Preview: rendered human-facing visual review artifact, not production code or source truth.
-- Optional renderer output: Figma or future tools when a team needs them, not source of truth.
-- UISpec: machine-facing implementation contract between ARIA and Codex.
-
-## Responsibilities
+## Responsibility Split
 
 ARIA:
 
-- Understands business requirements.
-- Asks clarifying questions when requirements are incomplete.
-- Produces human-facing Design Proposals.
-- Compiles approved Design Proposals into implementation-independent UISpecs.
-- Documents existing UI as current-state UISpecs before refactors.
-- Reviews implemented UI against approved UISpecs.
+- Owns product and UX decisions.
+- Produces Design Proposals and UISpecs.
+- Reviews implemented UI for design consistency.
+- Does not generate production frontend code.
 
 Codex:
 
-- Reads approved UISpecs.
-- Implements the UI in the target project.
-- Follows project architecture and design-system constraints.
-- Avoids changing UX decisions unless asked.
+- Renders ARIA's optional HTML Preview artifact.
+- Builds production frontend.
+- Follows the approved UISpec.
+- Does not redesign UX without explicit instruction.
 
 ## Repository Structure
 
 ```text
 ARIA/
+  manifest.md
   README.md
   workflow.md
   visual-review-workflow.md
@@ -112,43 +81,13 @@ ARIA/
 
 ## Document Map
 
-- `workflow.md` defines the full ARIA lifecycle.
-- `visual-review-workflow.md` defines the optional visual review layer, with HTML Preview as the default renderer and Figma as an optional renderer.
-- `schemas/design-proposal-v1.md` defines the human-facing design approval artifact.
-- `schemas/uispec-v1.md` defines the handoff contract between ARIA and Codex.
+- `manifest.md` defines what ARIA is and where responsibility boundaries sit.
+- `workflow.md` defines the operational lifecycle.
+- `visual-review-workflow.md` defines the optional visual review layer.
+- `schemas/design-proposal-v1.md` defines the human-facing design artifact.
+- `schemas/uispec-v1.md` defines the Codex implementation contract.
 - `prompts/analyst.md` guides requirement discovery and clarification.
-- `prompts/designer.md` guides UX design and UISpec generation.
-- `prompts/reviewer.md` guides review of implemented UI against an approved UISpec.
+- `prompts/designer.md` guides UX design and UISpec compilation.
+- `prompts/reviewer.md` guides implementation review against an approved UISpec.
 - `design-system/principles.md` defines ARIA's design principles.
 - `design-system/components.md` defines framework-agnostic component guidance.
-
-## Roadmap
-
-### v0.1 - Foundation
-
-- Define ARIA's responsibilities.
-- Define the design workflow.
-- Define Design Proposal v1.
-- Define UISpec v1.
-- Define existing-page refactor mode.
-- Define role prompts.
-- Define design principles and component guidance.
-
-### v0.2 - Visual Review and Examples
-
-- Add optional Render HTML Preview quality gate.
-- Keep Figma as an optional plugin-based renderer.
-- Add example UISpecs.
-- Add reusable page patterns.
-- Refine prompts from real usage.
-
-### v0.3 - Review and Validation
-
-- Add implementation review workflows.
-- Add UISpec-to-implementation checklists.
-- Explore visual validation support.
-
-### Later
-
-- Explore schema validation.
-- Explore automation around ARIA handoffs.
