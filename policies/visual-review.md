@@ -20,6 +20,26 @@ Renderer choice must not change source-of-truth rules:
 - HTML Preview shows rendered visual direction.
 - UISpec owns implementation intent.
 
+## Review Gate
+
+Visual Review is required by default for:
+
+- Existing page refactors.
+- New pages inside existing projects.
+- Layout-heavy pages.
+- Dense admin, dashboard, table, or operations screens.
+- Navigation or information hierarchy changes.
+- Workflows where action placement or information density is the main design risk.
+
+Visual Review may be skipped only when:
+
+- The change is copy-only.
+- The change is schema-only.
+- The change has no material visual consequence.
+- The user explicitly asks to skip visual review.
+
+If ARIA skips Visual Review, it must record the reason in the Design Proposal.
+
 ## Preview Rules
 
 HTML Preview should:
@@ -29,6 +49,8 @@ HTML Preview should:
 - Be overwritten in place when design changes.
 - Use realistic content only when it improves review quality.
 - Mark visual assumptions clearly.
+- Include the primary screen plus the key states and interaction surfaces needed to judge the proposal.
+- Use compact panels for loading, empty, error, permission, conflict, protected/read-only, and destructive-confirmation states when full-size screens would be too heavy.
 
 HTML Preview should not:
 
@@ -51,9 +73,9 @@ Reason:
 
 Use `high` when the layout follows known patterns and required states are clear.
 
-Use `medium` when multiple reasonable hierarchies exist or some assumptions are needed.
+Use `medium` when multiple reasonable hierarchies exist, some assumptions are needed, or the preview omits secondary but non-blocking states.
 
-Use `low` when major product behavior or layout direction remains unresolved.
+Use `low` when major product behavior or layout direction remains unresolved, or when a required-preview artifact shows only the happy path for a stateful workflow.
 
 ## Review Scope
 

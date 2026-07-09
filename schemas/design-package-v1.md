@@ -34,6 +34,7 @@ The package may reference artifacts outside the package:
 
 ```text
 docs/design-proposals/[feature-name].proposal.md
+docs/aria-context/[feature-name].project-context.md
 docs/uispecs/[feature-name].target.uispec.md
 preview/[feature-name]/index.html
 preview/[feature-name]/styles.css
@@ -72,6 +73,7 @@ Required fields:
 ```yaml
 artifacts:
   designProposal:
+  projectContext:
   uispec:
   htmlPreview:
   reviewFindings:
@@ -81,6 +83,7 @@ artifacts:
 Rules:
 
 - `designProposal` must point to the approved Design Proposal.
+- `projectContext` should point to Project Context Capture when the package is for a new page in an existing project.
 - `uispec` must point to the approved target UISpec.
 - `htmlPreview` is optional and visual only.
 - `reviewFindings` is optional until structured review output exists.
@@ -93,6 +96,7 @@ Purpose: explain how the coding agent should consume the package.
 Include:
 
 - Primary implementation artifact.
+- Project context reference, when available.
 - Visual reference, if available.
 - Constraints to preserve.
 - Known open questions.
@@ -101,6 +105,7 @@ Include:
 Rules:
 
 - The approved UISpec must be the primary implementation artifact.
+- Project Context Capture explains existing app conventions but must not add new UX decisions.
 - Handoff notes must not add new UX decisions.
 - If an open question affects UX, return to design review before implementation.
 

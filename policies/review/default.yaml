@@ -1,0 +1,94 @@
+version: 1
+name: default-review-policy
+mode: gate_only_v1
+
+gate_values:
+  - PASS
+  - PASS_WITH_NOTES
+  - FAIL
+  - BLOCKED
+
+criteria:
+  uispec_fidelity:
+    description: Implementation preserves the approved UISpec purpose, hierarchy, sections, components, actions, states, permissions, responsive rules, and accessibility expectations.
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  design_system_compliance:
+    description: Implementation reuses existing project components, primitives, patterns, tokens, and layout conventions instead of inventing unnecessary UI.
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  state_and_interaction_coverage:
+    description: Required loading, empty, search-empty, error, offline, permission, read-only, validation, saving, success, warning, and conflict states behave as specified.
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  accessibility:
+    description: Keyboard flow, focus behavior, labels, dialog semantics, error semantics, contrast, and non-color status communication satisfy the UISpec.
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  responsive_behavior:
+    description: The interface remains usable across approved desktop, tablet, and mobile constraints, with critical workflows still reachable.
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  verification_evidence:
+    description: Review records the tests, type checks, screenshots, browser checks, or blocked verification that support the result.
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+blocking_issues:
+  - implementation_contradicts_uispec
+  - missing_primary_workflow
+  - missing_required_state
+  - inaccessible_primary_action
+  - dialog_focus_or_keyboard_trap_absent_when_required
+  - permission_model_deviation
+  - responsive_layout_blocks_primary_workflow
+  - data_loss_or_destructive_action_without_required_confirmation
+  - invented_design_primitive_that_breaks_project_conventions
+  - verification_blocked_for_core_workflow
+
+gate_rules:
+  PASS:
+    description: No blocking issues are present and all criteria are pass or notes.
+  PASS_WITH_NOTES:
+    description: No blocking issues are present, but non-blocking notes remain.
+  FAIL:
+    description: One or more blocking issues are present, or a criterion fails against a required UISpec expectation.
+  BLOCKED:
+    description: Review cannot determine fidelity because required implementation, runtime evidence, or verification evidence is unavailable.
+
+review_result_required_fields:
+  - feature
+  - workflow_phase
+  - status
+  - reviewed_uispec
+  - review_policy
+  - reviewed_implementation
+  - verification
+  - criteria_results
+  - blocking_issues
+  - findings
+  - acceptable_implementation_choices
+  - gate

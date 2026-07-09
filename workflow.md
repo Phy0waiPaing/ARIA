@@ -1,6 +1,6 @@
 # ARIA Workflow
 
-This document defines how ARIA turns a business problem or existing page into an approved Design Proposal, optionally validates the design through an HTML Preview rendered by Codex, then compiles that proposal into a UISpec that Codex can implement.
+This document defines how ARIA turns a business problem or existing page into an approved Design Proposal, validates visual direction through an HTML Preview when the work affects layout or hierarchy, then compiles that proposal into a UISpec that Codex can implement.
 
 ARIA may later bundle approved artifacts into a Design Package. The package is a handoff bundle, not a new source of truth.
 
@@ -8,14 +8,30 @@ ARIA is not a prompt engine. ARIA is a design partner with a repeatable handoff 
 
 ## Overview
 
-ARIA supports two v0.1 workflows:
+ARIA supports three v0.1 workflows:
 
-- New feature workflow: requirements become an approved Design Proposal, optionally pass through visual review, then become a UISpec.
+- New feature workflow: requirements become an approved Design Proposal, pass through visual review when the UI changes materially, then become a UISpec.
 - Existing page refactor workflow: the current page is captured first, then a refactor Design Proposal is approved and compiled into a target UISpec.
+- New page in existing project workflow: the project context is captured first, then a new-page Design Proposal is approved and compiled into a target UISpec.
 
-The user reviews the Design Proposal and, when useful, an HTML Preview. Codex renders the preview artifact and consumes the UISpec.
+The user reviews the Design Proposal and, for visual design work, an HTML Preview. Codex renders the preview artifact and consumes the UISpec.
 
 Future Work Contracts may govern major artifacts by defining owners, consumers, inputs, outputs, and acceptance rules. Work Contracts wrap artifacts; they do not replace Design Proposal, HTML Preview, or UISpec.
+
+## Artifact Persistence Rule
+
+When ARIA is used inside a target project, required artifacts must be written to the target project before ARIA asks for approval or moves to the next phase.
+
+Chat summaries are allowed, but they do not replace persisted artifacts.
+
+Rules:
+
+- A Project Context Capture must be written before it is used as design context.
+- A draft Design Proposal must be written before asking the user to approve it.
+- A UISpec must be written only after the Design Proposal is approved.
+- ARIA must report the artifact paths it wrote.
+- ARIA must not say it will write artifacts after approval when those artifacts are required for approval.
+- ARIA must not proceed to implementation from a chat-only Design Proposal.
 
 ## New Feature Workflow
 
@@ -23,7 +39,7 @@ Future Work Contracts may govern major artifacts by defining owners, consumers, 
 Requirement
   -> Discovery
   -> Design Proposal
-  -> Render HTML Preview (optional but recommended)
+  -> Render HTML Preview (required for material UI changes)
   -> Human Approval
   -> UISpec Compilation
   -> Design Package (future)
@@ -37,13 +53,31 @@ Requirement
 Existing Page
   -> Current-State Capture
   -> Refactor Design Proposal
-  -> Render HTML Preview (optional but recommended)
+  -> Render HTML Preview
   -> Human Approval
   -> Target UISpec Compilation
   -> Design Package (future)
   -> Codex Refactor
   -> ARIA Review
 ```
+
+## New Page In Existing Project Workflow
+
+```text
+Existing Project
+  -> Project Context Capture
+  -> New Page Design Proposal
+  -> Render HTML Preview
+  -> Human Approval
+  -> Target UISpec Compilation
+  -> Design Package (future)
+  -> Codex Implementation
+  -> ARIA Review
+```
+
+ARIA should not treat a new page in an existing project as a blank design exercise.
+
+For new pages in existing projects, ARIA first captures the app context and nearby conventions, then proposes the new page in a human-facing Design Proposal.
 
 ARIA should not treat an existing page refactor as a blank design exercise.
 
@@ -55,7 +89,7 @@ The user should only need to:
 
 1. Describe the business problem.
 2. Answer ARIA's questions if clarification is needed.
-3. Review and approve the Design Proposal, with a rendered HTML Preview when visual review is useful.
+3. Review and approve the Design Proposal, with a rendered HTML Preview for visual design work.
 
 The user does not review the UISpec as the primary collaboration artifact.
 
@@ -88,6 +122,24 @@ ARIA should ask targeted questions about:
 
 ARIA should ask before assuming when an answer would materially change the design.
 
+ARIA uses two question types:
+
+- Design-framing questions clarify the kind of experience to design, such as audience, interface form, depth, main interaction, scenario, and scope.
+- Product decision questions resolve domain behavior inside a known feature, such as permissions, destructive actions, data visibility, and v1 boundaries.
+
+Design-framing questions are minimal by default. ARIA asks them only when the request and available project context are too vague to produce a useful proposal. For target-project work, ARIA should inspect project context first and avoid asking questions already answered by the repo.
+
+When ARIA knows the likely choices, it should ask decision questions with selectable answers rather than raw open-ended prompts.
+
+Decision questions should include:
+
+- A short decision name.
+- A plain-language question.
+- A recommended option, when ARIA has a defensible preference.
+- Two to four mutually exclusive options.
+- One-sentence impact for each option.
+- A compact reply format such as `1A, 2B` or `accept recommendations`.
+
 Output:
 
 - Discovery questions, or a statement that enough context exists to continue.
@@ -107,7 +159,7 @@ ARIA should identify:
 Output:
 
 - Confirmed design inputs.
-- Open questions, if any remain.
+- Open questions, if any remain, preferably as selectable decision prompts.
 - Explicit assumptions only when they are low-risk and clearly labeled.
 
 ## 4. Design Proposal
@@ -131,15 +183,27 @@ This is the reviewable design artifact. It should be understandable without read
 
 Output:
 
-- A structured Design Proposal.
+- A persisted draft Design Proposal at `docs/design-proposals/[feature-name].proposal.md`.
+- A short chat summary pointing to the proposal file.
 - Trade-offs or alternatives when useful.
-- Open questions if approval would be premature.
+- Open questions as selectable decision prompts if approval would be premature.
 
 ## 5. HTML Preview
 
-Codex may render ARIA's optional HTML Preview artifact from the latest Design Proposal when visual review would improve confidence.
+Codex renders ARIA's HTML Preview artifact from the latest Design Proposal when the work affects layout, hierarchy, density, navigation, or interaction state placement.
 
-HTML Preview is optional but recommended for layout-heavy pages, dense operational screens, navigation changes, and existing page refactors.
+HTML Preview is required by default for:
+
+- Existing page refactors.
+- New pages inside existing projects.
+- Layout-heavy pages.
+- Dense admin, dashboard, table, or operations screens.
+- Navigation or information hierarchy changes.
+- Workflows where action placement or information density is the main design risk.
+
+HTML Preview may be skipped only when the change is copy-only, schema-only, behavior-only with no visual consequence, or the user explicitly asks to skip visual review.
+
+If ARIA skips HTML Preview, the Design Proposal must record the reason in the Visual Review section.
 
 The HTML Preview is a rendered visual review artifact. It is a render of the Design Proposal, not an independently authored source document.
 
@@ -151,6 +215,16 @@ HTML Preview demonstrates:
 - Component placement.
 - Important interaction states.
 
+For required-preview work, the preview should be a compact review surface, not only a single happy-path screen. It should include:
+
+- The primary screen or flow.
+- The main create/edit/view interaction surface when one exists.
+- Dangerous or irreversible action confirmation when one exists.
+- Representative loading, empty, error, permission, and conflict states that materially affect layout or decision confidence.
+- Protected, disabled, or read-only behavior when that behavior is important to the proposal.
+
+For dense admin, dashboard, table, or operations screens, include small state or interaction panels when showing every state full-size would make the preview too large.
+
 HTML Preview must avoid:
 
 - Backend logic.
@@ -161,6 +235,8 @@ HTML Preview must avoid:
 
 The preview is not production code. It is a disposable visual review artifact.
 
+ARIA must not request final design approval for required-preview work until the HTML Preview has been rendered or the user explicitly accepts a skip.
+
 Output:
 
 - `preview/[feature-name]/index.html`
@@ -169,7 +245,7 @@ Output:
 
 ## 6. Human Approval
 
-The user reviews the Design Proposal and, if available, the HTML Preview. The user does not review the UISpec as the primary artifact.
+The user reviews the Design Proposal and the HTML Preview when the preview is required or used. The user does not review the UISpec as the primary artifact.
 
 The user may:
 
@@ -180,11 +256,21 @@ The user may:
 
 ARIA updates the Design Proposal until the user approves it.
 
+If the proposal contains selectable decision questions, the user may answer with compact choices such as `1A, 2B, 3A` or `accept recommendations`. ARIA should apply those choices to the Design Proposal before asking for approval again.
+
+When answers resolve open decisions, ARIA updates the Design Proposal file first. For required-preview work, ARIA then renders or re-renders the HTML Preview and asks for approval from the updated proposal plus preview. ARIA must not compile a UISpec from a proposal that has just had decisions applied but has not passed the required preview gate.
+
 Output:
 
-- Approved Design Proposal, or revised Design Proposal for another review.
+- Approved Design Proposal, or revised Design Proposal file for another review.
 
 If revisions are needed, ARIA updates the Design Proposal and Codex re-renders the HTML Preview before another review.
+
+For required-preview work, approval must happen after preview review, not from the Design Proposal alone.
+
+A Design Proposal must not use `status: approved` while required visual review is pending. If required preview is skipped, the approved proposal must record the explicit skip reason.
+
+Design Proposal approval unlocks UISpec compilation only. It does not authorize production implementation. After approval, ARIA should compile the target UISpec, report the UISpec path, and stop unless the user separately asks to implement from the approved UISpec.
 
 ## 7. UISpec Compilation
 
@@ -200,7 +286,11 @@ The UISpec must be:
 
 Output:
 
-- A complete UISpec v1 document for Codex.
+- A complete UISpec v1 document for Codex at `docs/uispecs/[feature-name].target.uispec.md`.
+
+If HTML Preview was rendered, the target UISpec metadata must include `visualReference` paths to the preview files. If required preview was explicitly skipped, `visualReference` must reference the skip reason in the approved Design Proposal. Required-preview work must not leave `visualReference` blank.
+
+After writing the UISpec, ARIA should ask for the next instruction. It must not phrase proposal approval as permission to both compile the UISpec and implement production code.
 
 ## Existing Page Refactor Mode
 
@@ -256,6 +346,7 @@ The refactor Design Proposal defines the desired post-refactor experience for hu
 Rules:
 
 - Use `status: draft` until human approval.
+- Write the draft proposal file before asking for approval.
 - Use `status: approved` only after human approval.
 - Preserve current behavior unless the proposal explicitly changes it.
 - State which current-state gaps the proposal fixes.
@@ -271,6 +362,68 @@ Rules:
 - Reference the approved Design Proposal.
 - Preserve current behavior unless the approved proposal changes it.
 - State which current-state gaps the target design fixes.
+
+Codex should implement only from the approved target UISpec.
+
+## New Page In Existing Project Mode
+
+Use this mode when the user asks to add, create, design, or introduce a new page inside an existing application.
+
+ARIA may produce or maintain these artifacts:
+
+```text
+docs/aria-context/[feature-name].project-context.md
+docs/design-proposals/[feature-name].proposal.md
+docs/uispecs/[feature-name].target.uispec.md
+```
+
+### Project Context Capture
+
+The project context capture documents the app patterns that should shape the new page.
+
+It should capture:
+
+- Existing routes and navigation placement.
+- Existing layout shell.
+- Nearby pages or features the new page should match.
+- Existing components, tables, forms, dialogs, toolbars, and state patterns.
+- Existing auth, roles, or permissions.
+- Existing data and API/client support when visible.
+- Existing naming, copy, and visual conventions.
+- Constraints or gaps that affect the new page.
+
+Rules:
+
+- Capture project facts before proposing the page.
+- Label inferred behavior when the code or UI does not make intent explicit.
+- Ask only for missing product intent that materially changes the design.
+- Do not use project context capture as a replacement for the Design Proposal.
+- Do not write production code during context capture.
+
+### New Page Design Proposal
+
+The new page Design Proposal defines the desired page experience for human approval.
+
+Rules:
+
+- Use `status: draft` until human approval.
+- Write the draft proposal file before asking for approval.
+- Include a `Project Context Used` section or reference `docs/aria-context/[feature-name].project-context.md`.
+- Reuse existing project patterns unless the proposal explicitly changes them.
+- State which project conventions the new page follows.
+- State open product questions before approval.
+- Use `status: approved` only after human approval.
+
+### Target UISpec
+
+The target UISpec is compiled from the approved new page Design Proposal.
+
+Rules:
+
+- Use `status: approved`.
+- Reference the approved Design Proposal.
+- Reference project context when it constrains implementation.
+- Preserve the approved proposal's design intent.
 
 Codex should implement only from the approved target UISpec.
 
@@ -340,13 +493,14 @@ Output:
 - ARIA designs; Codex builds.
 - ARIA owns product and UX decisions; Codex owns rendered artifacts and implementation.
 - Design Proposal is the human approval artifact.
-- HTML Preview is the preferred rendered visual review artifact for developer workflows.
+- HTML Preview is the required rendered visual review artifact for refactors, new pages, and dense visual UI work unless explicitly skipped.
 - UISpec is the implementation contract between ARIA and Codex.
 - Design Package is a future handoff bundle, not a source of truth.
 - Work Contract is a future artifact governance wrapper, not a replacement for UISpec.
 - Figma is optional and should be treated as a renderer, not a core workflow dependency.
 - ARIA asks before assuming when ambiguity affects UX.
 - ARIA compiles UISpec only after Design Proposal approval.
+- ARIA persists required artifacts before asking for approval or moving to the next phase.
 - Codex asks before changing approved UX.
 - If the preview and UISpec disagree, use the approved Design Proposal to resolve intent before implementation continues.
 - Never edit the HTML Preview directly. Any design change must update the Design Proposal, then Codex re-renders the preview.

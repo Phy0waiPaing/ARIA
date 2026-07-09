@@ -27,6 +27,8 @@ ARIA/
     ROADMAP.md
     architecture.md
     project-structure.md
+    workflows/
+      design-v1.md
   schemas/
     design-proposal-v1.md
     uispec-v1.md
@@ -43,6 +45,8 @@ ARIA/
     patterns.md
   policies/
     accessibility.md
+    review/
+      default.yaml
     visual-review.md
     artifact-governance.md
 ```
@@ -51,7 +55,8 @@ Rules:
 
 - Keep the ARIA repository methodology-focused.
 - Do not store real project Design Proposals, UISpecs, previews, or design packages here.
-- Do not add runtime, plugin, CLI, or workflow folders until automation work begins.
+- `docs/workflows/` may contain manually executable methodology workflows.
+- Do not add runtime, plugin, CLI, or top-level workflow engine folders until automation work begins.
 - Keep examples separate from methodology docs if examples are introduced later.
 
 ## Target Project Repository
@@ -63,11 +68,15 @@ Recommended structure:
 ```text
 target-project/
   docs/
+    aria-context/
+      [feature-name].project-context.md
     design-proposals/
       [feature-name].proposal.md
     uispecs/
       [feature-name].target.uispec.md
       [page-name].current.uispec.md
+    aria-reviews/
+      [feature-name].review.md
     work-contracts/
       [artifact-name].work-contract.md
     design-packages/
@@ -84,9 +93,11 @@ target-project/
 Rules:
 
 - Store generated artifacts in the target project, not the ARIA methodology repository.
+- Use project context capture before designing a new page in an existing project.
 - Keep Design Proposal as the human-approved design intent.
 - Keep UISpec as the implementation contract.
 - Keep HTML Preview as rendered visual review output.
+- Keep ARIA Review as persisted review findings and gate result.
 - Keep Design Package as a handoff bundle.
 - Keep Work Contract as artifact governance.
 
@@ -96,9 +107,11 @@ Use these target-project conventions unless a project already has stronger local
 
 | Artifact | Path |
 | --- | --- |
+| Project Context Capture | `docs/aria-context/[feature-name].project-context.md` |
 | Design Proposal | `docs/design-proposals/[feature-name].proposal.md` |
 | Current-State UISpec | `docs/uispecs/[page-name].current.uispec.md` |
 | Target UISpec | `docs/uispecs/[feature-name].target.uispec.md` |
+| ARIA Review | `docs/aria-reviews/[feature-name].review.md` |
 | HTML Preview | `preview/[feature-name]/index.html` and `preview/[feature-name]/styles.css` |
 | Work Contract | `docs/work-contracts/[artifact-name].work-contract.md` |
 | Design Package | `docs/design-packages/[feature-name]/` |
@@ -111,7 +124,6 @@ Do not add these folders to the ARIA repository until the methodology proves the
 runtime/
 skills/
 plugins/
-workflows/
 templates/
 cli/
 ```

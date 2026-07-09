@@ -19,14 +19,16 @@ Included:
 - Project manifest and responsibility boundaries.
 - Requirement-to-Design-Proposal workflow.
 - Existing-page refactor workflow.
-- Optional Visual Review workflow with HTML Preview as the default renderer.
+- New-page-in-existing-project workflow with project context capture.
+- Manual phase-gated design workflow for ARIA-alone spike testing.
+- Visual Review workflow with HTML Preview as the default renderer for visual UI work.
 - Human-facing Design Proposal contract.
 - UISpec v1 implementation contract.
 - Future Design Package schema stub.
 - Future Work Contract schema stub.
 - Role prompts for analysis, design, review, and export.
 - Design principles, component guidance, and pattern guidance.
-- Accessibility, visual review, and artifact governance policies.
+- Accessibility, visual review, review gate, and artifact governance policies.
 
 Not included yet:
 
@@ -43,12 +45,24 @@ Not included yet:
 Business Requirement
   -> Discovery
   -> Design Proposal
-  -> Visual Review (optional)
+  -> Visual Review
   -> Human Approval
   -> UISpec
   -> Codex Implementation
   -> ARIA Review
 ```
+
+## Proven Spike
+
+The manual ARIA-alone workflow was validated against a real target-project Role CRUD page in `D:\GW\svmp`.
+
+Result:
+
+- ARIA produced Project Context, Design Proposal, HTML Preview, approved UISpec, and persisted ARIA Review artifacts.
+- Codex implemented from the approved UISpec as a separate phase.
+- ARIA Review used `policies/review/default.yaml`.
+- The review artifact recorded `PASS_WITH_NOTES`, with no blocking design-fidelity issues.
+- Notes were verification-scope limits, not design blockers.
 
 ## Responsibility Split
 
@@ -61,7 +75,7 @@ ARIA:
 
 Codex:
 
-- Renders ARIA's optional HTML Preview artifact.
+- Renders ARIA's HTML Preview artifact for visual UI work.
 - Builds production frontend.
 - Follows the approved UISpec.
 - Does not redesign UX without explicit instruction.
@@ -78,6 +92,8 @@ ARIA/
     ROADMAP.md
     architecture.md
     project-structure.md
+    workflows/
+      design-v1.md
   prompts/
     analyst.md
     designer.md
@@ -94,6 +110,8 @@ ARIA/
     patterns.md
   policies/
     accessibility.md
+    review/
+      default.yaml
     visual-review.md
     artifact-governance.md
 ```
@@ -104,8 +122,9 @@ ARIA/
 - `docs/ROADMAP.md` defines the v1 direction and future phases.
 - `docs/architecture.md` defines ARIA's conceptual layers.
 - `docs/project-structure.md` defines ARIA-owned files and target-project artifact locations.
+- `docs/workflows/design-v1.md` defines the manual phase-gated workflow for proving ARIA without hidden chat context.
 - `workflow.md` defines the operational lifecycle.
-- `visual-review-workflow.md` defines the optional visual review layer.
+- `visual-review-workflow.md` defines the visual review layer.
 - `schemas/design-proposal-v1.md` defines the human-facing design artifact.
 - `schemas/uispec-v1.md` defines the Codex implementation contract.
 - `schemas/work-contract-v1.md` defines a future artifact governance wrapper.
@@ -118,5 +137,6 @@ ARIA/
 - `design-system/components.md` defines framework-agnostic component guidance.
 - `design-system/patterns.md` defines reusable UX pattern guidance.
 - `policies/accessibility.md` defines baseline accessibility expectations.
+- `policies/review/default.yaml` defines ARIA's default review criteria, blocking issues, and gate result model.
 - `policies/visual-review.md` defines visual review rules.
 - `policies/artifact-governance.md` defines artifact ownership, consumer, and acceptance rules.

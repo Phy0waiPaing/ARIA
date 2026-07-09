@@ -1,6 +1,6 @@
 # ARIA Visual Review Workflow
 
-This document defines ARIA's optional visual review layer.
+This document defines ARIA's visual review layer.
 
 The default renderer is HTML Preview. Figma remains an optional renderer for teams that require Figma-based review. Future renderers may include Penpot, AI-generated mockups, or other visual design tools.
 
@@ -54,7 +54,7 @@ Recommended path:
 Requirement
   -> Discovery
   -> Design Proposal
-  -> Render HTML Preview (optional but recommended)
+  -> Render HTML Preview
   -> Human Approval
   -> UISpec Compilation
   -> Codex Implementation
@@ -79,14 +79,18 @@ For existing page refactors:
 Existing Page
   -> Current-State Capture
   -> Refactor Design Proposal
-  -> Render HTML Preview (optional but recommended)
+  -> Render HTML Preview
   -> Human Approval
   -> Target UISpec Compilation
   -> Codex Refactor
   -> ARIA Review
 ```
 
-For simple changes, ARIA may skip the HTML Preview and proceed directly from Design Proposal to UISpec after approval.
+For simple non-visual changes, ARIA may skip the HTML Preview and proceed directly from Design Proposal to UISpec after approval.
+
+For required-preview work, ARIA must not request final design approval until the HTML Preview has been rendered or the user explicitly accepts a skip.
+
+A Design Proposal must remain `status: draft` while required visual review is pending. `status: approved` is valid only after the user reviews the required preview or explicitly accepts a recorded skip reason.
 
 ## Renderer Policy
 
@@ -109,21 +113,27 @@ Renderer choice must not change the ARIA contract. The Design Proposal remains t
 
 Use Visual Review when a picture would materially improve approval confidence.
 
-Good cases:
+Visual Review is required by default for:
 
 - Layout-heavy pages.
 - Dashboard, table, or dense operations screens.
 - Navigation or information hierarchy changes.
 - Existing page refactors where the user needs to compare current and proposed structure.
+- New pages inside existing projects.
 - Workflows where action placement or information density is the main design risk.
 - Stakeholder review before implementation.
 
-Skip Visual Review when:
+Skip Visual Review only when:
 
 - The change is copy-only.
-- The design is already obvious.
-- The user wants a fast text-only UISpec.
+- The change is schema-only.
+- The change has no material visual consequence.
+- The user explicitly asks to skip visual review.
 - The page is mostly backend behavior with little UI consequence.
+
+If ARIA skips Visual Review, it must record the skip reason in the Design Proposal's Visual Review section.
+
+When the user answers open design decisions, ARIA must update the Design Proposal first. For required-preview work, Codex then renders or re-renders the HTML Preview from that updated proposal before ARIA requests final approval.
 
 ## HTML Preview
 
@@ -133,7 +143,7 @@ It exists to:
 
 - Visualize the Design Proposal.
 - Allow human review before UISpec compilation.
-- Demonstrate layout, hierarchy, spacing, and interaction direction.
+- Demonstrate layout, hierarchy, spacing, state treatment, and interaction direction.
 - Help developers review design intent in Git-friendly local artifacts.
 
 The HTML Preview is not production code. It is a rendered visual review artifact used only for design validation.
@@ -147,6 +157,17 @@ Core rules:
 - The preview only represents the latest design.
 - Never edit the preview directly.
 - Any design change must be made in the Design Proposal, then Codex should re-render the preview.
+
+Required-preview completeness:
+
+- Show the primary screen or workflow.
+- Show the main form, dialog, drawer, wizard step, or inspection surface when that interaction is central to the proposal.
+- Show destructive confirmation and conflict/error treatment when the proposal includes dangerous actions.
+- Show representative loading, empty, error, permission, and offline states when they materially affect the experience.
+- Show protected, disabled, locked, or read-only behavior when the proposal depends on it.
+- Use compact state panels for dense admin, dashboard, table, or operations screens instead of full-size duplicates for every state.
+
+A required preview that only shows the default happy path is incomplete unless the proposal is truly simple and has no meaningful alternate states or risky interactions.
 
 ## HTML Preview Input
 
@@ -308,7 +329,7 @@ ARIA compiles the UISpec only after design approval.
 
 Design approval may come from:
 
-- Design Proposal only.
+- Design Proposal only, for simple non-visual work or when the user explicitly skips visual review.
 - Design Proposal plus HTML Preview.
 - Design Proposal plus another optional renderer output.
 

@@ -27,6 +27,8 @@ Preserve intent as artifacts.
 - Design Proposals capture human-approved design intent.
 - HTML Preview renders visual confidence.
 - UISpecs define implementation intent.
+- Review Policy defines implementation review criteria, blocking issues, and gate outcomes.
+- ARIA Review artifacts record design-fidelity findings and gate results.
 - Future Design Packages bundle approved references for coding agents.
 - Future Work Contracts govern artifact ownership, consumers, and acceptance.
 
@@ -49,7 +51,7 @@ ARIA should reason like a senior Product Designer and UX Architect.
 Business Requirement
   -> Discovery
   -> Design Proposal
-  -> Visual Review (optional)
+  -> Visual Review
   -> Human Approval
   -> UISpec
   -> Codex Implementation
@@ -72,7 +74,7 @@ ARIA should never generate production frontend code.
 
 ### Codex
 
-- Render ARIA's optional HTML Preview artifact from the Design Proposal.
+- Render ARIA's HTML Preview artifact from the Design Proposal for visual UI work.
 - Build production frontend.
 - Follow the approved UISpec.
 - Respect project architecture.
@@ -101,7 +103,7 @@ This is the primary discussion document.
 
 ### HTML Preview
 
-Optional rendered visual review artifact.
+Rendered visual review artifact for visual UI work.
 
 Purpose:
 
@@ -138,6 +140,32 @@ The Design Package does not replace the UISpec or create a new source of truth.
 
 Design Packages should live in the target project repository, not in the ARIA methodology repository.
 
+### Review Policy
+
+Reusable criteria for implementation review.
+
+Purpose:
+
+- Define how ARIA evaluates implementation against an approved UISpec.
+- Separate review standards from one-off reviewer prompts.
+- Define blocking issues and gate outcomes.
+
+The default Review Policy lives in the ARIA repository at `policies/review/default.yaml`.
+
+### ARIA Review
+
+Persisted review artifact for implemented UI.
+
+Purpose:
+
+- Compare production implementation against the approved UISpec.
+- Record criteria results.
+- Record blocking issues.
+- Record verification evidence.
+- Produce a gate outcome.
+
+ARIA Review artifacts live in the target project under `docs/aria-reviews/[feature-name].review.md`.
+
 ### Work Contract
 
 Future governance wrapper around an artifact.
@@ -163,6 +191,8 @@ Generated and maintained by Codex.
 | Design intent | Design Proposal |
 | Visual review | HTML Preview |
 | Implementation | UISpec |
+| Review gate | Review Policy |
+| Design-fidelity result | ARIA Review |
 | Artifact governance | Work Contract |
 | Running application | Production Code |
 
@@ -183,9 +213,9 @@ ARIA follows these principles:
 
 ## Visual Review
 
-Visual review is optional.
+Visual review is required by default for visual UI work.
 
-For simple features:
+For simple non-visual changes:
 
 ```text
 Requirement
@@ -194,7 +224,7 @@ Requirement
   -> UISpec
 ```
 
-For complex features:
+For visual UI work:
 
 ```text
 Requirement
@@ -204,7 +234,7 @@ Requirement
   -> UISpec
 ```
 
-The HTML Preview is a convenience for humans, not a required artifact.
+The HTML Preview is a required design gate for existing page refactors, new pages in existing projects, dense operational screens, dashboards, tables, and navigation or information hierarchy changes unless the user explicitly skips visual review.
 
 ## Guiding Principle
 

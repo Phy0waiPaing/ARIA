@@ -98,6 +98,7 @@ The target project artifact layer lives outside the ARIA methodology repository.
 
 Target project artifacts include:
 
+- Project Context Captures.
 - Design Proposals.
 - Current-State UISpecs.
 - Target UISpecs.
@@ -116,10 +117,11 @@ Responsibilities:
 ## Data Flow
 
 ```text
-Requirement or Existing Page
+Requirement, Existing Project, or Existing Page
   -> Analyst Prompt
+  -> Optional Project Context or Current-State Capture
   -> Design Proposal Schema
-  -> Optional HTML Preview
+  -> HTML Preview, when visual review is required
   -> Human Approval
   -> UISpec Schema
   -> Optional Work Contract
@@ -131,6 +133,7 @@ Requirement or Existing Page
 ## Source-Of-Truth Rules
 
 - Requirement is the source of business intent.
+- Project Context Capture is the source of existing app conventions for new pages.
 - Design Proposal is the source of human-approved design intent.
 - HTML Preview is a rendered visual review artifact.
 - UISpec is the source of implementation intent.

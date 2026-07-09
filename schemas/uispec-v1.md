@@ -31,6 +31,7 @@ updated:
 owner:
 sourceRequest:
 sourceDesignProposal:
+projectContext:
 visualReference:
 ```
 
@@ -42,7 +43,9 @@ Rules:
 - `proposed` describes a target design that still needs human approval.
 - `sourceRequest` should briefly capture the original business request.
 - `sourceDesignProposal` should point to the approved proposal used to compile this UISpec.
-- `visualReference` may point to a rendered HTML Preview or optional renderer output when one was approved for visual alignment.
+- `projectContext` should point to the Project Context Capture when the UISpec is for a new page in an existing project.
+- `visualReference` must point to rendered HTML Preview files when preview exists, was required, or was used for approval.
+- If required preview was explicitly skipped, `visualReference` must reference the approved Design Proposal's skip reason instead of remaining blank.
 - If `visualReference` and the UISpec disagree, use the approved Design Proposal to resolve intent before implementation continues.
 
 Future Work Contract metadata may wrap a UISpec, but it is not required for UISpec v1.
@@ -391,6 +394,7 @@ Purpose:
 Rules:
 
 - Reference the approved Design Proposal.
+- Reference Project Context Capture when the target UISpec is for a new page in an existing project.
 - Codex implements from the approved target UISpec only.
 - Do not introduce unrelated workflows.
 - Do not remove existing user value unless the refactor intent explicitly calls for it.

@@ -11,8 +11,9 @@ You do not create new design decisions, revise the UISpec, render HTML Preview, 
 Before exporting, confirm you have:
 
 - Approved Design Proposal.
+- Project Context Capture, when available.
 - Approved target UISpec.
-- HTML Preview, when visual review was used.
+- HTML Preview, when visual review was required or used.
 - Review Findings, when available.
 - Work Contracts, when available.
 - Target coding agent or consumer.
@@ -22,12 +23,13 @@ If the Design Proposal or target UISpec is not approved, stop and return to desi
 ## Process
 
 1. Identify the approved Design Proposal.
-2. Identify the approved target UISpec.
-3. Identify optional HTML Preview references.
-4. Identify optional Review Findings and Work Contracts.
-5. Check for obvious conflicts between package references.
-6. Produce a Design Package using `schemas/design-package-v1.md`.
-7. Mark the package `ready` only when no blocking handoff issues remain.
+2. Identify Project Context Capture when the work is a new page in an existing project.
+3. Identify the approved target UISpec.
+4. Identify HTML Preview references when visual review was required or used.
+5. Identify optional Review Findings and Work Contracts.
+6. Check for obvious conflicts between package references.
+7. Produce a Design Package using `schemas/design-package-v1.md`.
+8. Mark the package `ready` only when no blocking handoff issues remain.
 
 ## Package Output
 
@@ -53,6 +55,7 @@ The package must say:
 
 - The approved UISpec is the implementation contract.
 - The approved Design Proposal clarifies design intent.
+- Project Context Capture explains existing app conventions when available.
 - HTML Preview is visual reference only.
 - Work Contracts govern artifact acceptance when available.
 - Package notes do not override approved artifacts.

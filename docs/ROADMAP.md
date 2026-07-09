@@ -27,8 +27,9 @@ ARIA agents communicate through version-controlled artifacts.
 The core artifact chain is:
 
 ```text
-Requirement or Existing Page
+Requirement, Existing Project, or Existing Page
   -> Discovery
+  -> Project Context or Current-State Capture, when needed
   -> Design Proposal
   -> HTML Preview
   -> Human Approval
@@ -83,6 +84,7 @@ Coding agents own:
 The current ARIA methodology is centered on these artifacts:
 
 ```text
+Project Context Capture
 Design Proposal
 HTML Preview
 UISpec
@@ -161,6 +163,7 @@ Status: current.
 - Design Proposal as the human-facing approval artifact.
 - UISpec as the implementation contract.
 - HTML Preview as the default visual review renderer.
+- New page in existing project flow with project context capture.
 - Existing page refactor flow with current-state capture.
 - ARIA review against approved UISpec.
 
@@ -191,6 +194,7 @@ Goal: add Work Contracts around major artifacts.
 Goal: help ARIA reuse real project context.
 
 - Component discovery.
+- Project context capture.
 - Existing page analysis.
 - Pattern reuse.
 - Design memory.
