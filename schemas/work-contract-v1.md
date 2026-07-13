@@ -164,7 +164,7 @@ Rules:
 ## Example: UISpec Work Contract
 
 ```yaml
-artifact: docs/uispecs/orders.target.uispec.md
+artifact: .aria/orders/target.uispec.md
 artifactType: uispec
 version: 1
 status: draft
@@ -180,15 +180,15 @@ purpose:
     - Unapproved UX changes.
 
 inputs:
-  - path: docs/design-proposals/orders.proposal.md
+  - path: .aria/orders/design-proposal.md
     role: Approved design intent.
     required: true
-  - path: preview/orders/index.html
+  - path: .aria/orders/preview/index.html
     role: Visual alignment reference.
     required: false
 
 outputs:
-  - path: docs/design-packages/orders/handoff.md
+  - path: .aria/orders/design-package/handoff.md
     role: Coding-agent handoff summary.
 
 consumers:

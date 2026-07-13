@@ -1,6 +1,18 @@
 version: 1
 name: default-review-policy
-mode: gate_only_v1
+mode: design_package_review_v1
+
+scope:
+  description: ARIA v1 uses one Review phase before human approval. The phase combines artifact checks, browser/render checks, and policy-based UI/UX evaluation. UISpec compilation performs schema and contract validation later, but is not a separate AI review phase.
+  primary_inputs:
+    - Design Proposal
+    - HTML Preview
+    - Project Context
+    - Design/system policies
+  out_of_scope_v1:
+    - Production implementation review
+    - Code style review
+    - Separate AI review of compiled UISpec
 
 gate_values:
   - PASS
@@ -8,9 +20,82 @@ gate_values:
   - FAIL
   - BLOCKED
 
+interface_types:
+  - app_ui
+  - marketing
+  - hybrid
+
+interface_checks:
+  app_ui:
+    - The first view prioritizes the user's task, current state, and next action over decoration.
+    - Operational density, navigation, workspace structure, and repeated actions match the product context.
+    - The design does not become a decorative card mosaic or generic dashboard of interchangeable widgets.
+  marketing:
+    - The first viewport establishes the product, brand, offer, or subject and presents a clear action path.
+    - Narrative sequence, visual emphasis, imagery, and copy support persuasion rather than forming an arbitrary feature grid.
+    - Text remains readable over media and the composition retains a visible hint of what follows.
+  hybrid:
+    - Marketing-oriented and task-oriented regions are named and evaluated by their respective rules.
+    - Promotional composition does not obstruct the primary product workflow.
+    - App surfaces preserve task clarity and established product conventions.
+
+deterministic_result_values:
+  - pass
+  - fail
+  - not_applicable
+  - blocked
+
+deterministic_checks:
+  artifact_structure:
+    description: Required artifacts use the canonical .aria/<feature>/ structure and the Design Proposal uses the required schema section names.
+    required: true
+  artifact_persistence:
+    description: Required .aria artifacts are tracked, trackable-untracked, or explicitly local-only; none are accidentally ignored.
+    required: true
+  preview_render:
+    description: The required preview loads successfully and its primary review surface is nonblank.
+    required_when: preview_required
+  console_clean:
+    description: Browser verification records no preview-breaking console errors or uncaught exceptions.
+    required_when: preview_required
+  page_overflow:
+    description: The page has no horizontal overflow at required viewports; bounded component scrolling is identified separately.
+    required_when: preview_required
+  typography_readability:
+    description: Computed visible text sizes satisfy typography_floors at required viewports.
+    required_when: preview_required
+  viewport_coverage:
+    description: Desktop and mobile are verified; tablet is also verified for dense app UI, dashboards, tables, navigation changes, and layout-heavy work.
+    required_when: preview_required
+  critical_interactions:
+    description: Every approval-relevant interaction is exercised with click or keyboard evidence, or explicitly recorded as not demonstrated.
+    required_when: proposal_defines_critical_interactions
+
+typography_floors:
+  essential_body_help_state_error_and_label_text_px: 14
+  compact_metadata_and_caption_text_px: 12
+  absolute_visible_text_minimum_px: 12
+  rules:
+    - Do not classify essential instructions, state explanations, error recovery, labels, or decision-making content as compact metadata.
+    - Brand marks and purely decorative glyphs are not content text.
+    - Verify computed font size at mobile as well as desktop when responsive CSS can change typography.
+
+critical_interaction_status_values:
+  - demonstrated
+  - not_demonstrated
+  - not_applicable
+  - blocked
+
+critical_interaction_rules:
+  - A demonstrated interaction requires browser evidence showing the action and resulting state.
+  - A central interaction marked not_demonstrated blocks approval when its behavior affects layout, state, accessibility, safety, or workflow understanding.
+  - A static control cannot receive pass for state_and_interaction_coverage or interaction_clarity.
+  - Lightweight preview behavior must not be copied into production as implementation architecture.
+
 criteria:
-  uispec_fidelity:
-    description: Implementation preserves the approved UISpec purpose, hierarchy, sections, components, actions, states, permissions, responsive rules, and accessibility expectations.
+  proposal_completeness:
+    description: Proposal states purpose, users, information hierarchy, layout direction, workflows, actions, states, interaction intent, accessibility intent, project constraints, assumptions, and open decisions clearly enough for approval.
+    weight: 10
     result_values:
       - pass
       - notes
@@ -18,7 +103,26 @@ criteria:
       - not_reviewed
 
   design_system_compliance:
-    description: Implementation reuses existing project components, primitives, patterns, tokens, and layout conventions instead of inventing unnecessary UI.
+    description: Proposal and preview reuse existing project components, primitives, patterns, tokens, density, and layout conventions instead of inventing unnecessary UI.
+    weight: 15
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  information_architecture:
+    description: The design makes clear what the user sees first, second, and third; each section has one job; primary workspace, navigation/context, and supporting information are organized intentionally.
+    weight: 15
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  visual_hierarchy:
+    description: Priority, typography, contrast, spacing, grouping, and action emphasis guide attention without relying on decorative clutter.
+    weight: 15
     result_values:
       - pass
       - notes
@@ -26,7 +130,8 @@ criteria:
       - not_reviewed
 
   state_and_interaction_coverage:
-    description: Required loading, empty, search-empty, error, offline, permission, read-only, validation, saving, success, warning, and conflict states behave as specified.
+    description: Required loading, empty, search-empty, error, offline, permission, read-only, validation, saving, success, warning, conflict, and destructive states are specified and represented in preview when needed for review confidence.
+    weight: 10
     result_values:
       - pass
       - notes
@@ -34,7 +139,8 @@ criteria:
       - not_reviewed
 
   accessibility:
-    description: Keyboard flow, focus behavior, labels, dialog semantics, error semantics, contrast, and non-color status communication satisfy the UISpec.
+    description: Keyboard flow, focus behavior, visible labels, dialog semantics, error semantics, contrast, non-color status communication, and touch targets are addressed at the design-intent level.
+    weight: 10
     result_values:
       - pass
       - notes
@@ -42,7 +148,26 @@ criteria:
       - not_reviewed
 
   responsive_behavior:
-    description: The interface remains usable across approved desktop, tablet, and mobile constraints, with critical workflows still reachable.
+    description: Desktop, tablet, and mobile behavior is intentionally specified; critical workflows remain reachable and the preview does not collapse into horizontal overflow or unusable stacking.
+    weight: 10
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  interaction_clarity:
+    description: Primary, secondary, dangerous, disabled, protected, and read-only actions are clear; feedback and consequences are understandable before implementation.
+    weight: 10
+    result_values:
+      - pass
+      - notes
+      - fail
+      - not_reviewed
+
+  ai_slop_risk:
+    description: The proposal and preview avoid generic AI UI patterns, vague copy, decorative card grids, ornamental icons, default-looking visual systems, and novelty that does not serve the product.
+    weight: 5
     result_values:
       - pass
       - notes
@@ -50,45 +175,81 @@ criteria:
       - not_reviewed
 
   verification_evidence:
-    description: Review records the tests, type checks, screenshots, browser checks, or blocked verification that support the result.
+    description: Review records artifact checks, browser/render checks, screenshots, responsive checks, or blocked verification that support the result.
+    weight: 0
     result_values:
       - pass
       - notes
       - fail
       - not_reviewed
 
+minimum_score: 85
+
+scoring:
+  total_weight: 100
+  result_multipliers:
+    pass: 1.0
+    notes: 0.75
+    fail: 0.0
+    not_reviewed: 0.0
+  rule: Multiply each criterion weight by its result multiplier and sum the contributions. Round the final score to the nearest whole number. A required criterion that is not_reviewed may also produce BLOCKED when evidence is insufficient.
+  evidence_rule: Deterministic checks are not score contributions. A blocking deterministic failure decides the gate regardless of weighted score.
+  perfect_score_rule: Score 100 is valid only when every weighted criterion passes, every required deterministic check passes, no findings or unresolved review gaps remain, and no interaction is marked not_demonstrated or blocked.
+
 blocking_issues:
-  - implementation_contradicts_uispec
+  - missing_design_proposal
+  - missing_required_preview
+  - preview_does_not_render
+  - nonconforming_proposal_or_artifact_structure
+  - required_artifact_accidentally_ignored
+  - proposal_preview_contradiction
   - missing_primary_workflow
+  - missing_primary_action
   - missing_required_state
+  - horizontal_overflow
   - inaccessible_primary_action
-  - dialog_focus_or_keyboard_trap_absent_when_required
-  - permission_model_deviation
+  - placeholder_only_form_labels
+  - low_contrast_or_tiny_body_text
+  - essential_text_below_14px
+  - visible_content_text_below_12px
+  - critical_interaction_inert_or_unverified
+  - preview_breaking_console_error
   - responsive_layout_blocks_primary_workflow
-  - data_loss_or_destructive_action_without_required_confirmation
+  - destructive_action_without_confirmation_design
+  - permission_or_readonly_behavior_unspecified
   - invented_design_primitive_that_breaks_project_conventions
-  - verification_blocked_for_core_workflow
+  - app_ui_as_decorative_card_mosaic
+  - generic_saas_card_grid_as_first_impression
+  - generic_copy_or_brandless_first_viewport
+  - verification_blocked_for_core_review_surface
 
 gate_rules:
   PASS:
-    description: No blocking issues are present and all criteria are pass or notes.
+    description: No blocking issues are present, score is at or above minimum_score, all weighted criteria pass, every required deterministic check passes, and required verification evidence is sufficient.
   PASS_WITH_NOTES:
-    description: No blocking issues are present, but non-blocking notes remain.
+    description: No blocking issues are present, score is at or above minimum_score, and non-blocking notes or limited-but-sufficient verification remain.
   FAIL:
-    description: One or more blocking issues are present, or a criterion fails against a required UISpec expectation.
+    description: One or more blocking issues are present, score is below minimum_score, or a criterion fails against a required design expectation.
   BLOCKED:
-    description: Review cannot determine fidelity because required implementation, runtime evidence, or verification evidence is unavailable.
+    description: Review cannot determine design quality because required proposal, preview, runtime evidence, or verification evidence is unavailable.
 
 review_result_required_fields:
   - feature
   - workflow_phase
   - status
-  - reviewed_uispec
   - review_policy
-  - reviewed_implementation
+  - interface_type
+  - reviewed_proposal
+  - reviewed_preview
+  - artifact_persistence
   - verification
+  - deterministic_checks
+  - critical_interactions
+  - score
   - criteria_results
   - blocking_issues
   - findings
-  - acceptable_implementation_choices
+  - resolved_findings
+  - acceptable_design_choices
+  - unresolved_decisions
   - gate

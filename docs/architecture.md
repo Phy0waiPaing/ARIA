@@ -69,7 +69,7 @@ Responsibilities:
 
 - Analyst discovers intent.
 - Designer produces Design Proposals and compiles UISpecs after approval.
-- Reviewer compares implementation against approved UISpecs.
+- Reviewer evaluates Design Proposals and HTML Previews together before human approval.
 - Exporter prepares handoff bundles without changing design intent.
 
 ## Policy Layer
@@ -82,6 +82,7 @@ Files:
 - `design-system/components.md`
 - `design-system/patterns.md`
 - `policies/accessibility.md`
+- `policies/review/default.yaml`
 - `policies/visual-review.md`
 - `policies/artifact-governance.md`
 
@@ -90,11 +91,14 @@ Responsibilities:
 - Define design quality expectations.
 - Define reusable component and pattern guidance.
 - Define accessibility expectations.
+- Define design-package review criteria, scoring, blocking issues, and gate outcomes.
 - Define artifact acceptance and governance rules.
 
 ## Target Project Artifact Layer
 
 The target project artifact layer lives outside the ARIA methodology repository.
+
+All artifacts for one target-project feature live under `.aria/[feature-name]/`. This boundary keeps design context, preview evidence, review results, and implementation contracts together without scattering them through product documentation or source folders.
 
 Target project artifacts include:
 
@@ -103,7 +107,7 @@ Target project artifacts include:
 - Current-State UISpecs.
 - Target UISpecs.
 - HTML Previews.
-- Review Findings.
+- Design Review artifacts.
 - Work Contracts.
 - Design Packages.
 
@@ -122,12 +126,14 @@ Requirement, Existing Project, or Existing Page
   -> Optional Project Context or Current-State Capture
   -> Design Proposal Schema
   -> HTML Preview, when visual review is required
+  -> Review Policy
+  -> Reviewer Prompt
+  -> Design Review Artifact
   -> Human Approval
   -> UISpec Schema
   -> Optional Work Contract
   -> Optional Design Package
   -> Coding Agent
-  -> Reviewer Prompt
 ```
 
 ## Source-Of-Truth Rules
@@ -137,6 +143,8 @@ Requirement, Existing Project, or Existing Page
 - Design Proposal is the source of human-approved design intent.
 - HTML Preview is a rendered visual review artifact.
 - UISpec is the source of implementation intent.
+- Review Policy defines the pre-approval design gate.
+- Design Review records proposal-plus-preview findings, verification evidence, score, and gate result.
 - Work Contract governs artifact validity.
 - Design Package bundles references for handoff.
 - Production code is owned by the target project and coding agent.

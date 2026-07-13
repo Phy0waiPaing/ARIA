@@ -52,7 +52,7 @@ Loading, empty, error, offline, permission denied, and success states should:
 
 ## Review Rules
 
-ARIA Review should flag:
+ARIA's pre-approval Design Review should flag:
 
 - Missing keyboard paths.
 - Missing focus behavior.
@@ -60,5 +60,8 @@ ARIA Review should flag:
 - Color-only status.
 - Missing error recovery.
 - Responsive behavior that removes essential access.
+- Essential body, help, state, error, or label text below the typography floor defined by `policies/review/default.yaml`.
+- Visible content text below the absolute minimum defined by the review policy.
+- Keyboard behavior claimed by the proposal but not demonstrated for a critical preview interaction.
 
-Accessibility findings should be tied to the approved UISpec or to this policy.
+Accessibility findings should be tied to the Design Proposal, HTML Preview, project context, or this policy. Later implementation conformance may use a separate policy.

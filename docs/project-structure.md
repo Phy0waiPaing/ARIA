@@ -61,43 +61,44 @@ Rules:
 
 ## Target Project Repository
 
-Target projects using ARIA should store generated artifacts near the product code they describe.
+Target projects using ARIA should store every generated artifact under one feature-centric `.aria/` boundary.
 
 Recommended structure:
 
 ```text
 target-project/
-  docs/
-    aria-context/
-      [feature-name].project-context.md
-    design-proposals/
-      [feature-name].proposal.md
-    uispecs/
-      [feature-name].target.uispec.md
-      [page-name].current.uispec.md
-    aria-reviews/
-      [feature-name].review.md
-    work-contracts/
-      [artifact-name].work-contract.md
-    design-packages/
-      [feature-name]/
+  .aria/
+    [feature-name]/
+      project-context.md
+      design-proposal.md
+      current.uispec.md
+      target.uispec.md
+      review.md
+      preview/
+        index.html
+        styles.css
+        interactions.js
+        assets/
+      work-contracts/
+        [artifact-name].work-contract.md
+      design-package/
         handoff.md
         review.json
-  preview/
-    [feature-name]/
-      index.html
-      styles.css
-      assets/
 ```
 
 Rules:
 
 - Store generated artifacts in the target project, not the ARIA methodology repository.
+- Keep all artifacts for one feature or test slug together under `.aria/[feature-name]/`.
+- Treat `.aria/` as version-controlled project content by default. It must not be ignored accidentally.
+- A newly generated artifact may be `trackable-untracked` before commit. An ignored required artifact blocks the Review gate unless the user explicitly chose local-only artifacts.
+- Record an explicit local-only decision in `project-context.md` and `review.md`; do not infer it from `.gitignore`.
+- New runs must use this structure. Existing `docs/aria-*`, `docs/design-proposals`, `docs/uispecs`, and `preview/` artifacts may be read as legacy inputs but should not be copied forward as new outputs.
 - Use project context capture before designing a new page in an existing project.
 - Keep Design Proposal as the human-approved design intent.
 - Keep UISpec as the implementation contract.
 - Keep HTML Preview as rendered visual review output.
-- Keep ARIA Review as persisted review findings and gate result.
+- Keep Design Review as persisted proposal-plus-preview findings and gate result.
 - Keep Design Package as a handoff bundle.
 - Keep Work Contract as artifact governance.
 
@@ -107,14 +108,15 @@ Use these target-project conventions unless a project already has stronger local
 
 | Artifact | Path |
 | --- | --- |
-| Project Context Capture | `docs/aria-context/[feature-name].project-context.md` |
-| Design Proposal | `docs/design-proposals/[feature-name].proposal.md` |
-| Current-State UISpec | `docs/uispecs/[page-name].current.uispec.md` |
-| Target UISpec | `docs/uispecs/[feature-name].target.uispec.md` |
-| ARIA Review | `docs/aria-reviews/[feature-name].review.md` |
-| HTML Preview | `preview/[feature-name]/index.html` and `preview/[feature-name]/styles.css` |
-| Work Contract | `docs/work-contracts/[artifact-name].work-contract.md` |
-| Design Package | `docs/design-packages/[feature-name]/` |
+| Project Context Capture | `.aria/[feature-name]/project-context.md` |
+| Design Proposal | `.aria/[feature-name]/design-proposal.md` |
+| Current-State UISpec | `.aria/[feature-name]/current.uispec.md` |
+| Target UISpec | `.aria/[feature-name]/target.uispec.md` |
+| Design Review | `.aria/[feature-name]/review.md` |
+| HTML Preview | `.aria/[feature-name]/preview/index.html` and `.aria/[feature-name]/preview/styles.css` |
+| Preview Interactions | `.aria/[feature-name]/preview/interactions.js`, when critical interactions must be demonstrated |
+| Work Contract | `.aria/[feature-name]/work-contracts/[artifact-name].work-contract.md` |
+| Design Package | `.aria/[feature-name]/design-package/` |
 
 ## What Not To Add Yet
 

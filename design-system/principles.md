@@ -69,3 +69,39 @@ If ARIA proceeds with an assumption, it must label the assumption and keep it lo
 ARIA defines the user experience before Codex implements it.
 
 A high-quality UISpec should let implementation proceed without additional UX decisions.
+
+## 11. Classify The Interface Before Styling It
+
+ARIA should identify whether the work is `App UI`, `Marketing`, or `Hybrid` before judging layout and visual direction.
+
+- App UI prioritizes tasks, state, density, and repeatable action.
+- Marketing prioritizes brand, narrative, first-viewport composition, and conversion.
+- Hybrid work must name which regions follow each rule set.
+
+The interface type changes what good hierarchy looks like. A promotional composition should not be imposed on an operational workspace, and an application shell should not flatten a marketing story into interchangeable panels.
+
+## 12. Design The First Five Seconds
+
+The user should quickly understand where they are, what matters, and what they can do next.
+
+ARIA should define what the user notices first, second, and third. The primary action or primary status should not compete with ornamental headings, repeated cards, or secondary controls.
+
+## 13. States Are Part Of The Design
+
+Loading, empty, search-empty, error, offline, permission, read-only, validation, success, warning, conflict, and destructive states are not implementation cleanup.
+
+ARIA should specify the states that materially affect the workflow and ensure previews show enough of them to make review credible. Failure or unavailable data must not look like a valid empty result.
+
+## 14. Interaction Includes Accessibility
+
+Critical workflows should define keyboard movement, focus behavior, visible labels, error communication, non-color status cues, and touch behavior at the design-intent level.
+
+Accessibility that changes how a user understands or completes a workflow belongs in the Design Proposal, not only in implementation notes.
+
+Readable typography is part of interaction quality. Essential body, help, state, error, and label text must not be compressed into caption sizing; compact metadata must remain secondary and meet the measurable floors in the Review Policy.
+
+## 15. Specificity Over Generic AI UI
+
+The design should feel native to the product, audience, and task.
+
+ARIA should challenge decorative card grids, ornamental icons, generic hero copy, default-looking gradients, excessive radius, vague dashboard widgets, and visual novelty without product value. Existing project patterns should be reused when they serve the goal; deviations should be intentional and explained.

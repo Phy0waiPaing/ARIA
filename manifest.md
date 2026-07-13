@@ -27,8 +27,8 @@ Preserve intent as artifacts.
 - Design Proposals capture human-approved design intent.
 - HTML Preview renders visual confidence.
 - UISpecs define implementation intent.
-- Review Policy defines implementation review criteria, blocking issues, and gate outcomes.
-- ARIA Review artifacts record design-fidelity findings and gate results.
+- Review Policy defines proposal-plus-preview UI/UX criteria, scoring, blocking issues, and gate outcomes.
+- Design Review artifacts record pre-approval findings and gate results.
 - Future Design Packages bundle approved references for coding agents.
 - Future Work Contracts govern artifact ownership, consumers, and acceptance.
 
@@ -41,7 +41,7 @@ Preserve intent as artifacts.
 - Maintain consistency across the system.
 - Produce implementation-ready design specifications.
 - Prepare design packages for coding agents.
-- Review implemented UI for consistency.
+- Review Design Proposals and HTML Previews for UI and UX quality before approval.
 
 ARIA should reason like a senior Product Designer and UX Architect.
 
@@ -51,11 +51,11 @@ ARIA should reason like a senior Product Designer and UX Architect.
 Business Requirement
   -> Discovery
   -> Design Proposal
-  -> Visual Review
+  -> HTML Preview
+  -> Review
   -> Human Approval
   -> UISpec
-  -> Codex Implementation
-  -> ARIA Review
+  -> Codex
 ```
 
 ## Responsibilities
@@ -68,7 +68,7 @@ Business Requirement
 - Workflow design.
 - Design consistency.
 - UISpec generation.
-- Implementation review.
+- Proposal-plus-preview design review.
 
 ARIA should never generate production frontend code.
 
@@ -142,29 +142,29 @@ Design Packages should live in the target project repository, not in the ARIA me
 
 ### Review Policy
 
-Reusable criteria for implementation review.
+Reusable criteria for design-package review.
 
 Purpose:
 
-- Define how ARIA evaluates implementation against an approved UISpec.
+- Define how ARIA evaluates the Design Proposal and HTML Preview before human approval.
 - Separate review standards from one-off reviewer prompts.
 - Define blocking issues and gate outcomes.
 
 The default Review Policy lives in the ARIA repository at `policies/review/default.yaml`.
 
-### ARIA Review
+### Design Review
 
-Persisted review artifact for implemented UI.
+Persisted review artifact for the proposal-plus-preview design package.
 
 Purpose:
 
-- Compare production implementation against the approved UISpec.
+- Compare rendered preview against the Design Proposal and project context.
 - Record criteria results.
 - Record blocking issues.
 - Record verification evidence.
 - Produce a gate outcome.
 
-ARIA Review artifacts live in the target project under `docs/aria-reviews/[feature-name].review.md`.
+Design Review artifacts live in the target project under `.aria/[feature-name]/review.md`.
 
 ### Work Contract
 
@@ -192,7 +192,7 @@ Generated and maintained by Codex.
 | Visual review | HTML Preview |
 | Implementation | UISpec |
 | Review gate | Review Policy |
-| Design-fidelity result | ARIA Review |
+| Design review result | Design Review |
 | Artifact governance | Work Contract |
 | Running application | Production Code |
 
@@ -220,6 +220,7 @@ For simple non-visual changes:
 ```text
 Requirement
   -> Design Proposal
+  -> Review
   -> Approval
   -> UISpec
 ```
@@ -230,6 +231,7 @@ For visual UI work:
 Requirement
   -> Design Proposal
   -> HTML Preview
+  -> Review
   -> Approval
   -> UISpec
 ```
@@ -252,4 +254,4 @@ The current methodology is intentionally docs-first.
 
 Future roadmap items such as Design Package automation, Work Contract validation, CLI commands, plugins, and integrations should be introduced only after the core artifact boundaries remain stable in real project use.
 
-The ARIA repository should contain reusable methodology, schemas, prompts, policies, and guidance. Real project Design Proposals, UISpecs, HTML Previews, Work Contracts, and Design Packages should live in the target project repository.
+The ARIA repository should contain reusable methodology, schemas, prompts, policies, and guidance. Real project Design Proposals, UISpecs, HTML Previews, Reviews, Work Contracts, and Design Packages should live together under `.aria/[feature-name]/` in the target project repository.

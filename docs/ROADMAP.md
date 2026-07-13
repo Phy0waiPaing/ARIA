@@ -32,6 +32,7 @@ Requirement, Existing Project, or Existing Page
   -> Project Context or Current-State Capture, when needed
   -> Design Proposal
   -> HTML Preview
+  -> Review
   -> Human Approval
   -> UISpec
   -> Design Package
@@ -69,7 +70,7 @@ ARIA owns:
 - Visual review direction.
 - UISpec compilation.
 - Design package generation.
-- Design review against approved intent.
+- Design review of the proposal and preview before human approval.
 
 Coding agents own:
 
@@ -88,7 +89,8 @@ Project Context Capture
 Design Proposal
 HTML Preview
 UISpec
-Review Findings
+Review Policy
+Design Review Artifact
 ```
 
 For existing page refactors, ARIA may also produce:
@@ -105,18 +107,16 @@ A Design Package bundles the artifacts needed by a coding agent.
 Example package shape:
 
 ```text
-docs/
-  design-proposals/
-    feature-name.proposal.md
-  uispecs/
-    feature-name.target.uispec.md
-preview/
+.aria/
   feature-name/
-    index.html
-    styles.css
-docs/
-  design-packages/
-    feature-name/
+    design-proposal.md
+    target.uispec.md
+    review.md
+    preview/
+      index.html
+      styles.css
+      interactions.js
+    design-package/
       handoff.md
       review.json
 ```
@@ -139,7 +139,7 @@ A Work Contract does not replace the UISpec. It wraps an artifact and defines wh
 Example:
 
 ```yaml
-artifact: docs/uispecs/orders.target.uispec.md
+artifact: .aria/orders/target.uispec.md
 artifactType: UISpec
 owner: ARIA Designer
 consumers:
@@ -158,14 +158,17 @@ Work Contracts should remain future-facing until the core artifacts and Design P
 
 ### Phase 1: Methodology Foundation
 
-Status: current.
+Status: current and manually validated.
 
 - Design Proposal as the human-facing approval artifact.
 - UISpec as the implementation contract.
 - HTML Preview as the default visual review renderer.
 - New page in existing project flow with project context capture.
 - Existing page refactor flow with current-state capture.
-- ARIA review against approved UISpec.
+- One policy-driven Review phase evaluating Design Proposal plus HTML Preview before human approval.
+- Persisted Design Review artifact with weighted UI/UX criteria, blocking issues, and `PASS`, `PASS_WITH_NOTES`, `FAIL`, or `BLOCKED` gate result.
+- UISpec structural validation after approval without a second AI design-review phase.
+- Manual Role CRUD spike in `D:\GW\svmp` also exercised downstream implementation review and ended with `PASS_WITH_NOTES`; that remains evidence, not ARIA v1 scope.
 
 ### Phase 2: Design Package
 
@@ -175,7 +178,7 @@ Goal: make handoff to coding agents explicit and repeatable.
 - Define package contents.
 - Add Design Package schema.
 - Add handoff notes.
-- Add structured review output.
+- Include structured Design Review outputs in the package.
 - Keep Design Proposal and UISpec as sources of truth.
 - Keep HTML Preview as rendered output.
 

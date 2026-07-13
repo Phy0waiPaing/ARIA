@@ -16,6 +16,8 @@ For target-project workflows, the Design Proposal is a persisted file artifact. 
 
 Every Design Proposal v1 document must include these sections in order.
 
+Required section names must match this schema. A proposal may add feature-specific subsections, but it must not rename, split, replace, or silently omit a required section. Sections marked as conditional may be omitted when they do not apply.
+
 ## 1. Metadata
 
 Purpose: identify the proposal and its review status.
@@ -94,14 +96,20 @@ Purpose: explain what information matters most.
 
 Include:
 
+- Interface type: `App UI`, `Marketing`, or `Hybrid`.
 - Highest-priority information.
 - Supporting information.
 - Information hidden until needed.
+- What the user should notice first, second, and third.
+- The one thing the screen or flow should make memorable.
 
 Rules:
 
 - Explain priority in plain language.
 - Do not specify technical data models.
+- For app UI, favor task clarity, density, and calm hierarchy over decorative composition.
+- For marketing UI, favor a clear first-viewport composition, brand signal, and action path.
+- For hybrid UI, state which parts follow app rules and which parts follow marketing rules.
 
 ## 6. Layout Direction
 
@@ -113,11 +121,15 @@ Include:
 - Scanning order.
 - Any major layout trade-offs.
 - Desktop, tablet, and mobile direction when relevant.
+- What layout pattern is intentionally reused from the target project.
+- What would make the layout feel generic or AI-generated if left unchecked.
 
 Rules:
 
 - Describe the layout conceptually.
 - Do not prescribe CSS, components, or framework details.
+- Cards, panels, badges, icons, and decorative surfaces must earn their role.
+- Dense app screens should organize a primary workspace, navigation/context, and one clear accent rather than becoming a mosaic of decorative cards.
 
 ## 7. Key Workflows
 
@@ -137,6 +149,8 @@ Rules:
 
 - Focus on workflows the user cares about.
 - Include edge workflows only when they affect approval.
+- Include the user's expected emotional arc when it affects UX: what should feel clear, safe, urgent, calm, or resolved.
+- Mention what happens in the first five seconds of use when first impression matters.
 
 ## 8. Actions and Decisions
 
@@ -171,8 +185,55 @@ Rules:
 
 - Keep state descriptions understandable to non-technical reviewers.
 - State gaps should be visible before approval.
+- Describe what the user sees for each state, not only what the backend does.
+- Empty states should provide context and the next useful action when one exists.
+- Error, conflict, destructive, offline, and permission states should avoid implying valid empty data.
 
-## 10. Refactor Notes
+Recommended state coverage table:
+
+```markdown
+| Surface | Loading | Empty | Error | Success | Partial/Offline | Permission/Read-only |
+| --- | --- | --- | --- | --- | --- | --- |
+| [surface] | [what user sees] | [what user sees] | [what user sees] | [what user sees] | [what user sees] | [what user sees] |
+```
+
+## 10. Interaction and Accessibility Intent
+
+Purpose: make key interaction, keyboard, and accessibility expectations visible before implementation.
+
+Include:
+
+- Primary action behavior and feedback.
+- Dialog, drawer, tab, table, filter, form, wizard, or destructive-confirmation behavior when central to the proposal.
+- Which central interactions the HTML Preview must demonstrate.
+- Which interactions, if any, may remain `not demonstrated` and why that does not block approval.
+- Keyboard and focus expectations for critical workflows.
+- Label, status, contrast, and non-color communication expectations.
+- Touch target and mobile interaction expectations when relevant.
+
+Rules:
+
+- Keep this at the design-intent level.
+- Do not specify implementation libraries.
+- Do not defer accessibility to implementation if it changes the approved UX.
+
+## 11. AI Slop and Generic-UI Risk
+
+Purpose: identify design risks that would make the proposal feel generic, decorative, or poorly matched to the product.
+
+Include:
+
+- Known generic patterns to avoid for this feature.
+- Any places where cards, icons, gradients, large radius, shadows, centered layouts, or generic copy would weaken the UX.
+- How the proposal stays specific to the product and target users.
+
+Rules:
+
+- For app UI, flag decorative card mosaics, ornamental icons, vague dashboard widgets, and mood copy.
+- For marketing UI, flag generic hero copy, weak brand signal, busy imagery behind text, and feature grids without narrative purpose.
+- Do not add visual novelty unless it supports the product goal.
+
+## 12. Refactor Notes
 
 Purpose: only used when the Design Proposal is for an existing page refactor.
 
@@ -188,7 +249,7 @@ Rules:
 - Preserve existing behavior unless the proposal explicitly changes it.
 - Do not include this section for new feature proposals unless useful.
 
-## 11. Project Context Used
+## 13. Project Context Used
 
 Purpose: only used when the Design Proposal is for a new page in an existing project.
 
@@ -209,7 +270,7 @@ Rules:
 - Label inferred behavior when the code or UI does not prove intent.
 - Do not include this section for greenfield new features unless useful.
 
-## 12. Open Questions
+## 14. Open Questions
 
 Purpose: list remaining questions blocking approval.
 
@@ -265,7 +326,7 @@ Rules:
 - For required-preview work, render or re-render the HTML Preview after answers are applied and before final approval.
 - Do not ask the user to write a new prompt when choosing between known options.
 
-## 13. Visual Review
+## 15. Visual Review
 
 Purpose: capture visual review context before approval.
 
@@ -274,7 +335,10 @@ Include:
 - Whether visual review was used.
 - Renderer used, such as HTML Preview or Figma.
 - Preview reference, when available.
+- Interaction script reference, when available.
+- Critical interaction demonstration status: `demonstrated`, `not demonstrated`, `not applicable`, or `blocked`.
 - Visual confidence rating and reason.
+- Design Review artifact reference and gate result, when review has run.
 - Visual review feedback that affected the proposal.
 - Skip reason, when visual review was not used.
 
@@ -294,7 +358,7 @@ Rules:
 - Do not edit HTML Preview directly. Update the Design Proposal, then have Codex re-render the preview.
 - Do not include production implementation details.
 
-## 14. Approval Notes
+## 16. Approval Notes
 
 Purpose: capture the human approval decision.
 

@@ -62,26 +62,27 @@ When designing a refactor for an existing page, do not start with a blank target
 First produce or reference a current-state UISpec:
 
 ```text
-docs/uispecs/[page-name].current.uispec.md
+.aria/[feature-name]/current.uispec.md
 ```
 
 Then produce the refactor Design Proposal:
 
 ```text
-docs/design-proposals/[page-name].proposal.md
+.aria/[feature-name]/design-proposal.md
 ```
 
 After approval, compile the target UISpec:
 
 ```text
-docs/uispecs/[page-name].target.uispec.md
+.aria/[feature-name]/target.uispec.md
 ```
 
 For refactors, Codex should render or update:
 
 ```text
-preview/[page-name]/index.html
-preview/[page-name]/styles.css
+.aria/[feature-name]/preview/index.html
+.aria/[feature-name]/preview/styles.css
+.aria/[feature-name]/preview/interactions.js, when needed
 ```
 
 Current-state UISpec rules:
@@ -95,7 +96,7 @@ Current-state UISpec rules:
 Refactor Design Proposal rules:
 
 - Use `status: draft` until human approval.
-- Write `docs/design-proposals/[page-name].proposal.md` before asking for approval.
+- Write `.aria/[feature-name]/design-proposal.md` before asking for approval.
 - Preserve existing behavior unless explicitly changed.
 - Explain which current-state gaps the proposal fixes.
 - Keep unrelated product scope out of the refactor.
@@ -114,19 +115,19 @@ When designing a new page inside an existing project, do not start with a blank 
 First produce or reference project context:
 
 ```text
-docs/aria-context/[feature-name].project-context.md
+.aria/[feature-name]/project-context.md
 ```
 
 Then produce the new page Design Proposal:
 
 ```text
-docs/design-proposals/[feature-name].proposal.md
+.aria/[feature-name]/design-proposal.md
 ```
 
 After approval, compile the target UISpec:
 
 ```text
-docs/uispecs/[feature-name].target.uispec.md
+.aria/[feature-name]/target.uispec.md
 ```
 
 Project context rules:
@@ -139,7 +140,7 @@ Project context rules:
 New page Design Proposal rules:
 
 - Use `status: draft` until human approval.
-- Write `docs/design-proposals/[feature-name].proposal.md` before asking for approval.
+- Write `.aria/[feature-name]/design-proposal.md` before asking for approval.
 - Include `Project Context Used` or reference the project context artifact.
 - Reuse existing project patterns unless the proposal explicitly changes them.
 - State which existing conventions the page follows.
@@ -179,6 +180,10 @@ For required-preview work, do not ask for final approval until the preview is re
 Do not describe required preview as merely useful, optional, or recommended. If preview is required and not rendered yet, keep the proposal as `status: draft` and mark visual review as required and pending.
 
 The HTML Preview should demonstrate layout, hierarchy, section placement, component placement, and important interaction states.
+
+When a dialog, tab, filter, menu, refresh state, destructive confirmation, or other central interaction affects approval, require lightweight working behavior in the preview and browser verification through click and keyboard paths. Use `.aria/[feature-name]/preview/interactions.js` when a separate script makes the behavior easier to inspect.
+
+If an interaction is intentionally not executable, mark it `not demonstrated` in the Design Proposal and visible preview notes. Do not imply that its behavior has been reviewed.
 
 For required-preview work, ask Codex to render a review-complete preview, not only a casual happy-path mock. Include:
 
@@ -314,7 +319,7 @@ Reply format: `1A`
 
 The user reviews this proposal. The user should not need to inspect the UISpec schema.
 
-For target-project workflows, this chat structure is only a summary. The full draft Design Proposal must also be written to `docs/design-proposals/[feature-name].proposal.md` before approval is requested.
+For target-project workflows, this chat structure is only a summary. The full draft Design Proposal must also be written to `.aria/[feature-name]/design-proposal.md` before approval is requested.
 
 When requesting approval, use language like:
 
@@ -362,7 +367,7 @@ When a Design Package is requested in a future workflow, include only references
 
 Do not let package notes override the approved Design Proposal or UISpec.
 
-Design Packages belong in the target project repository under `docs/design-packages/[feature-name]/`.
+Design Packages belong in the target project repository under `.aria/[feature-name]/design-package/`.
 
 ## Future Work Contract Awareness
 
@@ -371,7 +376,7 @@ Work Contracts may later govern Design Proposals, HTML Previews, UISpecs, or Des
 When preserving acceptance expectations, keep them checkable:
 
 ```yaml
-artifact: docs/uispecs/[feature-name].target.uispec.md
+artifact: .aria/[feature-name]/target.uispec.md
 owner: ARIA Designer
 consumers:
   - Codex

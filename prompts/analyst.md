@@ -69,7 +69,7 @@ Capture:
 Output project context before the Design Proposal:
 
 ```text
-docs/aria-context/[feature-name].project-context.md
+.aria/[feature-name]/project-context.md
 ```
 
 Write this file before producing or asking approval for a new-page Design Proposal. Chat summaries may preview the context, but they do not replace the project context artifact.

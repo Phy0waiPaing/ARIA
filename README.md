@@ -29,6 +29,7 @@ Included:
 - Role prompts for analysis, design, review, and export.
 - Design principles, component guidance, and pattern guidance.
 - Accessibility, visual review, review gate, and artifact governance policies.
+- Feature-centric target-project artifacts under `.aria/[feature-name]/`.
 
 Not included yet:
 
@@ -45,11 +46,11 @@ Not included yet:
 Business Requirement
   -> Discovery
   -> Design Proposal
-  -> Visual Review
+  -> HTML Preview
+  -> Review
   -> Human Approval
   -> UISpec
-  -> Codex Implementation
-  -> ARIA Review
+  -> Codex
 ```
 
 ## Proven Spike
@@ -58,9 +59,9 @@ The manual ARIA-alone workflow was validated against a real target-project Role 
 
 Result:
 
-- ARIA produced Project Context, Design Proposal, HTML Preview, approved UISpec, and persisted ARIA Review artifacts.
+- ARIA produced Project Context, Design Proposal, HTML Preview, approved UISpec, and a persisted downstream implementation-review artifact.
 - Codex implemented from the approved UISpec as a separate phase.
-- ARIA Review used `policies/review/default.yaml`.
+- The spike's historical implementation review informed the current review-policy design.
 - The review artifact recorded `PASS_WITH_NOTES`, with no blocking design-fidelity issues.
 - Notes were verification-scope limits, not design blockers.
 
@@ -70,7 +71,7 @@ ARIA:
 
 - Owns product and UX decisions.
 - Produces Design Proposals and UISpecs.
-- Reviews implemented UI for design consistency.
+- Reviews Design Proposals and HTML Previews against explicit UI and UX criteria before human approval.
 - Does not generate production frontend code.
 
 Codex:
@@ -131,7 +132,7 @@ ARIA/
 - `schemas/design-package-v1.md` defines a future coding-agent handoff bundle.
 - `prompts/analyst.md` guides requirement discovery and clarification.
 - `prompts/designer.md` guides UX design and UISpec compilation.
-- `prompts/reviewer.md` guides implementation review against an approved UISpec.
+- `prompts/reviewer.md` guides proposal-plus-preview design review before human approval.
 - `prompts/exporter.md` guides Design Package export.
 - `design-system/principles.md` defines ARIA's design principles.
 - `design-system/components.md` defines framework-agnostic component guidance.

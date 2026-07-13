@@ -16,7 +16,7 @@ Every artifact should have a clear owner, consumer, purpose, and boundary.
 | Design Proposal | Human-approved design intent |
 | HTML Preview | Rendered visual review output |
 | UISpec | Implementation contract |
-| Review Findings | Implementation fidelity review |
+| Review Findings | Proposal-plus-preview design review |
 | Work Contract | Artifact governance wrapper |
 | Design Package | Handoff bundle |
 | Production Code | Runtime behavior |
@@ -32,7 +32,7 @@ Every artifact should have a clear owner, consumer, purpose, and boundary.
 
 - Humans consume Design Proposals and visual review artifacts.
 - Coding agents consume approved UISpecs.
-- Reviewers consume approved UISpecs and implementation evidence.
+- Reviewers consume draft Design Proposals, rendered previews, project context, and deterministic evidence.
 - Exporters consume approved artifacts and produce Design Packages.
 
 ## Acceptance Rules
@@ -50,6 +50,16 @@ Acceptance rules should not:
 - Override the approved Design Proposal.
 - Override the approved UISpec.
 - Convert package notes into source of truth.
+
+## Target Project Persistence
+
+- Store all artifacts for one feature under `.aria/[feature-name]/`.
+- Treat `.aria/` as version-controlled content by default.
+- Before Review, classify artifact persistence as `tracked`, `trackable-untracked`, `intentionally-local`, or `ignored`.
+- Use `git check-ignore -v -- .aria/[feature-name]/...` when Git is available to distinguish ignored files from ordinary untracked files.
+- Accidentally ignored required artifacts fail the Review gate.
+- `intentionally-local` is valid only when the user explicitly chooses it and the decision is recorded in `project-context.md` and `review.md`.
+- Do not scatter new ARIA outputs across target-project `docs/`, `preview/`, or production source folders.
 
 ## Conflict Resolution
 

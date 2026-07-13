@@ -24,13 +24,34 @@ Recommended target:
 Role CRUD in D:\GW\svmp
 ```
 
-Success means the workflow can move from project context to implementation review using only:
+Success means the workflow can move from project context to an implementation-ready UISpec using only:
 
 - This workflow document.
 - The reusable ARIA methodology docs.
 - Target-project source files.
 - Persisted target-project artifacts.
 - Explicit user approval at the approval gate.
+
+Validated result:
+
+```text
+Role CRUD standalone in D:\GW\svmp reached PASS_WITH_NOTES.
+```
+
+That run proved the full manual spike, including downstream implementation. The ARIA v1 design loop is:
+
+```text
+Project Context
+  -> Design Proposal
+  -> HTML Preview
+  -> Review Policy
+  -> Design Review Artifact
+  -> Human Approval
+  -> UISpec
+  -> Codex
+```
+
+The Role CRUD spike continued through implementation review and reached `PASS_WITH_NOTES`. That downstream result remains useful evidence, but implementation review is not a second ARIA v1 design-review phase.
 
 ## Phase Format
 
@@ -60,7 +81,7 @@ inputs:
   - Target project repository.
   - Existing routes, navigation, layout shell, nearby pages, components, API clients, roles, and state patterns.
 outputs:
-  - docs/aria-context/[feature-name].project-context.md
+  - .aria/[feature-name]/project-context.md
 done_when:
   - The context file records the relevant project facts.
   - Inferred behavior is labeled as inferred.
@@ -89,7 +110,7 @@ inputs:
   - Current-state capture, for refactors.
   - ARIA design principles and policies.
 outputs:
-  - docs/design-proposals/[feature-name].proposal.md
+  - .aria/[feature-name]/design-proposal.md
 done_when:
   - The proposal is understandable without reading UISpec schemas.
   - The proposal states purpose, users, hierarchy, workflows, actions, states, constraints, and assumptions.
@@ -114,20 +135,22 @@ phase: HTML Preview
 question: What should the design look like?
 purpose: Render a review-complete visual artifact from the Design Proposal.
 inputs:
-  - docs/design-proposals/[feature-name].proposal.md
+  - .aria/[feature-name]/design-proposal.md
   - Current-state capture or screenshots, when useful.
   - Existing design-system and project visual conventions.
 outputs:
-  - preview/[feature-name]/index.html
-  - preview/[feature-name]/styles.css
-  - Optional preview assets under preview/[feature-name]/assets/
+  - .aria/[feature-name]/preview/index.html
+  - .aria/[feature-name]/preview/styles.css
+  - .aria/[feature-name]/preview/interactions.js, when critical interactions must be demonstrated.
+  - Optional preview assets under .aria/[feature-name]/preview/assets/
 done_when:
   - The preview represents the latest Design Proposal.
   - The preview covers the primary screen or flow.
   - The preview shows key state and interaction surfaces needed for review.
+  - Approval-relevant interactions work, or are explicitly marked `not demonstrated`.
   - Assumptions are visible in the proposal or preview.
 gate:
-  - Ask the user to review the Design Proposal plus HTML Preview.
+  - Continue to Review when the Design Proposal and HTML Preview are ready to evaluate together.
 ```
 
 Rules:
@@ -140,6 +163,10 @@ Rules:
 - Do not write backend logic, API calls, authentication, production architecture, or framework-specific production code.
 - Do not compile a UISpec.
 - Do not write production code.
+- Keep preview behavior lightweight and isolated from production architecture.
+- A central interaction such as a dialog, tab switch, filter, menu, refresh-pending state, or destructive confirmation must work when its behavior affects approval.
+- Static controls must not imply behavior that the preview cannot demonstrate.
+- If an interaction is intentionally not implemented, label it in the preview and Design Proposal and carry it into Review as `not demonstrated`.
 
 For required-preview work, the preview should include:
 
@@ -150,24 +177,71 @@ For required-preview work, the preview should include:
 - Protected, disabled, locked, or read-only behavior when the proposal depends on it.
 - Compact state panels for dense admin, dashboard, table, or operations screens when full-size duplicate screens would be too heavy.
 
-## Phase 4: Human Approval
+## Phase 4: Review
+
+```yaml
+phase: Review
+question: Is this design package strong enough for human approval?
+purpose: Evaluate the Design Proposal and HTML Preview against explicit UI and UX criteria before asking the user for final design approval.
+inputs:
+  - .aria/[feature-name]/design-proposal.md
+  - .aria/[feature-name]/preview/index.html, when required or used.
+  - .aria/[feature-name]/preview/styles.css, when required or used.
+  - .aria/[feature-name]/preview/interactions.js, when present.
+  - .aria/[feature-name]/project-context.md, when available.
+  - Current-state capture or screenshots, for refactors.
+  - D:\Nemo\Projects\ARIA\policies\review\default.yaml, unless a project-specific policy is provided.
+outputs:
+  - .aria/[feature-name]/review.md
+done_when:
+  - The proposal and preview are evaluated as one design package.
+  - The review records interface type, policy criteria, weighted score, blocking issues, acceptable design choices, unresolved decisions, and gate result.
+  - Browser or rendering evidence is recorded when the preview is required.
+  - Artifact persistence and ignore status are recorded.
+  - Each critical interaction is recorded as demonstrated, not demonstrated, not applicable, or blocked.
+  - Findings are actionable and point back to the proposal or preview surface that must change.
+gate:
+  - Continue to Human Approval for PASS or PASS_WITH_NOTES.
+  - Return to Design Proposal and HTML Preview for FAIL.
+  - Gather missing evidence before continuing for BLOCKED.
+```
+
+Rules:
+
+- ARIA v1 has one Review phase with multiple checks, not separate AI reviews for proposal, preview, UISpec, and implementation.
+- Review the proposal and preview together so written intent and rendered design cannot pass independently while contradicting each other.
+- Classify the interface as `app_ui`, `marketing`, or `hybrid` before applying interface-specific checks.
+- Use deterministic checks for artifact existence, preview rendering, overflow, and other objective failures where possible.
+- Use deterministic checks for proposal structure, console errors, typography floors, viewport coverage, critical interaction behavior, and whether `.aria/` artifacts are Git-trackable.
+- Use design judgment for information architecture, visual hierarchy, interaction clarity, design-system fit, and AI-slop risk.
+- Do not award `pass` for interaction coverage when a required interaction is static or unverified.
+- Do not rely on the generator's confidence statement as review evidence.
+- Do not repair a failed preview silently inside Review. Record `FAIL`, return to Proposal or Preview, then rerun Review and retain a resolved-findings note.
+- Do not redesign the interface during review. Record findings and send failed work back to the proposal and preview phases.
+- Do not compile a UISpec or write production code during Review.
+- Chat may summarize the result, but it does not replace the persisted review artifact.
+
+## Phase 5: Human Approval
 
 ```yaml
 phase: Human Approval
 question: Has the user approved the design intent?
 purpose: Confirm the Design Proposal and visual direction before UISpec compilation.
 inputs:
-  - docs/design-proposals/[feature-name].proposal.md
-  - preview/[feature-name]/index.html, when required or used.
-  - preview/[feature-name]/styles.css, when required or used.
+  - .aria/[feature-name]/design-proposal.md
+  - .aria/[feature-name]/preview/index.html, when required or used.
+  - .aria/[feature-name]/preview/styles.css, when required or used.
+  - .aria/[feature-name]/review.md
 outputs:
   - Approved or revised Design Proposal.
 done_when:
   - The user explicitly approves the proposal, or sends changes.
+  - The review gate is PASS or PASS_WITH_NOTES.
   - Required preview has been reviewed or explicitly skipped.
   - Material open questions are resolved.
 gate:
   - Stop if changes are requested; update the proposal and re-render preview.
+  - Return to Review after any material proposal or preview revision.
   - Continue to UISpec only after explicit approval.
 ```
 
@@ -175,6 +249,7 @@ Rules:
 
 - Proposal approval permits UISpec compilation only.
 - Proposal approval does not authorize production implementation.
+- A FAIL or BLOCKED review cannot advance to approval.
 - Do not compile a UISpec if required preview is pending.
 - Do not mark the proposal `approved` while required visual review is pending.
 - Do not ask for one approval that covers both UISpec compilation and implementation.
@@ -182,28 +257,29 @@ Rules:
 Recommended approval prompt:
 
 ```text
-Reply `approve proposal` to compile the target UISpec next, or send changes. I will stop before production code until you ask for implementation from the approved UISpec.
+Review gate: `PASS_WITH_NOTES`. Reply `approve proposal` to compile the target UISpec next, or send changes. I will stop before production code until you ask for implementation from the approved UISpec.
 ```
 
-## Phase 5: UISpec
+## Phase 6: UISpec
 
 ```yaml
 phase: UISpec
 question: How should a coding agent build this interface?
 purpose: Compile the approved design intent into an implementation-independent contract.
 inputs:
-  - Approved docs/design-proposals/[feature-name].proposal.md
-  - docs/aria-context/[feature-name].project-context.md, when available.
-  - docs/uispecs/[page-name].current.uispec.md, for refactors.
-  - preview/[feature-name]/index.html, when required or used.
-  - preview/[feature-name]/styles.css, when required or used.
+  - Approved .aria/[feature-name]/design-proposal.md
+  - .aria/[feature-name]/project-context.md, when available.
+  - .aria/[feature-name]/current.uispec.md, for refactors.
+  - .aria/[feature-name]/preview/index.html, when required or used.
+  - .aria/[feature-name]/preview/styles.css, when required or used.
 outputs:
-  - docs/uispecs/[feature-name].target.uispec.md
+  - .aria/[feature-name]/target.uispec.md
 done_when:
   - The UISpec faithfully preserves the approved proposal.
   - The UISpec is complete enough for implementation without new UX decisions.
   - `visualReference` points to preview files when preview exists, was required, or was used.
   - No implementation note changes UX intent.
+  - Required fields and references pass structural validation.
 gate:
   - Report the UISpec path and stop.
 ```
@@ -213,16 +289,19 @@ Rules:
 - Do not compile before approval.
 - Do not introduce new UX decisions.
 - Do not write production code.
+- UISpec schema and completeness checks are compilation validation, not a second AI design-review phase.
 - If the UISpec and preview disagree, resolve intent from the approved Design Proposal before implementation.
 
-## Phase 6: Implementation
+## Downstream: Codex Implementation
+
+Codex implementation is intentionally outside ARIA v1's pre-development scope. The manual spike may continue here to test whether the design package is useful, but this phase requires a separate user instruction.
 
 ```yaml
 phase: Implementation
 question: Can Codex build the approved interface from the UISpec?
 purpose: Let the coding runtime implement the approved target UISpec in the target project.
 inputs:
-  - docs/uispecs/[feature-name].target.uispec.md
+  - .aria/[feature-name]/target.uispec.md
   - Approved Design Proposal, for clarification only.
   - HTML Preview, for visual alignment only.
   - Target project source files.
@@ -234,7 +313,7 @@ done_when:
   - Required states, actions, permissions, and responsive behavior are implemented or explicitly blocked.
   - Verification results are reported.
 gate:
-  - Continue to ARIA Review when implementation is complete enough to inspect.
+  - Report implementation and verification results.
 ```
 
 Rules:
@@ -244,20 +323,22 @@ Rules:
 - Codex must not redesign UX without reopening design review.
 - Implementation convenience must not change approved design intent.
 
-## Phase 7: ARIA Review
+## Future: Implementation Conformance Review
+
+Implementation conformance review is downstream evidence for improving ARIA. It is not the Review phase defined above and is not required to complete the ARIA v1 design package.
 
 ```yaml
-phase: ARIA Review
+phase: Implementation Conformance Review
 question: Did implementation follow the UISpec?
 purpose: Review the implemented UI against the approved contract.
 inputs:
-  - docs/uispecs/[feature-name].target.uispec.md
+  - .aria/[feature-name]/target.uispec.md
   - Approved Design Proposal, for clarifying intent.
   - HTML Preview, for visual reference only.
-  - D:\Nemo\Projects\ARIA\policies\review\default.yaml, unless a project-specific review policy is provided.
+  - A future implementation-conformance policy.
   - Running app, screenshots, code context, or verification output.
 outputs:
-  - docs/aria-reviews/[feature-name].review.md
+  - A future implementation-conformance artifact path.
 done_when:
   - The review artifact is written in the target project.
   - The review artifact names the review policy used.
@@ -278,18 +359,19 @@ Rules:
 - Do not redesign during review.
 - Do not write production code during review unless the user explicitly asks for fixes after the review.
 - Chat may summarize findings, but it does not replace the review artifact.
-- Use the review policy to produce structured criteria results and a gate result.
-- Do not invent new criteria names when using the default policy; record project-specific concerns as findings or notes.
+- Do not reuse the ARIA v1 design-review policy as if it were an implementation-conformance policy.
 - `FAIL` means changes are requested before design-fidelity acceptance.
 - `BLOCKED` means ARIA could not review enough evidence to decide.
 
-Required review artifact structure:
+The exact implementation-conformance policy and artifact structure should be defined only after more downstream spikes demonstrate what evidence is useful. The previous Role CRUD spike artifact remains historical evidence rather than the v1 template.
+
+Historical spike artifact structure:
 
 ```markdown
 # [Feature Name] ARIA Review
 
 Feature:
-Workflow phase: ARIA Review
+Workflow phase: Implementation Conformance Review
 Status: findings | accepted | blocked
 Reviewed UISpec:
 Review Policy:

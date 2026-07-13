@@ -360,8 +360,8 @@ Rules:
 When ARIA is used for an existing page refactor, use two UISpecs:
 
 ```text
-docs/uispecs/[page-name].current.uispec.md
-docs/uispecs/[page-name].target.uispec.md
+.aria/[feature-name]/current.uispec.md
+.aria/[feature-name]/target.uispec.md
 ```
 
 ### Current-State UISpec

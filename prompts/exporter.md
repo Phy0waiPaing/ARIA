@@ -36,7 +36,7 @@ If the Design Proposal or target UISpec is not approved, stop and return to desi
 Use this target-project structure:
 
 ```text
-docs/design-packages/[feature-name]/
+.aria/[feature-name]/design-package/
   handoff.md
   review.json
 ```
@@ -44,7 +44,7 @@ docs/design-packages/[feature-name]/
 Optional:
 
 ```text
-docs/design-packages/[feature-name]/
+.aria/[feature-name]/design-package/
   manifest.yaml
   work-contract.md
 ```

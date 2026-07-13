@@ -17,7 +17,7 @@ If package notes conflict with the approved Design Proposal or approved UISpec, 
 Every Design Package v1 should include these files:
 
 ```text
-docs/design-packages/[feature-name]/
+.aria/[feature-name]/design-package/
   handoff.md
   review.json
 ```
@@ -25,7 +25,7 @@ docs/design-packages/[feature-name]/
 Optional files:
 
 ```text
-docs/design-packages/[feature-name]/
+.aria/[feature-name]/design-package/
   manifest.yaml
   work-contract.md
 ```
@@ -33,12 +33,13 @@ docs/design-packages/[feature-name]/
 The package may reference artifacts outside the package:
 
 ```text
-docs/design-proposals/[feature-name].proposal.md
-docs/aria-context/[feature-name].project-context.md
-docs/uispecs/[feature-name].target.uispec.md
-preview/[feature-name]/index.html
-preview/[feature-name]/styles.css
-docs/work-contracts/[artifact-name].work-contract.md
+.aria/[feature-name]/design-proposal.md
+.aria/[feature-name]/project-context.md
+.aria/[feature-name]/target.uispec.md
+.aria/[feature-name]/preview/index.html
+.aria/[feature-name]/preview/styles.css
+.aria/[feature-name]/preview/interactions.js
+.aria/[feature-name]/work-contracts/[artifact-name].work-contract.md
 ```
 
 ## 1. Package Metadata
@@ -143,13 +144,14 @@ Consumers: Codex
 
 Implement from:
 
-- `docs/uispecs/orders.target.uispec.md`
+- `.aria/orders/target.uispec.md`
 
 ## Supporting References
 
-- Design intent: `docs/design-proposals/orders.proposal.md`
-- Visual reference: `preview/orders/index.html`
-- Visual styles: `preview/orders/styles.css`
+- Design intent: `.aria/orders/design-proposal.md`
+- Visual reference: `.aria/orders/preview/index.html`
+- Visual styles: `.aria/orders/preview/styles.css`
+- Interaction reference: `.aria/orders/preview/interactions.js`, when present
 
 ## Rules
 
