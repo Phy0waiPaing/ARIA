@@ -6,6 +6,9 @@
   "bin": {
     "aria": "./dist/src/bin.js"
   },
+  "aria": {
+    "releaseSource": "github:Phy0waiPaing/ARIA#release"
+  },
   "files": [
     "dist/src/",
     "docs/workflows/design-v1.md",

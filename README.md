@@ -58,7 +58,7 @@ Business Requirement
 ARIA runs from the target repository. The current directory is the target by default.
 
 ```powershell
-npm install -g github:Phy0waiPaing/ARIA
+npm install -g --install-links=true github:Phy0waiPaing/ARIA#release
 
 cd <target-project>
 aria run --feature monitoring-dashboard-v2
@@ -66,6 +66,8 @@ aria run --feature monitoring-dashboard-v2
 
 The GitHub install runs ARIA's package build during installation, so the `aria`
 command is ready without cloning, building, or linking the repository manually.
+`--install-links=true` avoids npm creating a temporary Git-cache junction during
+global installation on Windows.
 
 Use `--artifact-mode local` only when the target project's `.aria/` directory is intentionally ignored for a local spike:
 
@@ -81,9 +83,31 @@ Useful commands:
 aria status --feature monitoring-dashboard-v2
 aria run --feature monitoring-dashboard-v2 --phase review
 aria run --feature monitoring-dashboard-v2 --target <target-project>
+aria upgrade
+aria uninstall
 ```
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
+
+`aria upgrade` reinstalls the CLI from the public `release` branch. `aria uninstall`
+asks for confirmation, then removes only ARIA's global npm package.
+
+## Release Channel
+
+`main` remains the development branch. The public installation source is the
+`release` branch, so users do not receive work-in-progress changes from `main`.
+
+After testing the desired `main` commit, promote it deliberately:
+
+```powershell
+git switch release
+git merge main
+git push origin release
+git switch main
+```
+
+This promotion is intentionally manual. ARIA never updates or publishes the
+release branch by itself.
 
 ## Proven Spike
 

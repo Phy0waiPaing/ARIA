@@ -1,8 +1,9 @@
 export type ArtifactMode = "trackable" | "local";
+export type CommandName = "run" | "status" | "upgrade" | "uninstall";
 
 export interface ParsedCommand {
-  command: "run" | "status";
-  feature: string;
+  command: CommandName;
+  feature: string | undefined;
   target: string;
   phase: string | undefined;
   artifactMode: ArtifactMode;
@@ -15,14 +16,20 @@ export function formatUsage(): string {
     "Usage:",
     "  aria run --feature <slug> [--phase <phase>] [--target <path>] [--artifact-mode trackable|local]",
     "  aria status --feature <slug> [--target <path>]",
+    "  aria upgrade",
+    "  aria uninstall",
   ].join("\n");
 }
 
 export function parseArgs(argv: string[]): ParsedCommand {
   const [command, ...rest] = argv;
 
-  if (command !== "run" && command !== "status") {
+  if (command !== "run" && command !== "status" && command !== "upgrade" && command !== "uninstall") {
     throw new CliUsageError(`Unknown command: ${command ?? ""}`.trim());
+  }
+
+  if ((command === "upgrade" || command === "uninstall") && rest.length > 0) {
+    throw new CliUsageError(`${command} does not accept options`);
   }
 
   let feature: string | undefined;
@@ -73,7 +80,7 @@ export function parseArgs(argv: string[]): ParsedCommand {
     index += 1;
   }
 
-  if (feature === undefined) {
+  if ((command === "run" || command === "status") && feature === undefined) {
     throw new CliUsageError("--feature is required");
   }
 

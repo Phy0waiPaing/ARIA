@@ -5,12 +5,13 @@ import { stdin as input, stdout as output } from "node:process";
 
 import { CliUsageError, formatUsage, parseArgs } from "./cli/args.js";
 import { renderStatus } from "./cli/status-view.js";
-import { getPhase, PHASES } from "./core/phases.js";
+import { PHASES } from "./core/phases.js";
 import { resolveFeaturePaths, resolveTargetRoot } from "./core/paths.js";
 import { parseMaterialQuestions } from "./core/questions.js";
 import { readReviewGate, runWorkflow } from "./core/runner.js";
 import { loadOrCreateState } from "./core/state.js";
 import type { MaterialQuestion, PhaseId } from "./core/types.js";
+import { ReleaseManager } from "./core/release.js";
 import { CodexRuntime } from "./runtime/codex.js";
 
 function phaseId(value: string | undefined): PhaseId | undefined {
@@ -46,6 +47,16 @@ async function requestApproval(gate: "PASS" | "PASS_WITH_NOTES"): Promise<boolea
   }
 }
 
+async function requestUninstall(): Promise<boolean> {
+  const readline = createInterface({ input, output });
+  try {
+    const answer = (await readline.question("Remove the global ARIA CLI? [y/N] ")).trim().toLowerCase();
+    return answer === "y" || answer === "yes";
+  } finally {
+    readline.close();
+  }
+}
+
 async function main(argv: string[]): Promise<void> {
   if (argv.length === 1 && (argv[0] === "--help" || argv[0] === "-h")) {
     console.log(formatUsage());
@@ -58,6 +69,34 @@ async function main(argv: string[]): Promise<void> {
 
   try {
     const command = parseArgs(argv);
+
+    if (command.command === "upgrade") {
+      const result = await new ReleaseManager().upgrade();
+      if (result.exitCode === 0) {
+        console.log("ARIA upgraded from the release branch.");
+      } else {
+        process.exitCode = result.exitCode;
+      }
+      return;
+    }
+
+    if (command.command === "uninstall") {
+      if (!await requestUninstall()) {
+        console.log("ARIA uninstall cancelled.");
+        return;
+      }
+      const result = await new ReleaseManager().uninstall();
+      if (result.exitCode === 0) {
+        console.log("ARIA has been removed from global npm packages.");
+      } else {
+        process.exitCode = result.exitCode;
+      }
+      return;
+    }
+
+    if (command.feature === undefined) {
+      throw new CliUsageError("--feature is required");
+    }
     const targetRoot = await resolveTargetRoot(command.target);
     const paths = resolveFeaturePaths(targetRoot, command.feature);
     const state = await loadOrCreateState(paths, command.artifactMode);
