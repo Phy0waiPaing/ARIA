@@ -21,21 +21,18 @@ export async function resolveTargetRoot(input = process.cwd()): Promise<string> 
   }
 }
 
-export async function assertArtifactMode(targetRoot: string, paths: FeaturePaths, artifactMode: ArtifactMode): Promise<void> {
-  if (artifactMode === "local") return;
-
+export async function resolveArtifactMode(targetRoot: string, paths: FeaturePaths): Promise<ArtifactMode> {
   const featureRelativePath = path.relative(targetRoot, paths.root);
   try {
     await execFileAsync("git", ["check-ignore", "-q", "--", featureRelativePath], {
       cwd: targetRoot,
       windowsHide: true,
     });
+    return "local";
   } catch (error: unknown) {
-    if (error instanceof Error && "code" in error && error.code === 1) return;
+    if (error instanceof Error && "code" in error && error.code === 1) return "trackable";
     throw error;
   }
-
-  throw new Error(`.aria/${paths.feature} is ignored; rerun with --artifact-mode local or remove the ignore rule`);
 }
 
 export function resolveFeaturePaths(targetRoot: string, feature: string): FeaturePaths {

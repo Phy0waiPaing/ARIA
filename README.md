@@ -69,11 +69,8 @@ command is ready without cloning, building, or linking the repository manually.
 `--install-links=true` avoids npm creating a temporary Git-cache junction during
 global installation on Windows.
 
-Use `--artifact-mode local` only when the target project's `.aria/` directory is intentionally ignored for a local spike:
-
-```powershell
-aria run --feature monitoring-dashboard-v2 --artifact-mode local
-```
+ARIA automatically keeps artifacts local when the target project's `.aria/`
+directory is ignored by Git; otherwise, artifacts remain trackable.
 
 The runner advances automatically through Project Context, Design Proposal, HTML Preview, and Review. It presents numbered material-question choices in the terminal, then pauses at Human Approval with a default-no `[y/N]` prompt before compiling the UISpec. Production implementation remains outside ARIA v0.
 

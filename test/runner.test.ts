@@ -71,7 +71,6 @@ test("automatically advances context through review then waits for approval", as
   const result = await runWorkflow({
     targetRoot,
     feature: "monitoring-dashboard-v2",
-    artifactMode: "local",
   }, {
     runtime,
     requestApproval: async () => false,
@@ -88,7 +87,6 @@ test("selecting a material question reruns proposal before preview", async () =>
   const result = await runWorkflow({
     targetRoot,
     feature: "monitoring-dashboard-v2",
-    artifactMode: "local",
   }, {
     runtime,
     selectQuestion: async () => "existing-monitoring-api",
@@ -110,7 +108,7 @@ test("status displays artifacts, gate, and next action", async () => {
   const output = renderStatus({
     version: 1,
     feature: "monitoring-dashboard-v2",
-    artifactMode: "local",
+    artifactMode: "trackable",
     phase: "human-approval",
     status: "waiting-for-approval",
     answers: {},

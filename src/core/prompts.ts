@@ -41,7 +41,7 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
     "- Do not create artifacts from later phases.",
     "- Do not create or edit production application code.",
     "- Do not alter files outside the allowed outputs.",
-    "- When artifact mode is local, record the explicit local-only decision in the phase artifact when applicable.",
+    "- When artifact mode is local, record that ARIA automatically selected local-only storage because the feature artifact folder is ignored by Git.",
     "- Finish this phase, report the artifact paths created or updated, and stop.",
   ].join("\n");
 }

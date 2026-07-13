@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { assertArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "../src/core/paths.js";
+import { resolveArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "../src/core/paths.js";
 import { loadOrCreateState } from "../src/core/state.js";
 
 test("rejects path-traversal feature slugs", () => {
@@ -41,13 +41,24 @@ test("creates only minimal workflow state under the feature folder", async () =>
   assert.equal(paths.state, path.join(targetRoot, ".aria", "monitoring-dashboard-v2", "workflow-state.json"));
 });
 
-test("requires an explicit local mode when .aria is ignored", async () => {
+test("updates an existing artifact mode from the target Git ignore rules", async () => {
+  const targetRoot = await mkdtemp(path.join(os.tmpdir(), "aria-paths-"));
+  execFileSync("git", ["init"], { cwd: targetRoot, stdio: "ignore" });
+  await writeFile(path.join(targetRoot, ".gitignore"), ".aria/\n", "utf8");
+  const paths = resolveFeaturePaths(targetRoot, "monitoring-dashboard-v2");
+  await loadOrCreateState(paths, "trackable");
+
+  const updated = await loadOrCreateState(paths, await resolveArtifactMode(targetRoot, paths), true);
+  assert.equal(updated.artifactMode, "local");
+  assert.equal((await loadOrCreateState(paths, "trackable")).artifactMode, "local");
+});
+
+test("derives local artifact mode when .aria is ignored", async () => {
   const targetRoot = await mkdtemp(path.join(os.tmpdir(), "aria-paths-"));
   execFileSync("git", ["init"], { cwd: targetRoot, stdio: "ignore" });
   await writeFile(path.join(targetRoot, ".gitignore"), ".aria/\n", "utf8");
   const paths = resolveFeaturePaths(targetRoot, "monitoring-dashboard-v2");
   await mkdir(paths.root, { recursive: true });
 
-  await assert.rejects(() => assertArtifactMode(targetRoot, paths, "trackable"), /ignored/i);
-  await assert.doesNotReject(() => assertArtifactMode(targetRoot, paths, "local"));
+  assert.equal(await resolveArtifactMode(targetRoot, paths), "local");
 });

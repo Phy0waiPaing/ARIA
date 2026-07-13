@@ -9,7 +9,6 @@ test("parses run with feature and defaults target to cwd", () => {
     feature: "monitoring-dashboard-v2",
     target: process.cwd(),
     phase: undefined,
-    artifactMode: "trackable",
   });
 });
 
@@ -26,20 +25,25 @@ test("parses release-management commands without a feature", () => {
     feature: undefined,
     target: process.cwd(),
     phase: undefined,
-    artifactMode: "trackable",
   });
   assert.deepEqual(parseArgs(["uninstall"]), {
     command: "uninstall",
     feature: undefined,
     target: process.cwd(),
     phase: undefined,
-    artifactMode: "trackable",
   });
 });
 
 test("rejects duplicate single-value options", () => {
   assert.throws(
-    () => parseArgs(["run", "--feature", "monitoring-dashboard-v2", "--artifact-mode", "local", "--artifact-mode", "trackable"]),
-    /--artifact-mode may be provided once/,
+    () => parseArgs(["run", "--feature", "monitoring-dashboard-v2", "--target", "one", "--target", "two"]),
+    /--target may be provided once/,
+  );
+});
+
+test("rejects artifact mode as a user-facing option", () => {
+  assert.throws(
+    () => parseArgs(["run", "--feature", "monitoring-dashboard-v2", "--artifact-mode", "local"]),
+    /unknown option/i,
   );
 });

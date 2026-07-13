@@ -6,7 +6,7 @@ import { stdin as input, stdout as output } from "node:process";
 import { CliUsageError, formatUsage, parseArgs } from "./cli/args.js";
 import { renderStatus } from "./cli/status-view.js";
 import { PHASES } from "./core/phases.js";
-import { resolveFeaturePaths, resolveTargetRoot } from "./core/paths.js";
+import { resolveArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "./core/paths.js";
 import { parseMaterialQuestions } from "./core/questions.js";
 import { readReviewGate, runWorkflow } from "./core/runner.js";
 import { loadOrCreateState } from "./core/state.js";
@@ -99,7 +99,8 @@ async function main(argv: string[]): Promise<void> {
     }
     const targetRoot = await resolveTargetRoot(command.target);
     const paths = resolveFeaturePaths(targetRoot, command.feature);
-    const state = await loadOrCreateState(paths, command.artifactMode);
+    const artifactMode = await resolveArtifactMode(targetRoot, paths);
+    const state = await loadOrCreateState(paths, artifactMode, true);
 
     if (command.command === "status") {
       const proposal = await import("node:fs/promises").then(({ readFile }) => readFile(paths.proposal, "utf8").catch(() => ""));
@@ -110,7 +111,6 @@ async function main(argv: string[]): Promise<void> {
     const run = await runWorkflow({
       targetRoot,
       feature: command.feature,
-      artifactMode: state.artifactMode,
       phase: phaseId(command.phase),
     }, {
       runtime: new CodexRuntime(),

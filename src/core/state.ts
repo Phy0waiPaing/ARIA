@@ -15,11 +15,20 @@ function initialState(feature: string, artifactMode: ArtifactMode): WorkflowStat
   };
 }
 
-export async function loadOrCreateState(paths: FeaturePaths, artifactMode: ArtifactMode): Promise<WorkflowState> {
+export async function loadOrCreateState(
+  paths: FeaturePaths,
+  artifactMode: ArtifactMode,
+  updateArtifactMode = false,
+): Promise<WorkflowState> {
   await mkdir(paths.root, { recursive: true });
 
   try {
-    return JSON.parse(await readFile(paths.state, "utf8")) as WorkflowState;
+    const state = JSON.parse(await readFile(paths.state, "utf8")) as WorkflowState;
+    if (!updateArtifactMode || state.artifactMode === artifactMode) return state;
+
+    const updatedState = { ...state, artifactMode };
+    await saveState(paths, updatedState);
+    return updatedState;
   } catch (error: unknown) {
     if (!(error instanceof Error) || !("code" in error) || error.code !== "ENOENT") {
       throw error;
