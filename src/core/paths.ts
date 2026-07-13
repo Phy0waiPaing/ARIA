@@ -1,8 +1,25 @@
+import { execFile } from "node:child_process";
+import { realpath } from "node:fs/promises";
 import path from "node:path";
+import { promisify } from "node:util";
 
 import type { FeaturePaths } from "./types.js";
 
 const FEATURE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const execFileAsync = promisify(execFile);
+
+export async function resolveTargetRoot(input = process.cwd()): Promise<string> {
+  const requested = await realpath(input);
+  try {
+    const { stdout } = await execFileAsync("git", ["rev-parse", "--show-toplevel"], {
+      cwd: requested,
+      windowsHide: true,
+    });
+    return realpath(stdout.trim());
+  } catch {
+    throw new Error(`ARIA target must be inside a Git repository: ${requested}`);
+  }
+}
 
 export function resolveFeaturePaths(targetRoot: string, feature: string): FeaturePaths {
   if (!FEATURE_SLUG.test(feature)) {
