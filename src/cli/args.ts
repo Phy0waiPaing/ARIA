@@ -29,6 +29,8 @@ export function parseArgs(argv: string[]): ParsedCommand {
   let target = process.cwd();
   let phase: string | undefined;
   let artifactMode: ArtifactMode = "trackable";
+  let targetProvided = false;
+  let artifactModeProvided = false;
 
   for (let index = 0; index < rest.length; index += 1) {
     const option = rest[index];
@@ -48,18 +50,21 @@ export function parseArgs(argv: string[]): ParsedCommand {
         feature = value;
         break;
       case "--target":
-        if (target !== process.cwd()) throw new CliUsageError("--target may be provided once");
+        if (targetProvided) throw new CliUsageError("--target may be provided once");
         target = value;
+        targetProvided = true;
         break;
       case "--phase":
         if (phase !== undefined) throw new CliUsageError("--phase may be provided once");
         phase = value;
         break;
       case "--artifact-mode":
+        if (artifactModeProvided) throw new CliUsageError("--artifact-mode may be provided once");
         if (value !== "trackable" && value !== "local") {
           throw new CliUsageError("--artifact-mode must be trackable or local");
         }
         artifactMode = value;
+        artifactModeProvided = true;
         break;
       default:
         throw new CliUsageError(`Unknown option: ${option}`);
