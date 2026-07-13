@@ -1,14 +1,24 @@
 import assert from "node:assert/strict";
-import { mkdtemp } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { resolveFeaturePaths } from "../src/core/paths.js";
+import { assertArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "../src/core/paths.js";
 import { loadOrCreateState } from "../src/core/state.js";
 
 test("rejects path-traversal feature slugs", () => {
   assert.throws(() => resolveFeaturePaths("C:/repo", "../escape"), /feature slug/i);
+});
+
+test("resolves a nested working directory to its Git repository root", async () => {
+  const targetRoot = await mkdtemp(path.join(os.tmpdir(), "aria-target-"));
+  execFileSync("git", ["init"], { cwd: targetRoot, stdio: "ignore" });
+  const nestedDirectory = path.join(targetRoot, "src", "nested");
+  await mkdir(nestedDirectory, { recursive: true });
+
+  assert.equal(await resolveTargetRoot(nestedDirectory), await import("node:fs/promises").then(({ realpath }) => realpath(targetRoot)));
 });
 
 test("creates only minimal workflow state under the feature folder", async () => {
@@ -29,4 +39,15 @@ test("creates only minimal workflow state under the feature folder", async () =>
     "version",
   ]);
   assert.equal(paths.state, path.join(targetRoot, ".aria", "monitoring-dashboard-v2", "workflow-state.json"));
+});
+
+test("requires an explicit local mode when .aria is ignored", async () => {
+  const targetRoot = await mkdtemp(path.join(os.tmpdir(), "aria-paths-"));
+  execFileSync("git", ["init"], { cwd: targetRoot, stdio: "ignore" });
+  await writeFile(path.join(targetRoot, ".gitignore"), ".aria/\n", "utf8");
+  const paths = resolveFeaturePaths(targetRoot, "monitoring-dashboard-v2");
+  await mkdir(paths.root, { recursive: true });
+
+  await assert.rejects(() => assertArtifactMode(targetRoot, paths, "trackable"), /ignored/i);
+  await assert.doesNotReject(() => assertArtifactMode(targetRoot, paths, "local"));
 });

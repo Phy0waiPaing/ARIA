@@ -2,7 +2,7 @@
 
 **Goal:** Turn ARIA's documented manual workflow into a local CLI that invokes Codex phase by phase, persists feature-scoped workflow state, asks humans to resolve material design questions, and stops at approval gates.
 
-**Status:** Approved design direction, pending implementation-plan review.
+**Status:** Implemented v0 baseline.
 
 ## Product Boundary
 
@@ -110,18 +110,17 @@ This is an explicit, auditable approval event even though it does not require a 
 
 ```text
 Feature: monitoring-dashboard-v2
+Artifact mode: local
 Current phase: Human Approval
-Status: waiting
-
-Completed:
-  Context, Proposal, Preview, Review
+Status: waiting-for-approval
+Review gate: PASS_WITH_NOTES
 
 Artifacts:
-  project-context.md     present
-  design-proposal.md     present
-  preview/               present
-  review.md              present (PASS_WITH_NOTES)
-  target.uispec.md       not created
+- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\project-context.md
+- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\design-proposal.md
+- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\preview
+- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\review.md
+- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\target.uispec.md
 
 Next: aria run --feature monitoring-dashboard-v2
 ```
@@ -197,7 +196,7 @@ The Codex adapter is responsible only for runtime execution:
 
 1. Verify `codex` is available on `PATH` with `codex --version`.
 2. Build a phase-specific prompt that names the target root, feature slug, artifact mode, allowed outputs, forbidden outputs, and required stop behavior.
-3. Spawn `codex exec -C <targetRoot> -s workspace-write -` without a shell and inherit terminal I/O.
+3. Spawn `codex exec -C <targetRoot> -s workspace-write -` without a shell, stream terminal output, and retain it for error reporting.
 4. Return the process exit status and captured execution metadata to the runner.
 
 The prompt references the installed ARIA package's workflow documents by absolute package path. This preserves ARIA as the workflow authority while letting Codex operate in the target repository.
@@ -214,7 +213,7 @@ Before each phase, the runner captures a repository snapshot. After Codex exits,
 - Untracked and ignored filesystem entries.
 - Expected artifact outputs for the selected phase.
 
-The phase fails if it detects a new or changed path outside the current phase's allowed outputs, excluding changes that already existed in the pre-phase snapshot. It records the unexpected paths in workflow state and requires user intervention before a retry.
+The phase fails if it detects a new or changed path outside the current phase's allowed outputs, excluding changes that already existed in the pre-phase snapshot. It preserves the blocked phase in workflow state, reports the unexpected paths, and requires user intervention before a retry.
 
 For v0, Scope Integrity means file and phase boundaries. Detecting semantic product-scope expansion in production implementation is deferred until ARIA gains an implementation-review stage.
 
@@ -230,7 +229,7 @@ ARIA records this explicit exception in workflow state and tells Codex to docume
 
 ## Failure Handling
 
-- Missing `codex`: report installation or PATH guidance and do not create state changes beyond an initialization error record.
+- Missing `codex`: report the availability error; state may already have been initialized but does not advance.
 - Invalid feature slug: reject values that would escape `.aria/` or create ambiguous paths.
 - Missing prerequisite artifact: stop with an actionable status result.
 - Codex nonzero exit: preserve its output, mark the phase failed, and do not advance.

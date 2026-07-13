@@ -122,7 +122,7 @@ export interface RuntimeAdapter {
 
 **Interfaces:**
 - Produces `parseArgs(argv: string[]): ParsedCommand` and `formatUsage(): string`.
-- Produces npm command `aria` mapped to `dist/bin.js`.
+- Produces npm command `aria` mapped to `dist/src/bin.js`.
 
 - [ ] **Step 1: Write failing CLI parse and help tests**
 
@@ -151,7 +151,7 @@ Expected: fail because the package and parser do not exist.
 
 - [ ] **Step 3: Add package metadata and TypeScript configuration**
 
-Create `package.json` with `name: "aria-orchestrator"`, `bin: { "aria": "./dist/bin.js" }`, `type: "module"`, `engines.node: ">=22"`, `build`, `test`, and `dev` scripts. Add only `typescript` and `@types/node` as development dependencies. Compile `src/` into `dist/` with NodeNext module settings and strict checking.
+Create `package.json` with `name: "aria-orchestrator"`, `bin: { "aria": "./dist/src/bin.js" }`, `type: "module"`, `engines.node: ">=22"`, `build`, `test`, and `dev` scripts. Add only `typescript` and `@types/node` as development dependencies. Compile `src/` into `dist/` with NodeNext module settings and strict checking.
 
 - [ ] **Step 4: Implement argument parsing and entry point**
 

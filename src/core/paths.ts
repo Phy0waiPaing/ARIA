@@ -3,7 +3,7 @@ import { realpath } from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
 
-import type { FeaturePaths } from "./types.js";
+import type { ArtifactMode, FeaturePaths } from "./types.js";
 
 const FEATURE_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const execFileAsync = promisify(execFile);
@@ -19,6 +19,23 @@ export async function resolveTargetRoot(input = process.cwd()): Promise<string> 
   } catch {
     throw new Error(`ARIA target must be inside a Git repository: ${requested}`);
   }
+}
+
+export async function assertArtifactMode(targetRoot: string, paths: FeaturePaths, artifactMode: ArtifactMode): Promise<void> {
+  if (artifactMode === "local") return;
+
+  const featureRelativePath = path.relative(targetRoot, paths.root);
+  try {
+    await execFileAsync("git", ["check-ignore", "-q", "--", featureRelativePath], {
+      cwd: targetRoot,
+      windowsHide: true,
+    });
+  } catch (error: unknown) {
+    if (error instanceof Error && "code" in error && error.code === 1) return;
+    throw error;
+  }
+
+  throw new Error(`.aria/${paths.feature} is ignored; rerun with --artifact-mode local or remove the ignore rule`);
 }
 
 export function resolveFeaturePaths(targetRoot: string, feature: string): FeaturePaths {

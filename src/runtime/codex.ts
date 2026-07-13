@@ -52,8 +52,14 @@ export class CodexRuntime implements RuntimeAdapter {
 
       child.stdout?.setEncoding("utf8");
       child.stderr?.setEncoding("utf8");
-      child.stdout?.on("data", (chunk: string) => { stdout += chunk; });
-      child.stderr?.on("data", (chunk: string) => { stderr += chunk; });
+      child.stdout?.on("data", (chunk: string) => {
+        stdout += chunk;
+        process.stdout.write(chunk);
+      });
+      child.stderr?.on("data", (chunk: string) => {
+        stderr += chunk;
+        process.stderr.write(chunk);
+      });
       child.once("error", reject);
       child.once("close", (exitCode) => {
         resolve({ exitCode: exitCode ?? 1, stdout, stderr });

@@ -20,6 +20,9 @@ The ARIA repository owns reusable methodology assets:
 ```text
 ARIA/
   README.md
+  package.json
+  src/
+  test/
   manifest.md
   workflow.md
   visual-review-workflow.md
@@ -56,7 +59,8 @@ Rules:
 - Keep the ARIA repository methodology-focused.
 - Do not store real project Design Proposals, UISpecs, previews, or design packages here.
 - `docs/workflows/` may contain manually executable methodology workflows.
-- Do not add runtime, plugin, CLI, or top-level workflow engine folders until automation work begins.
+- The v0 runtime lives under `src/`; it mirrors the documented workflow but does not replace it as the source of truth.
+- Do not add plugin systems, additional runtimes, or general workflow-engine folders until a real use case proves the need.
 - Keep examples separate from methodology docs if examples are introduced later.
 
 ## Target Project Repository
@@ -69,6 +73,7 @@ Recommended structure:
 target-project/
   .aria/
     [feature-name]/
+      workflow-state.json
       project-context.md
       design-proposal.md
       current.uispec.md
@@ -90,6 +95,7 @@ Rules:
 
 - Store generated artifacts in the target project, not the ARIA methodology repository.
 - Keep all artifacts for one feature or test slug together under `.aria/[feature-name]/`.
+- `workflow-state.json` is operational metadata only. It stores phase progression, selected answers, approval time, and artifact mode; it never replaces the proposal, review, or UISpec.
 - Treat `.aria/` as version-controlled project content by default. It must not be ignored accidentally.
 - A newly generated artifact may be `trackable-untracked` before commit. An ignored required artifact blocks the Review gate unless the user explicitly chose local-only artifacts.
 - Record an explicit local-only decision in `project-context.md` and `review.md`; do not infer it from `.gitignore`.
@@ -108,6 +114,7 @@ Use these target-project conventions unless a project already has stronger local
 
 | Artifact | Path |
 | --- | --- |
+| Workflow State | `.aria/[feature-name]/workflow-state.json` |
 | Project Context Capture | `.aria/[feature-name]/project-context.md` |
 | Design Proposal | `.aria/[feature-name]/design-proposal.md` |
 | Current-State UISpec | `.aria/[feature-name]/current.uispec.md` |
@@ -123,11 +130,9 @@ Use these target-project conventions unless a project already has stronger local
 Do not add these folders to the ARIA repository until the methodology proves the need:
 
 ```text
-runtime/
 skills/
 plugins/
 templates/
-cli/
 ```
 
 These belong to future automation phases, not the current docs-first structure.

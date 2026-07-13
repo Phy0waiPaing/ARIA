@@ -24,6 +24,10 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
     "ARIA workflow authority:",
     `- ${path.join(input.packageRoot, "docs", "workflows", "design-v1.md")}`,
     `- ${path.join(input.packageRoot, "schemas", "design-proposal-v1.md")}`,
+    `- ${path.join(input.packageRoot, "design-system", "principles.md")}`,
+    `- ${path.join(input.packageRoot, "design-system", "components.md")}`,
+    `- ${path.join(input.packageRoot, "design-system", "patterns.md")}`,
+    `- ${path.join(input.packageRoot, "policies", "review", "default.yaml")}`,
     "",
     "Selected material-question answers:",
     answers,
@@ -37,6 +41,7 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
     "- Do not create artifacts from later phases.",
     "- Do not create or edit production application code.",
     "- Do not alter files outside the allowed outputs.",
+    "- When artifact mode is local, record the explicit local-only decision in the phase artifact when applicable.",
     "- Finish this phase, report the artifact paths created or updated, and stop.",
   ].join("\n");
 }

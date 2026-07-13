@@ -2,7 +2,7 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { getPhase, assertPhaseEligible } from "./phases.js";
-import { resolveFeaturePaths } from "./paths.js";
+import { assertArtifactMode, resolveFeaturePaths } from "./paths.js";
 import { parseMaterialQuestions } from "./questions.js";
 import { assertScopeIntegrity, captureSnapshot } from "./scope-integrity.js";
 import { loadOrCreateState, saveState } from "./state.js";
@@ -86,6 +86,7 @@ function result(state: WorkflowState, message: string): RunResult {
 export async function runWorkflow(options: RunWorkflowOptions, dependencies: WorkflowDependencies): Promise<RunResult> {
   const paths = resolveFeaturePaths(options.targetRoot, options.feature);
   let state = await loadOrCreateState(paths, options.artifactMode);
+  await assertArtifactMode(options.targetRoot, paths, state.artifactMode);
   const onlySelectedPhase = options.phase !== undefined;
   const snapshot = dependencies.captureSnapshot ?? captureSnapshot;
   const verifyScope = dependencies.assertScopeIntegrity ?? assertScopeIntegrity;

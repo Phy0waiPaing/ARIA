@@ -8,11 +8,11 @@ ARIA is not a code generator. It helps teams decide what should be built before 
 
 Start with [manifest.md](manifest.md). It is the conceptual source for ARIA v0.1.
 
-For the v1 direction, see [docs/ROADMAP.md](docs/ROADMAP.md). The roadmap describes ARIA's evolution toward an AI Design Orchestrator, while this repository remains docs-first.
+For the v1 direction, see [docs/ROADMAP.md](docs/ROADMAP.md). The roadmap describes ARIA's evolution toward an AI Design Orchestrator. This repository now includes the small Codex-backed v0 orchestrator that proves the documented design workflow.
 
 ## v0.1 Focus
 
-v0.1 establishes a docs-first methodology before automation.
+v0.1 establishes a docs-first methodology and a deliberately narrow local CLI.
 
 Included:
 
@@ -30,11 +30,11 @@ Included:
 - Design principles, component guidance, and pattern guidance.
 - Accessibility, visual review, review gate, and artifact governance policies.
 - Feature-centric target-project artifacts under `.aria/[feature-name]/`.
+- A Codex-backed CLI that runs the six design phases, captures minimal resumable state, asks material questions interactively, and pauses for human approval.
 
 Not included yet:
 
-- Production frontend code.
-- CLI tools or schema validators.
+- Production frontend code generation.
 - Visual validation automation.
 - Design Package automation.
 - Work Contract enforcement.
@@ -52,6 +52,38 @@ Business Requirement
   -> UISpec
   -> Codex
 ```
+
+## Run The Orchestrator
+
+ARIA runs from the target repository. The current directory is the target by default.
+
+```powershell
+cd D:\Nemo\Projects\ARIA
+npm install
+npm run build
+npm link
+
+cd D:\GW\svmp
+aria run --feature monitoring-dashboard-v2
+```
+
+Use `--artifact-mode local` only when the target project's `.aria/` directory is intentionally ignored for a local spike:
+
+```powershell
+aria run --feature monitoring-dashboard-v2 --artifact-mode local
+```
+
+The runner advances automatically through Project Context, Design Proposal, HTML Preview, and Review. It presents numbered material-question choices in the terminal, then pauses at Human Approval with a default-no `[y/N]` prompt before compiling the UISpec. Production implementation remains outside ARIA v0.
+
+Useful commands:
+
+```powershell
+aria status --feature monitoring-dashboard-v2
+aria run --feature monitoring-dashboard-v2 --phase review
+aria run --feature monitoring-dashboard-v2 --target D:\GW\svmp
+```
+
+`--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
 
 ## Proven Spike
 
@@ -87,6 +119,13 @@ Codex:
 ARIA/
   manifest.md
   README.md
+  package.json
+  src/
+    bin.ts
+    cli/
+    core/
+    runtime/
+  test/
   workflow.md
   visual-review-workflow.md
   docs/
@@ -123,6 +162,7 @@ ARIA/
 - `docs/ROADMAP.md` defines the v1 direction and future phases.
 - `docs/architecture.md` defines ARIA's conceptual layers.
 - `docs/project-structure.md` defines ARIA-owned files and target-project artifact locations.
+- `src/` contains the v0 CLI runner, phase catalog, scope checker, and Codex runtime adapter.
 - `docs/workflows/design-v1.md` defines the manual phase-gated workflow for proving ARIA without hidden chat context.
 - `workflow.md` defines the operational lifecycle.
 - `visual-review-workflow.md` defines the visual review layer.
