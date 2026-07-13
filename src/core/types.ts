@@ -48,6 +48,25 @@ export interface MaterialQuestion {
   choices: MaterialQuestionChoice[];
 }
 
+export interface RuntimeResult {
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}
+
+export interface RuntimePhaseInput {
+  targetRoot: string;
+  feature: string;
+  phase: PhaseDefinition;
+  artifactMode: ArtifactMode;
+  answers: Record<string, string>;
+}
+
+export interface RuntimeAdapter {
+  ensureAvailable(): Promise<void>;
+  runPhase(input: RuntimePhaseInput): Promise<RuntimeResult>;
+}
+
 export interface FeaturePaths {
   feature: string;
   root: string;
