@@ -1,15 +1,17 @@
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
+import path from "node:path";
 import { PassThrough } from "node:stream";
 import test from "node:test";
 
 import { getPhase } from "../src/core/phases.js";
 import { buildPhasePrompt } from "../src/core/prompts.js";
-import { CodexRuntime } from "../src/runtime/codex.js";
+import { CodexRuntime, findWindowsCodexScript } from "../src/runtime/codex.js";
 
 test("runs codex exec in the target without a shell", async () => {
   const calls: Array<{ command: string; args: readonly string[]; shell: unknown }> = [];
   const runtime = new CodexRuntime({
+    executable: "codex-bin",
     spawnImpl(command, args, options) {
       calls.push({ command, args, shell: options.shell });
       const child = Object.assign(new EventEmitter(), {
@@ -32,10 +34,21 @@ test("runs codex exec in the target without a shell", async () => {
 
   assert.equal(result.exitCode, 0);
   assert.deepEqual(calls, [{
-    command: "codex",
+    command: "codex-bin",
     args: ["exec", "-C", "C:/repo", "-s", "workspace-write", "-"],
     shell: false,
   }]);
+});
+
+test("finds the Windows Codex Node script rather than a command shim", () => {
+  const first = path.join("C:", "tools");
+  const second = path.join("C:", "codex");
+  const script = findWindowsCodexScript(
+    [first, second].join(path.delimiter),
+    (candidate) => candidate === path.join(second, "node_modules", "@openai", "codex", "bin", "codex.js"),
+  );
+
+  assert.equal(script, path.join(second, "node_modules", "@openai", "codex", "bin", "codex.js"));
 });
 
 test("phase prompt names the feature, allowed outputs, and stop boundary", () => {

@@ -1,4 +1,5 @@
 import { execFile, spawn, type ChildProcess, type SpawnOptionsWithoutStdio } from "node:child_process";
+import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 
@@ -17,10 +18,28 @@ export interface CodexRuntimeOptions {
   spawnImpl?: SpawnImplementation;
 }
 
+export function findWindowsCodexScript(
+  pathValue: string | undefined,
+  fileExists: (candidate: string) => boolean = existsSync,
+): string | undefined {
+  for (const directory of pathValue?.split(path.delimiter) ?? []) {
+    if (!directory) continue;
+    const candidate = path.join(directory, "node_modules", "@openai", "codex", "bin", "codex.js");
+    if (fileExists(candidate)) return candidate;
+  }
+  return undefined;
+}
+
+interface CodexInvocation {
+  command: string;
+  argsPrefix: readonly string[];
+}
+
 export class CodexRuntime implements RuntimeAdapter {
   private readonly executable: string;
   private readonly packageRoot: string;
   private readonly spawnImpl: SpawnImplementation;
+  private resolvedInvocation: CodexInvocation | undefined;
 
   constructor(options: CodexRuntimeOptions = {}) {
     this.executable = options.executable ?? "codex";
@@ -29,12 +48,14 @@ export class CodexRuntime implements RuntimeAdapter {
   }
 
   async ensureAvailable(): Promise<void> {
+    const invocation = this.resolveInvocation();
     await new Promise<void>((resolve, reject) => {
-      execFile(this.executable, ["--version"], { windowsHide: true }, (error) => {
+      execFile(invocation.command, [...invocation.argsPrefix, "--version"], { windowsHide: true }, (error) => {
         if (error) {
           reject(new Error(`Codex is unavailable: ${error.message}`));
           return;
         }
+        this.resolvedInvocation = invocation;
         resolve();
       });
     });
@@ -43,10 +64,11 @@ export class CodexRuntime implements RuntimeAdapter {
   async runPhase(input: RuntimePhaseInput): Promise<RuntimeResult> {
     const prompt = buildPhasePrompt({ ...input, packageRoot: this.packageRoot });
     const args = ["exec", "-C", input.targetRoot, "-s", "workspace-write", "-"];
+    const invocation = this.resolvedInvocation ?? this.resolveInvocation();
 
     return new Promise<RuntimeResult>((resolve, reject) => {
       const options: SpawnOptionsWithoutStdio = { shell: false, windowsHide: true };
-      const child = this.spawnImpl(this.executable, args, options);
+      const child = this.spawnImpl(invocation.command, [...invocation.argsPrefix, ...args], options);
       let stdout = "";
       let stderr = "";
 
@@ -66,5 +88,16 @@ export class CodexRuntime implements RuntimeAdapter {
       });
       child.stdin?.end(prompt);
     });
+  }
+
+  private resolveInvocation(): CodexInvocation {
+    if (process.platform !== "win32" || this.executable !== "codex") {
+      return { command: this.executable, argsPrefix: [] };
+    }
+
+    const script = findWindowsCodexScript(process.env.PATH);
+    return script === undefined
+      ? { command: this.executable, argsPrefix: [] }
+      : { command: process.execPath, argsPrefix: [script] };
   }
 }

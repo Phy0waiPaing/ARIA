@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
+import path from "node:path";
 import { PassThrough } from "node:stream";
 import test from "node:test";
 
@@ -28,8 +29,16 @@ test("upgrades from the configured release branch without a shell", async () => 
 
   assert.equal(result.exitCode, 0);
   assert.deepEqual(calls, [{
-    command: process.platform === "win32" ? "npm.cmd" : "npm",
-    args: ["install", "-g", "--install-links=true", "github:Phy0waiPaing/ARIA#release"],
+    command: process.platform === "win32" ? process.execPath : "npm",
+    args: process.platform === "win32"
+      ? [
+        path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js"),
+        "install",
+        "-g",
+        "--install-links=true",
+        "github:Phy0waiPaing/ARIA#release",
+      ]
+      : ["install", "-g", "--install-links=true", "github:Phy0waiPaing/ARIA#release"],
     shell: false,
   }]);
 });
@@ -56,7 +65,9 @@ test("uninstalls only the configured global package", async () => {
   await manager.uninstall();
 
   assert.deepEqual(calls, [{
-    command: process.platform === "win32" ? "npm.cmd" : "npm",
-    args: ["uninstall", "-g", "aria-orchestrator"],
+    command: process.platform === "win32" ? process.execPath : "npm",
+    args: process.platform === "win32"
+      ? [path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js"), "uninstall", "-g", "aria-orchestrator"]
+      : ["uninstall", "-g", "aria-orchestrator"],
   }]);
 });

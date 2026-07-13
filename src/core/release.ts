@@ -72,10 +72,13 @@ export class ReleaseManager {
   }
 
   private runNpm(args: readonly string[]): Promise<NpmResult> {
-    const executable = process.platform === "win32" ? "npm.cmd" : "npm";
+    const executable = process.platform === "win32" ? process.execPath : "npm";
+    const npmArgs = process.platform === "win32"
+      ? [path.join(path.dirname(process.execPath), "node_modules", "npm", "bin", "npm-cli.js"), ...args]
+      : args;
 
     return new Promise<NpmResult>((resolve, reject) => {
-      const child = this.spawnImpl(executable, args, { shell: false, windowsHide: true });
+      const child = this.spawnImpl(executable, npmArgs, { shell: false, windowsHide: true });
       let stdout = "";
       let stderr = "";
 
