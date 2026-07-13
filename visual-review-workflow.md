@@ -404,13 +404,13 @@ If the preview and UISpec disagree, the approved Design Proposal should be used 
 Use this when asking Codex to render ARIA's HTML Preview artifact:
 
 ```text
-Use ARIA from D:\Nemo\Projects\ARIA.
+Use the checked-out ARIA repository.
 
 Render ARIA's HTML Preview from:
 .aria/[feature-name]/design-proposal.md
 
 Follow the Visual Review workflow in:
-D:\Nemo\Projects\ARIA\visual-review-workflow.md
+visual-review-workflow.md
 
 Render or overwrite:
 .aria/[feature-name]/preview/index.html

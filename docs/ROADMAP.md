@@ -168,7 +168,7 @@ Status: current and manually validated.
 - One policy-driven Review phase evaluating Design Proposal plus HTML Preview before human approval.
 - Persisted Design Review artifact with weighted UI/UX criteria, blocking issues, and `PASS`, `PASS_WITH_NOTES`, `FAIL`, or `BLOCKED` gate result.
 - UISpec structural validation after approval without a second AI design-review phase.
-- Manual Role CRUD spike in `D:\GW\svmp` also exercised downstream implementation review and ended with `PASS_WITH_NOTES`; that remains evidence, not ARIA v1 scope.
+- A manual Role CRUD spike also exercised downstream implementation review and ended with `PASS_WITH_NOTES`; that remains evidence, not ARIA v1 scope.
 
 ### Phase 2: Design Package
 

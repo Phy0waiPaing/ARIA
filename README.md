@@ -60,7 +60,7 @@ ARIA runs from the target repository. The current directory is the target by def
 ```powershell
 npm install -g github:Phy0waiPaing/ARIA
 
-cd D:\GW\svmp
+cd <target-project>
 aria run --feature monitoring-dashboard-v2
 ```
 
@@ -80,14 +80,14 @@ Useful commands:
 ```powershell
 aria status --feature monitoring-dashboard-v2
 aria run --feature monitoring-dashboard-v2 --phase review
-aria run --feature monitoring-dashboard-v2 --target D:\GW\svmp
+aria run --feature monitoring-dashboard-v2 --target <target-project>
 ```
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
 
 ## Proven Spike
 
-The manual ARIA-alone workflow was validated against a real target-project Role CRUD page in `D:\GW\svmp`.
+The manual ARIA-alone workflow was validated against a real target-project Role CRUD page.
 
 Result:
 

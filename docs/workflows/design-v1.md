@@ -21,7 +21,7 @@ Use one real feature for the first spike.
 Recommended target:
 
 ```text
-Role CRUD in D:\GW\svmp
+Role CRUD in a target project repository
 ```
 
 Success means the workflow can move from project context to an implementation-ready UISpec using only:
@@ -35,7 +35,7 @@ Success means the workflow can move from project context to an implementation-re
 Validated result:
 
 ```text
-Role CRUD standalone in D:\GW\svmp reached PASS_WITH_NOTES.
+The standalone Role CRUD spike reached PASS_WITH_NOTES.
 ```
 
 That run proved the full manual spike, including downstream implementation. The ARIA v1 design loop is:
@@ -190,7 +190,7 @@ inputs:
   - .aria/[feature-name]/preview/interactions.js, when present.
   - .aria/[feature-name]/project-context.md, when available.
   - Current-state capture or screenshots, for refactors.
-  - D:\Nemo\Projects\ARIA\policies\review\default.yaml, unless a project-specific policy is provided.
+  - ARIA's `policies/review/default.yaml`, unless a project-specific policy is provided.
 outputs:
   - .aria/[feature-name]/review.md
 done_when:

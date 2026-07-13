@@ -116,11 +116,11 @@ Status: waiting-for-approval
 Review gate: PASS_WITH_NOTES
 
 Artifacts:
-- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\project-context.md
-- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\design-proposal.md
-- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\preview
-- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\review.md
-- D:\\GW\\svmp\\.aria\\monitoring-dashboard-v2\\target.uispec.md
+- .aria/monitoring-dashboard-v2/project-context.md
+- .aria/monitoring-dashboard-v2/design-proposal.md
+- .aria/monitoring-dashboard-v2/preview/
+- .aria/monitoring-dashboard-v2/review.md
+- .aria/monitoring-dashboard-v2/target.uispec.md
 
 Next: aria run --feature monitoring-dashboard-v2
 ```
