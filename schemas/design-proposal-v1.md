@@ -326,6 +326,33 @@ Rules:
 - For required-preview work, render or re-render the HTML Preview after answers are applied and before final approval.
 - Do not ask the user to write a new prompt when choosing between known options.
 
+### Material Questions (CLI)
+
+When ARIA is run through the v0 CLI, questions that must pause the workflow must
+also be represented in this restricted fenced-YAML block. The Markdown question
+sections remain the human-facing explanation; this block is only the selectable
+runtime contract.
+
+```yaml
+questions:
+  - id: data-source
+    material: true
+    prompt: Which data source should the dashboard use?
+    choices:
+      - id: existing-monitoring-api
+        label: Existing monitoring API
+      - id: proposed-new-api
+        label: Proposed new API
+```
+
+Rules:
+
+- The heading must be exactly `### Material Questions (CLI)`.
+- Question and choice IDs must use lowercase kebab-case.
+- Each question must set `material: true` and include one or more choices.
+- The CLI does not parse general YAML, nested metadata, recommendations, or free-form answers from this block.
+- Omit this subsection when no material question remains.
+
 ## 15. Visual Review
 
 Purpose: capture visual review context before approval.

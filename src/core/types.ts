@@ -28,6 +28,26 @@ export interface WorkflowState {
   updatedAt: string;
 }
 
+export interface PhaseDefinition {
+  id: PhaseId;
+  displayName: string;
+  prerequisites: readonly string[];
+  allowedOutputs: readonly string[];
+  requiredOutputs: readonly string[];
+  nextPhase: PhaseId | null;
+}
+
+export interface MaterialQuestionChoice {
+  id: string;
+  label: string;
+}
+
+export interface MaterialQuestion {
+  id: string;
+  prompt: string;
+  choices: MaterialQuestionChoice[];
+}
+
 export interface FeaturePaths {
   feature: string;
   root: string;
