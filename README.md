@@ -58,14 +58,14 @@ Business Requirement
 ARIA runs from the target repository. The current directory is the target by default.
 
 ```powershell
-cd D:\Nemo\Projects\ARIA
-npm install
-npm run build
-npm link
+npm install -g github:Phy0waiPaing/ARIA
 
 cd D:\GW\svmp
 aria run --feature monitoring-dashboard-v2
 ```
+
+The GitHub install runs ARIA's package build during installation, so the `aria`
+command is ready without cloning, building, or linking the repository manually.
 
 Use `--artifact-mode local` only when the target project's `.aria/` directory is intentionally ignored for a local spike:
 
