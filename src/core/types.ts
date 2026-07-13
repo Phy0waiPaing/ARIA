@@ -67,6 +67,16 @@ export interface RuntimeAdapter {
   runPhase(input: RuntimePhaseInput): Promise<RuntimeResult>;
 }
 
+export interface WorkspaceSnapshot {
+  git: Map<string, string>;
+  files: Map<string, string>;
+}
+
+export interface ScopeIntegrityResult {
+  changedPaths: string[];
+  unexpectedPaths: string[];
+}
+
 export interface FeaturePaths {
   feature: string;
   root: string;
