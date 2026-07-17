@@ -12,6 +12,7 @@ import type {
   MaterialQuestion,
   PhaseId,
   RuntimeAdapter,
+  RuntimeResult,
   ScopeIntegrityResult,
   WorkflowState,
   WorkspaceSnapshot,
@@ -29,6 +30,8 @@ export interface WorkflowDependencies {
   runtime: RuntimeAdapter;
   selectQuestion?: (question: MaterialQuestion) => Promise<string | undefined>;
   requestApproval?: (gate: "PASS" | "PASS_WITH_NOTES") => Promise<boolean>;
+  onPhaseStart?: (phase: ReturnType<typeof getPhase>) => void;
+  onPhaseEnd?: (phase: ReturnType<typeof getPhase>) => void;
   captureSnapshot?: (targetRoot: string) => Promise<WorkspaceSnapshot>;
   assertScopeIntegrity?: (
     before: WorkspaceSnapshot,
@@ -141,16 +144,23 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
     }
 
     state = await persist(paths, nextState(state, phase.id, "running"));
-    const before = await snapshot(options.targetRoot);
-    const runtimeResult = await dependencies.runtime.runPhase({
-      targetRoot: options.targetRoot,
-      feature: options.feature,
-      phase,
-      artifactMode: state.artifactMode,
-      answers: state.answers,
-    });
-    const after = await snapshot(options.targetRoot);
-    const scope = verifyScope(before, after, phase, paths);
+    dependencies.onPhaseStart?.(phase);
+    let runtimeResult!: RuntimeResult;
+    let scope!: ScopeIntegrityResult;
+    try {
+      const before = await snapshot(options.targetRoot);
+      runtimeResult = await dependencies.runtime.runPhase({
+        targetRoot: options.targetRoot,
+        feature: options.feature,
+        phase,
+        artifactMode: state.artifactMode,
+        answers: state.answers,
+      });
+      const after = await snapshot(options.targetRoot);
+      scope = verifyScope(before, after, phase, paths);
+    } finally {
+      dependencies.onPhaseEnd?.(phase);
+    }
 
     if (scope.unexpectedPaths.length > 0) {
       state = await persist(paths, nextState(state, phase.id, "blocked"));
@@ -176,7 +186,7 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
         const selected = dependencies.selectQuestion ? await dependencies.selectQuestion(question) : undefined;
         if (selected === undefined) {
           state = await persist(paths, nextState(state, "design-proposal", "waiting-for-questions"));
-          return result(state, `Waiting for an answer to: ${question.id}`);
+          return result(state, `Paused for answer to: ${question.id}. Re-run ARIA and choose an option number at the prompt.`);
         }
         if (!question.choices.some((choice) => choice.id === selected)) {
           throw new Error(`Invalid answer for ${question.id}: ${selected}`);

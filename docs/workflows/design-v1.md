@@ -14,6 +14,8 @@ Runtimes such as Codex execute one phase at a time.
 
 Do not skip ahead. Do not create artifacts from a later phase early. Do not use conversation memory as a substitute for written artifacts.
 
+Use `policies/gates.md` as the shared gate policy. Each phase gate asks whether the current artifact is strong enough for its next consumer.
+
 ## Manual Test Target
 
 Use one real feature for the first spike.
@@ -85,9 +87,11 @@ outputs:
 done_when:
   - The context file records the relevant project facts.
   - For existing-project UI work, the context records concrete visual conventions, tokens, component signatures, and nearby-page examples that constrain the preview.
+  - For existing-project UI work, the context includes a source-backed `## Visual Contract` section.
   - Inferred behavior is labeled as inferred.
   - Missing product intent is represented as targeted questions, not broad homework for the user.
 gate:
+  - Apply the Discovery Gate from `policies/gates.md`.
   - Continue to Design Proposal when ARIA has enough context to propose a design.
 ```
 
@@ -99,6 +103,7 @@ Rules:
 - Do not write a target UISpec.
 - Do not use project context as a replacement for the Design Proposal.
 - For UI work inside an existing app, capture visual evidence with enough specificity that another runtime can render a preview that fits the app. Record shell structure, page padding, typography scale, color tokens, borders, radius, shadows, density, icon usage, table/form/dialog patterns, state patterns, and source-file references.
+- The Visual Contract must define shell/navigation, page container/spacing, typography, colors/tokens, reusable components, state treatments, and do-not-invent rules. If a convention is unknown, mark it unknown instead of guessing.
 
 ## Phase 2: Design Proposal
 
@@ -119,6 +124,7 @@ done_when:
   - Material open questions are selectable and easy to answer.
   - Status is draft until approval.
 gate:
+  - Apply the Proposal Gate from `policies/gates.md`.
   - Continue to HTML Preview when the draft proposal exists and required visual review has not been skipped.
   - Ask the user for answers if material design questions remain.
 ```
@@ -154,6 +160,7 @@ done_when:
   - Approval-relevant interactions work, or are explicitly marked `not demonstrated`.
   - Assumptions are visible in the proposal or preview.
 gate:
+  - Apply the Preview Gate from `policies/gates.md`.
   - Pause for human preview review after the HTML Preview is rendered.
   - Continue to Review only after the human has had a chance to inspect the preview.
 ```
@@ -207,10 +214,13 @@ done_when:
   - The proposal and preview are evaluated as one design package.
   - The review records interface type, policy criteria, weighted score, blocking issues, acceptable design choices, unresolved decisions, and gate result.
   - Browser or rendering evidence is recorded when the preview is required.
+  - For existing-project UI work, Visual Contract alignment is checked row by row.
+  - Preview validation evidence records desktop and mobile rendering, tablet when required, console status, overflow status, typography readability, and interaction evidence.
   - Artifact persistence and ignore status are recorded.
   - Each critical interaction is recorded as demonstrated, not demonstrated, not applicable, or blocked.
   - Findings are actionable and point back to the proposal or preview surface that must change.
 gate:
+  - Apply the Review Gate from `policies/gates.md`.
   - Continue to Human Approval for PASS or PASS_WITH_NOTES.
   - Return to Design Proposal and HTML Preview for FAIL.
   - Gather missing evidence before continuing for BLOCKED.
@@ -222,7 +232,7 @@ Rules:
 - Review the proposal and preview together so written intent and rendered design cannot pass independently while contradicting each other.
 - Classify the interface as `app_ui`, `marketing`, or `hybrid` before applying interface-specific checks.
 - Use deterministic checks for artifact existence, preview rendering, overflow, and other objective failures where possible.
-- Use deterministic checks for proposal structure, console errors, typography floors, viewport coverage, critical interaction behavior, and whether `.aria/` artifacts are Git-trackable.
+- Use deterministic checks for proposal structure, console errors, typography floors, viewport coverage, Visual Contract presence/alignment, critical interaction behavior, and whether `.aria/` artifacts are Git-trackable.
 - Use design judgment for information architecture, visual hierarchy, interaction clarity, design-system fit, and AI-slop risk.
 - Do not award `pass` for interaction coverage when a required interaction is static or unverified.
 - Do not rely on the generator's confidence statement as review evidence.
@@ -250,6 +260,7 @@ done_when:
   - Required preview has been reviewed or explicitly skipped.
   - Material open questions are resolved.
 gate:
+  - Apply the Approval Gate from `policies/gates.md`.
   - Stop if changes are requested; update the proposal and re-render preview.
   - Return to Review after any material proposal or preview revision.
   - Continue to UISpec only after explicit approval.
@@ -291,6 +302,7 @@ done_when:
   - No implementation note changes UX intent.
   - Required fields and references pass structural validation.
 gate:
+  - Apply the UISpec Gate from `policies/gates.md`.
   - Report the UISpec path and stop.
 ```
 

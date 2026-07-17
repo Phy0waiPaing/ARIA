@@ -10,7 +10,7 @@ import { resolveArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "./c
 import { parseMaterialQuestions } from "./core/questions.js";
 import { readReviewGate, runWorkflow } from "./core/runner.js";
 import { loadOrCreateState } from "./core/state.js";
-import type { MaterialQuestion, PhaseId } from "./core/types.js";
+import type { MaterialQuestion, PhaseDefinition, PhaseId } from "./core/types.js";
 import { ReleaseManager } from "./core/release.js";
 import { CodexRuntime } from "./runtime/codex.js";
 
@@ -55,6 +55,45 @@ async function requestUninstall(): Promise<boolean> {
   } finally {
     readline.close();
   }
+}
+
+function createPhaseReporter(modelLabel: string, verbose: boolean): {
+  onPhaseStart: (phase: PhaseDefinition) => void;
+  onPhaseEnd: (phase: PhaseDefinition) => void;
+} {
+  let timer: NodeJS.Timeout | undefined;
+  let activePhase: string | undefined;
+  let tick = 0;
+
+  function clearProgressLine(): void {
+    if (process.stdout.isTTY) {
+      process.stdout.write(`\r${" ".repeat(90)}\r`);
+    }
+  }
+
+  return {
+    onPhaseStart(phase) {
+      activePhase = phase.displayName;
+      tick = 0;
+      console.log(`Running ${phase.displayName} with Codex model ${modelLabel}...`);
+      if (verbose || !process.stdout.isTTY) return;
+
+      timer = setInterval(() => {
+        tick += 1;
+        const dots = ".".repeat((tick % 3) + 1).padEnd(3, " ");
+        process.stdout.write(`\rStill running ${activePhase}${dots}`);
+      }, 1000);
+    },
+    onPhaseEnd(phase) {
+      if (timer !== undefined) {
+        clearInterval(timer);
+        timer = undefined;
+        clearProgressLine();
+      }
+      console.log(`Completed ${phase.displayName}.`);
+      activePhase = undefined;
+    },
+  };
 }
 
 async function main(argv: string[]): Promise<void> {
@@ -108,14 +147,20 @@ async function main(argv: string[]): Promise<void> {
       return;
     }
 
+    const model = command.model ?? process.env.ARIA_MODEL;
+    const modelLabel = model ?? "Codex config default";
+    const phaseReporter = createPhaseReporter(modelLabel, command.verbose);
+
     const run = await runWorkflow({
       targetRoot,
       feature: command.feature,
       phase: phaseId(command.phase),
     }, {
-      runtime: new CodexRuntime({ verbose: command.verbose }),
+      runtime: new CodexRuntime({ model, verbose: command.verbose }),
       selectQuestion: chooseQuestion,
       requestApproval,
+      onPhaseStart: phaseReporter.onPhaseStart,
+      onPhaseEnd: phaseReporter.onPhaseEnd,
     });
     console.log(run.message);
     if (run.status === "failed" || run.status === "blocked") process.exitCode = 1;

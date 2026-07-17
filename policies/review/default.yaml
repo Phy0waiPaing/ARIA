@@ -67,6 +67,12 @@ deterministic_checks:
   viewport_coverage:
     description: Desktop and mobile are verified; tablet is also verified for dense app UI, dashboards, tables, navigation changes, and layout-heavy work.
     required_when: preview_required
+  visual_contract_present:
+    description: Existing-project UI work has a Project Context Visual Contract with source-backed shell, token, component, density, state, and do-not-invent rules.
+    required_when: existing_project_ui
+  visual_contract_alignment:
+    description: The preview is compared against every applicable Visual Contract row and does not contradict source-backed shell, navigation, token, density, component, state, or do-not-invent requirements.
+    required_when: existing_project_ui_and_preview_required
   critical_interactions:
     description: Every approval-relevant interaction is exercised with click or keyboard evidence, or explicitly recorded as not demonstrated.
     required_when: proposal_defines_critical_interactions
@@ -103,7 +109,7 @@ criteria:
       - not_reviewed
 
   design_system_compliance:
-    description: Proposal and preview reuse existing project components, primitives, patterns, tokens, density, shell, navigation, and layout conventions instead of inventing unnecessary UI.
+    description: Proposal and preview reuse existing project components, primitives, patterns, tokens, density, shell, navigation, and layout conventions from the Project Context Visual Contract instead of inventing unnecessary UI.
     weight: 15
     result_values:
       - pass
@@ -203,6 +209,8 @@ blocking_issues:
   - nonconforming_proposal_or_artifact_structure
   - required_artifact_accidentally_ignored
   - proposal_preview_contradiction
+  - missing_visual_contract_for_existing_project_ui
+  - visual_contract_alignment_unverified
   - missing_primary_workflow
   - missing_primary_action
   - missing_required_state
@@ -219,6 +227,7 @@ blocking_issues:
   - permission_or_readonly_behavior_unspecified
   - invented_design_primitive_that_breaks_project_conventions
   - preview_visual_system_mismatch
+  - preview_contradicts_visual_contract
   - app_ui_as_decorative_card_mosaic
   - generic_saas_card_grid_as_first_impression
   - generic_copy_or_brandless_first_viewport
@@ -245,6 +254,8 @@ review_result_required_fields:
   - artifact_persistence
   - verification
   - deterministic_checks
+  - preview_validation_evidence
+  - visual_contract_alignment
   - critical_interactions
   - score
   - criteria_results

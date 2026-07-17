@@ -16,6 +16,7 @@ export interface CodexRuntimeOptions {
   executable?: string;
   packageRoot?: string;
   spawnImpl?: SpawnImplementation;
+  model?: string;
   verbose?: boolean;
 }
 
@@ -40,6 +41,7 @@ export class CodexRuntime implements RuntimeAdapter {
   private readonly executable: string;
   private readonly packageRoot: string;
   private readonly spawnImpl: SpawnImplementation;
+  private readonly model: string | undefined;
   private readonly verbose: boolean;
   private resolvedInvocation: CodexInvocation | undefined;
 
@@ -47,6 +49,7 @@ export class CodexRuntime implements RuntimeAdapter {
     this.executable = options.executable ?? "codex";
     this.packageRoot = options.packageRoot ?? path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
     this.spawnImpl = options.spawnImpl ?? (spawn as SpawnImplementation);
+    this.model = options.model;
     this.verbose = options.verbose ?? process.env.ARIA_VERBOSE === "1";
   }
 
@@ -66,7 +69,9 @@ export class CodexRuntime implements RuntimeAdapter {
 
   async runPhase(input: RuntimePhaseInput): Promise<RuntimeResult> {
     const prompt = buildPhasePrompt({ ...input, packageRoot: this.packageRoot });
-    const args = ["exec", "-C", input.targetRoot, "-s", "workspace-write", "-"];
+    const args = ["exec", "-C", input.targetRoot, "-s", "workspace-write"];
+    if (this.model !== undefined) args.push("--model", this.model);
+    args.push("-");
     const invocation = this.resolvedInvocation ?? this.resolveInvocation();
 
     return new Promise<RuntimeResult>((resolve, reject) => {

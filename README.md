@@ -28,7 +28,7 @@ Included:
 - Future Work Contract schema stub.
 - Role prompts for analysis, design, review, and export.
 - Design principles, component guidance, and pattern guidance.
-- Accessibility, visual review, review gate, and artifact governance policies.
+- Accessibility, gate, visual review, review, and artifact governance policies.
 - Feature-centric target-project artifacts under `.aria/[feature-name]/`.
 - A Codex-backed CLI that runs the six design phases, captures minimal resumable state, asks material questions interactively, pauses for preview review, and pauses for human approval.
 
@@ -80,13 +80,14 @@ Useful commands:
 aria status --feature monitoring-dashboard-v2
 aria run --feature monitoring-dashboard-v2 --phase review
 aria run --feature monitoring-dashboard-v2 --target <target-project>
+aria run --feature monitoring-dashboard-v2 --model gpt-5
 aria run --feature monitoring-dashboard-v2 --verbose
 aria upgrade
 aria uninstall
 ```
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
-ARIA hides raw Codex phase output during normal runs so the terminal shows only workflow status, questions, gates, and final artifact paths. Use `--verbose` or set `ARIA_VERBOSE=1` when you need the underlying Codex transcript for diagnostics.
+ARIA hides raw Codex phase output during normal runs so the terminal shows only workflow status, running phase progress, questions, gates, and final artifact paths. Use `--model` or `ARIA_MODEL` to select the Codex model for phase execution. When no model is set, ARIA uses the Codex config default. Use `--verbose` or set `ARIA_VERBOSE=1` when you need the underlying Codex transcript for diagnostics.
 
 `aria upgrade` reinstalls the CLI from the public `release` branch. `aria uninstall`
 asks for confirmation, then removes only ARIA's global npm package.
@@ -173,6 +174,7 @@ ARIA/
     patterns.md
   policies/
     accessibility.md
+    gates.md
     review/
       default.yaml
     visual-review.md
@@ -191,16 +193,15 @@ ARIA/
 - `visual-review-workflow.md` defines the visual review layer.
 - `schemas/design-proposal-v1.md` defines the human-facing design artifact.
 - `schemas/uispec-v1.md` defines the Codex implementation contract.
-- `schemas/work-contract-v1.md` defines a future artifact governance wrapper.
-- `schemas/design-package-v1.md` defines a future coding-agent handoff bundle.
 - `prompts/analyst.md` guides requirement discovery and clarification.
 - `prompts/designer.md` guides UX design and UISpec compilation.
 - `prompts/reviewer.md` guides proposal-plus-preview design review before human approval.
-- `prompts/exporter.md` guides Design Package export.
 - `design-system/principles.md` defines ARIA's design principles.
 - `design-system/components.md` defines framework-agnostic component guidance.
 - `design-system/patterns.md` defines reusable UX pattern guidance.
 - `policies/accessibility.md` defines baseline accessibility expectations.
+- `policies/gates.md` defines phase gates, blocking failures, and allowed next actions.
 - `policies/review/default.yaml` defines ARIA's default review criteria, blocking issues, and gate result model.
 - `policies/visual-review.md` defines visual review rules.
 - `policies/artifact-governance.md` defines artifact ownership, consumer, and acceptance rules.
+- `prompts/exporter.md`, `schemas/work-contract-v1.md`, and `schemas/design-package-v1.md` are future handoff/governance assets, not active v0 runtime authority.

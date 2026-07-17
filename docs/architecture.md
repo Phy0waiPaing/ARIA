@@ -81,6 +81,7 @@ Files:
 - `design-system/components.md`
 - `design-system/patterns.md`
 - `policies/accessibility.md`
+- `policies/gates.md`
 - `policies/review/default.yaml`
 - `policies/visual-review.md`
 - `policies/artifact-governance.md`
@@ -90,6 +91,7 @@ Responsibilities:
 - Define design quality expectations.
 - Define reusable component and pattern guidance.
 - Define accessibility expectations.
+- Define phase gate checks, blocking failures, and allowed next actions.
 - Define design-package review criteria, scoring, blocking issues, and gate outcomes.
 - Define artifact acceptance and governance rules.
 

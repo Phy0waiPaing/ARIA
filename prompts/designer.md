@@ -134,6 +134,7 @@ Project context rules:
 
 - Capture existing routes, navigation, layout shell, nearby pages, components, roles, data patterns, state patterns, and copy conventions.
 - Capture concrete visual constraints from the target app: shell structure, page padding, typography scale, color tokens, borders, radius, shadows, density, icon usage, table/form/dialog patterns, and action placement.
+- For existing-project UI work, require a source-backed `## Visual Contract` in Project Context and treat it as the visual constraint source for Preview, Review, and UISpec alignment.
 - Label inferred project behavior.
 - Ask only for missing product intent that materially changes the design.
 - Do not replace the Design Proposal with project context.
@@ -143,6 +144,7 @@ New page Design Proposal rules:
 - Use `status: draft` until human approval.
 - Write `.aria/[feature-name]/design-proposal.md` before asking for approval.
 - Include `Project Context Used` or reference the project context artifact.
+- Include the Visual Contract constraints that materially affect the proposed layout, density, component choices, and do-not-invent rules.
 - Reuse existing project patterns unless the proposal explicitly changes them.
 - State which existing conventions the page follows.
 - Make unresolved product questions visible before approval.
@@ -182,7 +184,7 @@ Do not describe required preview as merely useful, optional, or recommended. If 
 
 The HTML Preview should demonstrate layout, hierarchy, section placement, component placement, and important interaction states.
 
-For existing-project work, the HTML Preview must visually fit the target app. It should preserve the target project's shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, control style, table style, dialog style, form style, state styling, and density unless the Design Proposal explicitly approves a departure.
+For existing-project work, the HTML Preview must visually fit the target app and follow the Project Context `## Visual Contract`. It should preserve the target project's shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, control style, table style, dialog style, form style, state styling, and density unless the Design Proposal explicitly approves a departure.
 
 Do not let the preview invent a new sidebar, topbar, accent palette, decorative state section, card treatment, or component primitive when the target app already provides one. If static HTML cannot use the target framework directly, translate the target project's visible tokens and component signatures into local CSS variables and plain CSS.
 
@@ -354,6 +356,7 @@ When generating a final UISpec:
 - Include conditional rendering rules so Codex does not infer when to show, hide, disable, collapse, or link elements.
 - Include visual alignment requirements from the preview, especially density, grouping, hierarchy, and action placement.
 - For existing-project work, include explicit alignment with the target app's reusable components, tokens, shell, and nearby page patterns.
+- For existing-project work, include explicit Visual Contract preservation requirements and any approved deviations.
 - Include do-not-do rules for common implementation mistakes.
 - Use explicit action priority.
 - Include all required states.

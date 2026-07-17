@@ -70,6 +70,34 @@ test("captures codex output without streaming it by default", async () => {
   assert.equal(result.stderr, "stderr details");
 });
 
+test("passes an explicit model to codex exec", async () => {
+  const calls: Array<{ args: readonly string[] }> = [];
+  const runtime = new CodexRuntime({
+    executable: "codex-bin",
+    model: "gpt-5",
+    spawnImpl(_command, args) {
+      calls.push({ args });
+      const child = Object.assign(new EventEmitter(), {
+        stdin: new PassThrough(),
+        stdout: new PassThrough(),
+        stderr: new PassThrough(),
+      });
+      process.nextTick(() => child.emit("close", 0));
+      return child as never;
+    },
+  });
+
+  await runtime.runPhase({
+    targetRoot: "C:/repo",
+    feature: "monitoring-dashboard-v2",
+    phase: getPhase("project-context"),
+    artifactMode: "local",
+    answers: {},
+  });
+
+  assert.deepEqual(calls[0]?.args, ["exec", "-C", "C:/repo", "-s", "workspace-write", "--model", "gpt-5", "-"]);
+});
+
 test("finds the Windows Codex Node script rather than a command shim", () => {
   const first = path.join("C:", "tools");
   const second = path.join("C:", "codex");
@@ -93,7 +121,9 @@ test("phase prompt names the feature, allowed outputs, and stop boundary", () =>
 
   assert.match(prompt, /monitoring-dashboard-v2/);
   assert.match(prompt, /project-context\.md/);
+  assert.match(prompt, /gates\.md/);
   assert.match(prompt, /visual-review\.md/);
   assert.match(prompt, /concrete visual evidence/);
+  assert.match(prompt, /Visual Contract/);
   assert.match(prompt, /Do not create artifacts from later phases/);
 });

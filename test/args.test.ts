@@ -9,6 +9,7 @@ test("parses run with feature and defaults target to cwd", () => {
     feature: "monitoring-dashboard-v2",
     target: process.cwd(),
     phase: undefined,
+    model: undefined,
     verbose: false,
   });
 });
@@ -26,6 +27,7 @@ test("parses release-management commands without a feature", () => {
     feature: undefined,
     target: process.cwd(),
     phase: undefined,
+    model: undefined,
     verbose: false,
   });
   assert.deepEqual(parseArgs(["uninstall"]), {
@@ -33,6 +35,18 @@ test("parses release-management commands without a feature", () => {
     feature: undefined,
     target: process.cwd(),
     phase: undefined,
+    model: undefined,
+    verbose: false,
+  });
+});
+
+test("parses model as an opt-in run value", () => {
+  assert.deepEqual(parseArgs(["run", "--feature", "monitoring-dashboard-v2", "--model", "gpt-5"]), {
+    command: "run",
+    feature: "monitoring-dashboard-v2",
+    target: process.cwd(),
+    phase: undefined,
+    model: "gpt-5",
     verbose: false,
   });
 });
@@ -43,6 +57,7 @@ test("parses verbose as an opt-in run flag", () => {
     feature: "monitoring-dashboard-v2",
     target: process.cwd(),
     phase: undefined,
+    model: undefined,
     verbose: true,
   });
 });
@@ -65,5 +80,12 @@ test("rejects verbose outside run", () => {
   assert.throws(
     () => parseArgs(["status", "--feature", "monitoring-dashboard-v2", "--verbose"]),
     /--verbose is only valid with run/,
+  );
+});
+
+test("rejects model outside run", () => {
+  assert.throws(
+    () => parseArgs(["status", "--feature", "monitoring-dashboard-v2", "--model", "gpt-5"]),
+    /--model is only valid with run/,
   );
 });

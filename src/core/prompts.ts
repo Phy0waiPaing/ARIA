@@ -14,6 +14,8 @@ function phaseExecutionNotes(input: PhasePromptInput): string[] {
       return [
         "Project-context requirements:",
         "- For existing-project UI work, capture concrete visual evidence, not only file names.",
+        "- Include a `## Visual Contract` section in project-context.md for existing-project UI work.",
+        "- In `## Visual Contract`, record: shell, navigation, page container, typography, colors/tokens, spacing, borders, radius, shadows, density, icons, buttons, tables, forms, dialogs, state treatments, and explicit do-not-invent rules.",
         "- Record the app shell, navigation, page container, spacing, typography, colors, borders, radius, shadows, icon usage, and density that the preview must preserve.",
         "- Record reusable component names and their visible signatures, including nearby page patterns, button variants, table patterns, dialogs, form fields, empty/error/loading states, and action placement.",
         "- Cite source files for every visual convention that will constrain the Design Proposal or HTML Preview.",
@@ -22,6 +24,7 @@ function phaseExecutionNotes(input: PhasePromptInput): string[] {
       return [
         "HTML-preview requirements:",
         `- Read ${featureRoot}/design-proposal.md and ${featureRoot}/project-context.md before rendering the preview.`,
+        "- Use the project context `## Visual Contract` as the preview's visual source contract.",
         "- Re-open the project-context evidence source files that define the current app shell, components, tokens, and nearby page patterns.",
         "- Render the preview as a visual fit for the target app, not as a generic standalone mockup.",
         "- Reuse the target app's visual language: shell structure, navigation style, page padding, typography scale, colors, borders, radius, shadows, density, icon treatment, table pattern, dialog pattern, form controls, and state styling.",
@@ -33,6 +36,9 @@ function phaseExecutionNotes(input: PhasePromptInput): string[] {
       return [
         "Review requirements:",
         "- Compare the preview against project-context evidence and referenced source files, not only against the proposal prose.",
+        "- For existing-project UI work, verify the preview against the project context `## Visual Contract` item by item.",
+        "- Record browser/render evidence for desktop and mobile, and tablet when the interface is dense, table-based, layout-heavy, or navigation-heavy.",
+        "- Record whether the preview has console errors, horizontal overflow, unusable mobile layout, unreadable text, or inert approval-critical interactions.",
         "- Treat invented shell structure, invented color tokens, invented component primitives, or decorative sections that conflict with the target app as design-system failures.",
       ];
     default:
@@ -62,6 +68,7 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
     `- ${path.join(input.packageRoot, "design-system", "principles.md")}`,
     `- ${path.join(input.packageRoot, "design-system", "components.md")}`,
     `- ${path.join(input.packageRoot, "design-system", "patterns.md")}`,
+    `- ${path.join(input.packageRoot, "policies", "gates.md")}`,
     `- ${path.join(input.packageRoot, "policies", "visual-review.md")}`,
     `- ${path.join(input.packageRoot, "policies", "review", "default.yaml")}`,
     "",

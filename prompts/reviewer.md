@@ -31,15 +31,18 @@ Do not require production implementation, production code, or target UISpec for 
 4. Run every applicable deterministic check from the policy and record boolean evidence before subjective scoring.
 5. Check the HTML Preview renders and represents the latest Design Proposal.
 6. For existing-project work, compare the preview against Project Context and the referenced source files for the current app shell, tokens, reusable components, nearby pages, and state patterns.
-7. Exercise each approval-relevant interaction through click or keyboard input and record the resulting state. If behavior is absent, record `not_demonstrated`; do not infer it from markup or proposal prose.
-8. Inspect computed typography at required viewports and apply the policy floors to body, help, state, error, label, caption, and metadata text according to their actual purpose.
-9. Check whether required `.aria/` artifacts are tracked, trackable-untracked, explicitly local-only, or accidentally ignored. Use `git check-ignore -v` when Git is available.
-10. Evaluate proposal completeness, design-system compliance, information architecture, visual hierarchy, state and interaction coverage, accessibility, responsive behavior, interaction clarity, AI-slop risk, and verification evidence.
-11. Apply the policy weights and result multipliers exactly as written and record a score out of 100. Do not invent alternate scoring math.
-12. Check policy blocking issues and record whether any are present. Deterministic blockers override the weighted score.
-13. Distinguish acceptable design choices from design gaps.
-14. Surface unresolved decisions that must be answered before approval.
-15. Produce a gate result from the policy.
+7. For existing-project work, find the Project Context `## Visual Contract` and verify the preview against every row. Missing Visual Contract evidence is a review gap; a preview that contradicts the contract is a design-system failure.
+8. Render or inspect the preview in browser-equivalent viewports: desktop and mobile for all required previews; tablet as well for dense app UI, dashboards, tables, navigation changes, and layout-heavy work.
+9. Record validation evidence: render status, console errors, horizontal overflow, viewport coverage, visual-contract alignment, typography readability, and approval-critical interaction outcomes.
+10. Exercise each approval-relevant interaction through click or keyboard input and record the resulting state. If behavior is absent, record `not_demonstrated`; do not infer it from markup or proposal prose.
+11. Inspect computed typography at required viewports and apply the policy floors to body, help, state, error, label, caption, and metadata text according to their actual purpose.
+12. Check whether required `.aria/` artifacts are tracked, trackable-untracked, explicitly local-only, or accidentally ignored. Use `git check-ignore -v` when Git is available.
+13. Evaluate proposal completeness, design-system compliance, information architecture, visual hierarchy, state and interaction coverage, accessibility, responsive behavior, interaction clarity, AI-slop risk, and verification evidence.
+14. Apply the policy weights and result multipliers exactly as written and record a score out of 100. Do not invent alternate scoring math.
+15. Check policy blocking issues and record whether any are present. Deterministic blockers override the weighted score.
+16. Distinguish acceptable design choices from design gaps.
+17. Surface unresolved decisions that must be answered before approval.
+18. Produce a gate result from the policy.
 
 Review the artifacts and rendered browser state fresh. Generator confidence, previous self-review statements, and claims that an issue was fixed are context only, not evidence.
 
@@ -58,6 +61,8 @@ Check for:
 - Dangerous actions without confirmation design.
 - Missing loading, empty, search-empty, error, offline, permission, read-only, conflict, or success states.
 - Preview omits key state or interaction surfaces needed for review confidence.
+- Project Context lacks a Visual Contract for existing-project UI work.
+- Preview contradicts the Visual Contract for shell, navigation, tokens, density, components, state styling, or do-not-invent rules.
 - Proposal headings do not follow the required Design Proposal schema.
 - Required `.aria/` artifacts are accidentally ignored by Git.
 - Central controls are inert, unverified, or presented as demonstrated without browser evidence.
@@ -118,7 +123,30 @@ Score: [0-100]
 | page_overflow | pass \| fail \| not_applicable \| blocked | [viewport measurements] |
 | typography_readability | pass \| fail \| not_applicable \| blocked | [computed-size evidence] |
 | viewport_coverage | pass \| fail \| not_applicable \| blocked | [viewports/screenshots] |
+| visual_contract_alignment | pass \| fail \| not_applicable \| blocked | [Visual Contract comparison] |
 | critical_interactions | pass \| fail \| not_applicable \| blocked | [click/keyboard evidence] |
+
+## Preview Validation Evidence
+
+| Evidence | Result | Notes |
+| --- | --- | --- |
+| desktop_render | pass \| fail \| blocked | [viewport, file URL, screenshot path if captured] |
+| tablet_render | pass \| fail \| not_applicable \| blocked | [viewport, reason] |
+| mobile_render | pass \| fail \| blocked | [viewport, file URL, screenshot path if captured] |
+| console_clean | pass \| fail \| blocked | [console evidence] |
+| overflow_check | pass \| fail \| blocked | [measurements] |
+| typography_check | pass \| fail \| blocked | [computed-size evidence] |
+
+## Visual Contract Alignment
+
+| Contract area | Result | Evidence | Finding |
+| --- | --- | --- | --- |
+| Shell and navigation | pass \| notes \| fail \| blocked | [preview/source comparison] | [finding or none] |
+| Page container and spacing | pass \| notes \| fail \| blocked | [preview/source comparison] | [finding or none] |
+| Typography | pass \| notes \| fail \| blocked | [preview/source comparison] | [finding or none] |
+| Color and tokens | pass \| notes \| fail \| blocked | [preview/source comparison] | [finding or none] |
+| Components | pass \| notes \| fail \| blocked | [preview/source comparison] | [finding or none] |
+| Do not invent | pass \| notes \| fail \| blocked | [preview/source comparison] | [finding or none] |
 
 ## Critical Interactions
 

@@ -48,6 +48,7 @@ ARIA/
     patterns.md
   policies/
     accessibility.md
+    gates.md
     review/
       default.yaml
     visual-review.md

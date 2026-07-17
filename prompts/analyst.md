@@ -109,6 +109,25 @@ For existing-project work, inspect repo context before asking design-framing que
 
 For visual UI work inside an existing app, do not stop at naming nearby files. Extract the visible design contract those files establish so the HTML Preview can match the product instead of becoming a generic mockup.
 
+For existing-project UI work, persist a `## Visual Contract` section in `.aria/[feature-name]/project-context.md`. This section is required input for HTML Preview and Review.
+
+Use this structure:
+
+```markdown
+## Visual Contract
+
+| Area | Existing convention | Evidence source | Preview requirement |
+| --- | --- | --- | --- |
+| Shell and navigation | [layout/nav behavior] | [file/path or screenshot] | [must preserve] |
+| Page container and spacing | [padding/width/density] | [file/path or screenshot] | [must preserve] |
+| Typography | [scale/weight/labels/metadata] | [file/path or token] | [must preserve] |
+| Color and tokens | [surface/ink/muted/accent/danger/line] | [file/path or token] | [must preserve] |
+| Components | [buttons/tables/forms/dialogs/states/icons] | [file/path] | [must preserve] |
+| Do not invent | [visual systems or primitives to avoid] | [why] | [must avoid] |
+```
+
+If a field cannot be verified from the repository, mark it `unknown` and explain the evidence gap. Do not fill the contract with guessed styling.
+
 Example zero-shot framing question block:
 
 ```markdown
@@ -236,6 +255,7 @@ For new pages in existing projects, include:
 - Existing layout shell:
 - Nearby pages/features:
 - Existing components/patterns:
+- Visual Contract:
 - Existing auth/roles:
 - Existing data/API/client support:
 - Copy/naming conventions:
