@@ -30,7 +30,7 @@ Included:
 - Design principles, component guidance, and pattern guidance.
 - Accessibility, visual review, review gate, and artifact governance policies.
 - Feature-centric target-project artifacts under `.aria/[feature-name]/`.
-- A Codex-backed CLI that runs the six design phases, captures minimal resumable state, asks material questions interactively, and pauses for human approval.
+- A Codex-backed CLI that runs the six design phases, captures minimal resumable state, asks material questions interactively, pauses for preview review, and pauses for human approval.
 
 Not included yet:
 
@@ -72,7 +72,7 @@ global installation on Windows.
 ARIA automatically keeps artifacts local when the target project's `.aria/`
 directory is ignored by Git; otherwise, artifacts remain trackable.
 
-The runner advances automatically through Project Context, Design Proposal, HTML Preview, and Review. It presents numbered material-question choices in the terminal, then pauses at Human Approval with a default-no `[y/N]` prompt before compiling the UISpec. Production implementation remains outside ARIA v0.
+The runner advances automatically through Project Context, Design Proposal, and HTML Preview. It presents numbered material-question choices in the terminal, then pauses so the human can inspect the rendered preview before Review. A later run continues through Review and pauses again at Human Approval with a default-no `[y/N]` prompt before compiling the UISpec. Production implementation remains outside ARIA v0.
 
 Useful commands:
 

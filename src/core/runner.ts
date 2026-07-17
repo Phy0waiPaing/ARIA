@@ -210,6 +210,11 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
       return result(state, `Design package complete: ${paths.targetUispec}`);
     }
 
+    if (phase.id === "html-preview") {
+      state = await persist(paths, nextState(state, next, "waiting-for-preview-review"));
+      return result(state, `HTML Preview ready for human review: ${path.join(paths.preview, "index.html")}. Review the preview, then run ARIA again to continue to Review.`);
+    }
+
     state = await persist(paths, nextState(state, next, "ready"));
     if (onlySelectedPhase) return result(state, `Completed ${phase.displayName}. Next phase: ${getPhase(next).displayName}.`);
   }

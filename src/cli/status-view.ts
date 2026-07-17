@@ -4,6 +4,9 @@ import type { ReviewGate } from "../core/runner.js";
 
 function nextAction(state: WorkflowState): string {
   if (state.status === "complete") return "Design package is complete; hand target.uispec.md to a coding agent.";
+  if (state.status === "waiting-for-preview-review") {
+    return `review the HTML Preview, then run aria run --feature ${state.feature}`;
+  }
   if (state.status === "waiting-for-questions" || state.status === "waiting-for-approval") {
     return `aria run --feature ${state.feature}`;
   }

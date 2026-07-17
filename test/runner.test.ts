@@ -65,9 +65,35 @@ async function createTarget(): Promise<string> {
   return target;
 }
 
-test("automatically advances context through review then waits for approval", async () => {
+test("automatically advances context through preview then waits for human preview review", async () => {
   const targetRoot = await createTarget();
   const runtime = new FakeRuntime();
+  const result = await runWorkflow({
+    targetRoot,
+    feature: "monitoring-dashboard-v2",
+  }, {
+    runtime,
+    requestApproval: async () => false,
+  });
+
+  assert.equal(result.status, "waiting-for-preview-review");
+  assert.deepEqual(runtime.phases, ["project-context", "design-proposal", "html-preview"]);
+  assert.equal(result.state.phase, "review");
+  assert.match(result.message, /HTML Preview ready/);
+});
+
+test("continues to review and approval after human preview review", async () => {
+  const targetRoot = await createTarget();
+  const runtime = new FakeRuntime();
+
+  await runWorkflow({
+    targetRoot,
+    feature: "monitoring-dashboard-v2",
+  }, {
+    runtime,
+    requestApproval: async () => false,
+  });
+
   const result = await runWorkflow({
     targetRoot,
     feature: "monitoring-dashboard-v2",
@@ -93,7 +119,7 @@ test("selecting a material question reruns proposal before preview", async () =>
     requestApproval: async () => false,
   });
 
-  assert.equal(result.status, "waiting-for-approval");
+  assert.equal(result.status, "waiting-for-preview-review");
   assert.deepEqual(runtime.phases.slice(0, 3), ["project-context", "design-proposal", "design-proposal"]);
   assert.equal(result.state.answers["data-source"], "existing-monitoring-api");
 });
@@ -118,4 +144,24 @@ test("status displays artifacts, gate, and next action", async () => {
 
   assert.match(output, /Current phase: Human Approval/);
   assert.match(output, /Next: aria run/);
+});
+
+test("status explains the preview-review pause", async () => {
+  const targetRoot = await createTarget();
+  const paths = resolveFeaturePaths(targetRoot, "monitoring-dashboard-v2");
+  const { renderStatus } = await import("../src/cli/status-view.js");
+
+  const output = renderStatus({
+    version: 1,
+    feature: "monitoring-dashboard-v2",
+    artifactMode: "trackable",
+    phase: "review",
+    status: "waiting-for-preview-review",
+    answers: {},
+    approvedAt: null,
+    updatedAt: "2026-07-13T00:00:00.000Z",
+  }, paths, undefined, []);
+
+  assert.match(output, /Status: waiting-for-preview-review/);
+  assert.match(output, /review the HTML Preview/);
 });

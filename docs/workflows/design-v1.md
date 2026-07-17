@@ -154,13 +154,15 @@ done_when:
   - Approval-relevant interactions work, or are explicitly marked `not demonstrated`.
   - Assumptions are visible in the proposal or preview.
 gate:
-  - Continue to Review when the Design Proposal and HTML Preview are ready to evaluate together.
+  - Pause for human preview review after the HTML Preview is rendered.
+  - Continue to Review only after the human has had a chance to inspect the preview.
 ```
 
 Rules:
 
 - Required by default for existing page refactors, new pages inside existing projects, dense admin screens, dashboards, tables, navigation changes, and material layout changes.
 - The preview must be rendered from the Design Proposal.
+- The runner should stop after rendering the preview so the human can inspect visual direction before ARIA Review runs.
 - For existing-project work, the preview must also be rendered from Project Context and nearby source evidence. Re-open the referenced source files before rendering.
 - Match the existing app's visual language: layout shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, controls, tables, dialogs, forms, and state styling.
 - Do not invent a new sidebar, header, accent color, decorative state section, card treatment, or component primitive unless the Design Proposal explicitly calls for that visual change.

@@ -12,6 +12,7 @@ export type WorkflowStatus =
   | "ready"
   | "running"
   | "waiting-for-questions"
+  | "waiting-for-preview-review"
   | "waiting-for-approval"
   | "failed"
   | "blocked"
