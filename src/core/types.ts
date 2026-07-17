@@ -18,12 +18,19 @@ export type WorkflowStatus =
   | "blocked"
   | "complete";
 
+export interface RevisionRequest {
+  createdAt: string;
+  message: string;
+}
+
 export interface WorkflowState {
   version: 1;
   feature: string;
   artifactMode: ArtifactMode;
   phase: PhaseId;
   status: WorkflowStatus;
+  requirementBrief?: string;
+  revisionRequests?: RevisionRequest[];
   answers: Record<string, string>;
   approvedAt: string | null;
   updatedAt: string;
@@ -60,6 +67,8 @@ export interface RuntimePhaseInput {
   feature: string;
   phase: PhaseDefinition;
   artifactMode: ArtifactMode;
+  requirementBrief?: string;
+  revisionRequests?: RevisionRequest[];
   answers: Record<string, string>;
 }
 

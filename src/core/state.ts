@@ -45,3 +45,28 @@ export async function saveState(paths: FeaturePaths, state: WorkflowState): Prom
   await mkdir(paths.root, { recursive: true });
   await writeFile(paths.state, `${JSON.stringify(next, null, 2)}\n`, "utf8");
 }
+
+export async function setRequirementBrief(paths: FeaturePaths, state: WorkflowState, brief: string): Promise<WorkflowState> {
+  const next = {
+    ...state,
+    requirementBrief: brief,
+    approvedAt: null,
+  };
+  await saveState(paths, next);
+  return next;
+}
+
+export async function recordRevisionRequest(paths: FeaturePaths, state: WorkflowState, message: string): Promise<WorkflowState> {
+  const next = {
+    ...state,
+    phase: "design-proposal" as const,
+    status: "ready" as const,
+    approvedAt: null,
+    revisionRequests: [
+      ...(state.revisionRequests ?? []),
+      { createdAt: new Date().toISOString(), message },
+    ],
+  };
+  await saveState(paths, next);
+  return next;
+}

@@ -52,12 +52,19 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
   const answers = Object.entries(input.answers)
     .map(([id, choice]) => `- ${id}: ${choice}`)
     .join("\n") || "- None";
+  const revisions = (input.revisionRequests ?? [])
+    .map((request) => `- ${request.createdAt}: ${request.message}`)
+    .join("\n") || "- None";
   const executionNotes = phaseExecutionNotes(input).join("\n") || "- No additional phase-specific notes.";
 
   return [
     "You are the Codex runtime for one bounded ARIA workflow phase.",
     "",
     `Feature: ${input.feature}`,
+    "",
+    "Initial requirement brief:",
+    input.requirementBrief?.trim() ? input.requirementBrief.trim() : "- None provided. Do not infer requirements from the feature slug alone.",
+    "",
     `Phase: ${input.phase.displayName} (${input.phase.id})`,
     `Target repository: ${input.targetRoot}`,
     `Artifact mode: ${input.artifactMode}`,
@@ -77,6 +84,9 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
     "",
     "Selected material-question answers:",
     answers,
+    "",
+    "Human revision requests:",
+    revisions,
     "",
     "Allowed outputs for this phase:",
     allowedOutputs,

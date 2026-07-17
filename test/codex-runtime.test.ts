@@ -116,10 +116,14 @@ test("phase prompt names the feature, allowed outputs, and stop boundary", () =>
     feature: "monitoring-dashboard-v2",
     phase: getPhase("project-context"),
     artifactMode: "local",
+    requirementBrief: "Create role only needs a name for now. Permissions come later.",
+    revisionRequests: [{ createdAt: "2026-07-17T00:00:00.000Z", message: "Preview should match SVMP density." }],
     answers: {},
   });
 
   assert.match(prompt, /monitoring-dashboard-v2/);
+  assert.match(prompt, /Create role only needs a name/);
+  assert.match(prompt, /Preview should match SVMP density/);
   assert.match(prompt, /project-context\.md/);
   assert.match(prompt, /gates\.md/);
   assert.match(prompt, /visual-review\.md/);

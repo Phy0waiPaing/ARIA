@@ -1,4 +1,4 @@
-export type CommandName = "run" | "status" | "upgrade" | "uninstall";
+export type CommandName = "run" | "revise" | "status" | "upgrade" | "uninstall";
 
 export interface ParsedCommand {
   command: CommandName;
@@ -6,6 +6,8 @@ export interface ParsedCommand {
   target: string;
   phase: string | undefined;
   model: string | undefined;
+  brief: string | undefined;
+  message: string | undefined;
   verbose: boolean;
 }
 
@@ -14,7 +16,8 @@ export class CliUsageError extends Error {}
 export function formatUsage(): string {
   return [
     "Usage:",
-    "  aria run --feature <slug> [--phase <phase>] [--target <path>] [--model <model>] [--verbose]",
+    "  aria run --feature <slug> [--brief <text>] [--phase <phase>] [--target <path>] [--model <model>] [--verbose]",
+    "  aria revise --feature <slug> --message <text> [--target <path>] [--model <model>] [--verbose]",
     "  aria status --feature <slug> [--target <path>]",
     "  aria upgrade",
     "  aria uninstall",
@@ -24,7 +27,7 @@ export function formatUsage(): string {
 export function parseArgs(argv: string[]): ParsedCommand {
   const [command, ...rest] = argv;
 
-  if (command !== "run" && command !== "status" && command !== "upgrade" && command !== "uninstall") {
+  if (command !== "run" && command !== "revise" && command !== "status" && command !== "upgrade" && command !== "uninstall") {
     throw new CliUsageError(`Unknown command: ${command ?? ""}`.trim());
   }
 
@@ -36,6 +39,8 @@ export function parseArgs(argv: string[]): ParsedCommand {
   let target = process.cwd();
   let phase: string | undefined;
   let model: string | undefined;
+  let brief: string | undefined;
+  let message: string | undefined;
   let targetProvided = false;
   let verbose = false;
 
@@ -75,6 +80,14 @@ export function parseArgs(argv: string[]): ParsedCommand {
         if (model !== undefined) throw new CliUsageError("--model may be provided once");
         model = value;
         break;
+      case "--brief":
+        if (brief !== undefined) throw new CliUsageError("--brief may be provided once");
+        brief = value;
+        break;
+      case "--message":
+        if (message !== undefined) throw new CliUsageError("--message may be provided once");
+        message = value;
+        break;
       default:
         throw new CliUsageError(`Unknown option: ${option}`);
     }
@@ -82,21 +95,33 @@ export function parseArgs(argv: string[]): ParsedCommand {
     index += 1;
   }
 
-  if ((command === "run" || command === "status") && feature === undefined) {
+  if ((command === "run" || command === "revise" || command === "status") && feature === undefined) {
     throw new CliUsageError("--feature is required");
   }
 
-  if (command === "status" && phase !== undefined) {
+  if (command !== "run" && phase !== undefined) {
     throw new CliUsageError("--phase is only valid with run");
   }
 
-  if (command !== "run" && model !== undefined) {
-    throw new CliUsageError("--model is only valid with run");
+  if (command !== "run" && command !== "revise" && model !== undefined) {
+    throw new CliUsageError("--model is only valid with run or revise");
   }
 
-  if (command !== "run" && verbose) {
-    throw new CliUsageError("--verbose is only valid with run");
+  if (command !== "run" && command !== "revise" && verbose) {
+    throw new CliUsageError("--verbose is only valid with run or revise");
   }
 
-  return { command, feature, target, phase, model, verbose };
+  if (command !== "run" && brief !== undefined) {
+    throw new CliUsageError("--brief is only valid with run");
+  }
+
+  if (command !== "revise" && message !== undefined) {
+    throw new CliUsageError("--message is only valid with revise");
+  }
+
+  if (command === "revise" && message === undefined) {
+    throw new CliUsageError("--message is required with revise");
+  }
+
+  return { command, feature, target, phase, model, brief, message, verbose };
 }

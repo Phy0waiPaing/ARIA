@@ -135,7 +135,7 @@ Files:
 Responsibilities:
 
 - Resolve a Git target repository and feature-scoped `.aria/[feature]/` paths.
-- Persist only restart-critical workflow state in `workflow-state.json`.
+- Persist only restart-critical workflow state in `workflow-state.json`, including the initial requirement brief and human revision requests.
 - Invoke Codex for one bounded phase at a time.
 - Present material-question choices and human approval in the terminal.
 - Compare before/after snapshots to reject phase-time edits outside allowed outputs.
@@ -169,7 +169,7 @@ Requirement, Existing Project, or Existing Page
 - UISpec is the source of implementation intent.
 - Review Policy defines the pre-approval design gate.
 - Design Review records proposal-plus-preview findings, verification evidence, score, and gate result.
-- Workflow State stores only phase mechanics, selected answers, approval time, and artifact mode.
+- Workflow State stores phase mechanics, initial requirement brief, revision requests, selected answers, approval time, and artifact mode.
 - Work Contract governs artifact validity.
 - Design Package bundles references for handoff.
 - Production code is owned by the target project and coding agent.

@@ -7,6 +7,7 @@ import test from "node:test";
 
 import { resolveFeaturePaths } from "../src/core/paths.js";
 import { runWorkflow } from "../src/core/runner.js";
+import { loadOrCreateState, recordRevisionRequest, setRequirementBrief } from "../src/core/state.js";
 import type { RuntimeAdapter, RuntimePhaseInput, RuntimeResult } from "../src/core/types.js";
 
 const QUESTION_FENCE = `### Material Questions (CLI)
@@ -24,6 +25,8 @@ questions:
 
 class FakeRuntime implements RuntimeAdapter {
   readonly phases: string[] = [];
+  readonly briefs: Array<string | undefined> = [];
+  readonly revisions: number[] = [];
 
   constructor(private readonly includeQuestion = false) {}
 
@@ -31,6 +34,8 @@ class FakeRuntime implements RuntimeAdapter {
 
   async runPhase(input: RuntimePhaseInput): Promise<RuntimeResult> {
     this.phases.push(input.phase.id);
+    this.briefs.push(input.requirementBrief);
+    this.revisions.push(input.revisionRequests?.length ?? 0);
     const root = path.join(input.targetRoot, ".aria", input.feature);
     await mkdir(path.join(root, "preview"), { recursive: true });
 
@@ -122,6 +127,28 @@ test("selecting a material question reruns proposal before preview", async () =>
   assert.equal(result.status, "waiting-for-preview-review");
   assert.deepEqual(runtime.phases.slice(0, 3), ["project-context", "design-proposal", "design-proposal"]);
   assert.equal(result.state.answers["data-source"], "existing-monitoring-api");
+});
+
+test("revision request returns to proposal and rerenders preview", async () => {
+  const targetRoot = await createTarget();
+  const paths = resolveFeaturePaths(targetRoot, "role-crud-v2");
+  let state = await loadOrCreateState(paths, "trackable", true);
+  state = await setRequirementBrief(paths, state, "Create role only needs a name for now. Permissions come later.");
+  state = await recordRevisionRequest(paths, state, "Preview is too decorative; match SVMP admin density.");
+
+  const runtime = new FakeRuntime();
+  const result = await runWorkflow({
+    targetRoot,
+    feature: "role-crud-v2",
+  }, {
+    runtime,
+    requestApproval: async () => false,
+  });
+
+  assert.equal(result.status, "waiting-for-preview-review");
+  assert.deepEqual(runtime.phases, ["design-proposal", "html-preview"]);
+  assert.equal(runtime.briefs[0], "Create role only needs a name for now. Permissions come later.");
+  assert.deepEqual(runtime.revisions, [1, 1]);
 });
 
 test("status displays artifacts, gate, and next action", async () => {

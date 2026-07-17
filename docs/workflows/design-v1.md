@@ -79,7 +79,7 @@ phase: Project Context
 question: What existing project facts should shape this design?
 purpose: Capture the target app context before proposing a new page or refactor.
 inputs:
-  - User request.
+  - User request, including the initial requirement brief when provided.
   - Target project repository.
   - Existing routes, navigation, layout shell, nearby pages, components, API clients, roles, and state patterns.
 outputs:
@@ -112,7 +112,8 @@ phase: Design Proposal
 question: What should be built and why?
 purpose: Produce the human-facing design intent artifact.
 inputs:
-  - User request.
+  - User request, including the initial requirement brief when provided.
+  - Human revision requests from prior proposal, preview, or review feedback.
   - Project context, when available.
   - Current-state capture, for refactors.
   - ARIA design principles and policies.
@@ -133,6 +134,8 @@ Rules:
 
 - Write the proposal file before asking for approval.
 - A chat summary may point to the proposal, but it does not replace the proposal file.
+- Treat the feature slug as an artifact identifier, not as the full requirement.
+- Treat human revision requests as source input for the next proposal revision.
 - Do not compile a UISpec.
 - Do not write production code.
 
@@ -170,6 +173,7 @@ Rules:
 - Required by default for existing page refactors, new pages inside existing projects, dense admin screens, dashboards, tables, navigation changes, and material layout changes.
 - The preview must be rendered from the Design Proposal.
 - The runner should stop after rendering the preview so the human can inspect visual direction before ARIA Review runs.
+- If the human requests changes after preview, return to Design Proposal first, then re-render the preview from the revised proposal.
 - For existing-project work, the preview must also be rendered from Project Context and nearby source evidence. Re-open the referenced source files before rendering.
 - Match the existing app's visual language: layout shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, controls, tables, dialogs, forms, and state styling.
 - Do not invent a new sidebar, header, accent color, decorative state section, card treatment, or component primitive unless the Design Proposal explicitly calls for that visual change.

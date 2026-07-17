@@ -154,6 +154,8 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
         feature: options.feature,
         phase,
         artifactMode: state.artifactMode,
+        requirementBrief: state.requirementBrief,
+        revisionRequests: state.revisionRequests ?? [],
         answers: state.answers,
       });
       const after = await snapshot(options.targetRoot);

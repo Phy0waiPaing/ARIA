@@ -72,7 +72,19 @@ global installation on Windows.
 ARIA automatically keeps artifacts local when the target project's `.aria/`
 directory is ignored by Git; otherwise, artifacts remain trackable.
 
+The feature slug is only the artifact name. Use `--brief` on the first run when the business intent is more specific than the slug:
+
+```powershell
+aria run --feature role-crud-v2 --brief "Role create should collect only a name for now. Permissions will be added later."
+```
+
 The runner advances automatically through Project Context, Design Proposal, and HTML Preview. It presents numbered material-question choices in the terminal, then pauses so the human can inspect the rendered preview before Review. A later run continues through Review and pauses again at Human Approval with a default-no `[y/N]` prompt before compiling the UISpec. Production implementation remains outside ARIA v0.
+
+If the preview is wrong, do not edit the preview manually. Record design feedback and let ARIA return to Design Proposal, re-render HTML Preview, and pause again:
+
+```powershell
+aria revise --feature role-crud-v2 --message "The create role flow should only ask for a role name. Remove permission assignment from this version and match the existing SVMP admin page density."
+```
 
 Useful commands:
 
@@ -82,11 +94,13 @@ aria run --feature monitoring-dashboard-v2 --phase review
 aria run --feature monitoring-dashboard-v2 --target <target-project>
 aria run --feature monitoring-dashboard-v2 --model gpt-5
 aria run --feature monitoring-dashboard-v2 --verbose
+aria revise --feature monitoring-dashboard-v2 --message "Use the existing table toolbar pattern."
 aria upgrade
 aria uninstall
 ```
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
+`--brief` is initial business intent, not a replacement for the feature slug. `aria revise --message` is for human feedback after a proposal, preview, or review needs changes.
 ARIA hides raw Codex phase output during normal runs so the terminal shows only workflow status, running phase progress, questions, gates, and final artifact paths. Use `--model` or `ARIA_MODEL` to select the Codex model for phase execution. When no model is set, ARIA uses the Codex config default. Use `--verbose` or set `ARIA_VERBOSE=1` when you need the underlying Codex transcript for diagnostics.
 
 `aria upgrade` reinstalls the CLI from the public `release` branch. `aria uninstall`

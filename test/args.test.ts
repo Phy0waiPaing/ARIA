@@ -10,12 +10,15 @@ test("parses run with feature and defaults target to cwd", () => {
     target: process.cwd(),
     phase: undefined,
     model: undefined,
+    brief: undefined,
+    message: undefined,
     verbose: false,
   });
 });
 
 test("usage documents run and status", () => {
   assert.match(formatUsage(), /aria run --feature <slug>/);
+  assert.match(formatUsage(), /aria revise --feature <slug>/);
   assert.match(formatUsage(), /aria status --feature <slug>/);
   assert.match(formatUsage(), /aria upgrade/);
   assert.match(formatUsage(), /aria uninstall/);
@@ -28,6 +31,8 @@ test("parses release-management commands without a feature", () => {
     target: process.cwd(),
     phase: undefined,
     model: undefined,
+    brief: undefined,
+    message: undefined,
     verbose: false,
   });
   assert.deepEqual(parseArgs(["uninstall"]), {
@@ -36,6 +41,8 @@ test("parses release-management commands without a feature", () => {
     target: process.cwd(),
     phase: undefined,
     model: undefined,
+    brief: undefined,
+    message: undefined,
     verbose: false,
   });
 });
@@ -47,6 +54,8 @@ test("parses model as an opt-in run value", () => {
     target: process.cwd(),
     phase: undefined,
     model: "gpt-5",
+    brief: undefined,
+    message: undefined,
     verbose: false,
   });
 });
@@ -58,7 +67,35 @@ test("parses verbose as an opt-in run flag", () => {
     target: process.cwd(),
     phase: undefined,
     model: undefined,
+    brief: undefined,
+    message: undefined,
     verbose: true,
+  });
+});
+
+test("parses initial requirement brief for run", () => {
+  assert.deepEqual(parseArgs(["run", "--feature", "role-crud-v2", "--brief", "Create role only needs a name for now. Permissions come later."]), {
+    command: "run",
+    feature: "role-crud-v2",
+    target: process.cwd(),
+    phase: undefined,
+    model: undefined,
+    brief: "Create role only needs a name for now. Permissions come later.",
+    message: undefined,
+    verbose: false,
+  });
+});
+
+test("parses revise feedback as a runnable command", () => {
+  assert.deepEqual(parseArgs(["revise", "--feature", "role-crud-v2", "--message", "Use the existing SVMP table density."]), {
+    command: "revise",
+    feature: "role-crud-v2",
+    target: process.cwd(),
+    phase: undefined,
+    model: undefined,
+    brief: undefined,
+    message: "Use the existing SVMP table density.",
+    verbose: false,
   });
 });
 
@@ -79,13 +116,20 @@ test("rejects artifact mode as a user-facing option", () => {
 test("rejects verbose outside run", () => {
   assert.throws(
     () => parseArgs(["status", "--feature", "monitoring-dashboard-v2", "--verbose"]),
-    /--verbose is only valid with run/,
+    /--verbose is only valid with run or revise/,
   );
 });
 
 test("rejects model outside run", () => {
   assert.throws(
     () => parseArgs(["status", "--feature", "monitoring-dashboard-v2", "--model", "gpt-5"]),
-    /--model is only valid with run/,
+    /--model is only valid with run or revise/,
+  );
+});
+
+test("rejects missing revise message", () => {
+  assert.throws(
+    () => parseArgs(["revise", "--feature", "role-crud-v2"]),
+    /--message is required with revise/,
   );
 });

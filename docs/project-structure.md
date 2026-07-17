@@ -96,7 +96,7 @@ Rules:
 
 - Store generated artifacts in the target project, not the ARIA methodology repository.
 - Keep all artifacts for one feature or test slug together under `.aria/[feature-name]/`.
-- `workflow-state.json` is operational metadata only. It stores phase progression, selected answers, approval time, and artifact mode; it never replaces the proposal, review, or UISpec.
+- `workflow-state.json` is operational metadata only. It stores phase progression, initial requirement brief, revision requests, selected answers, approval time, and artifact mode; it never replaces the proposal, review, or UISpec.
 - Treat `.aria/` as version-controlled project content by default. It must not be ignored accidentally.
 - A newly generated artifact may be `trackable-untracked` before commit. An ignored required artifact blocks the Review gate unless the user explicitly chose local-only artifacts.
 - Record an explicit local-only decision in `project-context.md` and `review.md`; do not infer it from `.gitignore`.

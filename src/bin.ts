@@ -9,7 +9,7 @@ import { PHASES } from "./core/phases.js";
 import { resolveArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "./core/paths.js";
 import { parseMaterialQuestions } from "./core/questions.js";
 import { readReviewGate, runWorkflow } from "./core/runner.js";
-import { loadOrCreateState } from "./core/state.js";
+import { loadOrCreateState, recordRevisionRequest, setRequirementBrief } from "./core/state.js";
 import type { MaterialQuestion, PhaseDefinition, PhaseId } from "./core/types.js";
 import { ReleaseManager } from "./core/release.js";
 import { CodexRuntime } from "./runtime/codex.js";
@@ -139,7 +139,7 @@ async function main(argv: string[]): Promise<void> {
     const targetRoot = await resolveTargetRoot(command.target);
     const paths = resolveFeaturePaths(targetRoot, command.feature);
     const artifactMode = await resolveArtifactMode(targetRoot, paths);
-    const state = await loadOrCreateState(paths, artifactMode, true);
+    let state = await loadOrCreateState(paths, artifactMode, true);
 
     if (command.command === "status") {
       const proposal = await import("node:fs/promises").then(({ readFile }) => readFile(paths.proposal, "utf8").catch(() => ""));
@@ -150,6 +150,18 @@ async function main(argv: string[]): Promise<void> {
     const model = command.model ?? process.env.ARIA_MODEL;
     const modelLabel = model ?? "Codex config default";
     const phaseReporter = createPhaseReporter(modelLabel, command.verbose);
+
+    if (command.command === "run" && command.brief !== undefined) {
+      state = await setRequirementBrief(paths, state, command.brief);
+      if (state.phase !== "project-context") {
+        console.log("Updated requirement brief. Existing completed phases are not reset automatically; use revise for design changes after preview.");
+      }
+    }
+
+    if (command.command === "revise") {
+      state = await recordRevisionRequest(paths, state, command.message!);
+      console.log("Recorded revision request. Returning to Design Proposal and re-rendering the preview.");
+    }
 
     const run = await runWorkflow({
       targetRoot,
