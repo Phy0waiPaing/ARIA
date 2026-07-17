@@ -84,6 +84,7 @@ outputs:
   - .aria/[feature-name]/project-context.md
 done_when:
   - The context file records the relevant project facts.
+  - For existing-project UI work, the context records concrete visual conventions, tokens, component signatures, and nearby-page examples that constrain the preview.
   - Inferred behavior is labeled as inferred.
   - Missing product intent is represented as targeted questions, not broad homework for the user.
 gate:
@@ -97,6 +98,7 @@ Rules:
 - Do not write production code.
 - Do not write a target UISpec.
 - Do not use project context as a replacement for the Design Proposal.
+- For UI work inside an existing app, capture visual evidence with enough specificity that another runtime can render a preview that fits the app. Record shell structure, page padding, typography scale, color tokens, borders, radius, shadows, density, icon usage, table/form/dialog patterns, state patterns, and source-file references.
 
 ## Phase 2: Design Proposal
 
@@ -136,6 +138,7 @@ question: What should the design look like?
 purpose: Render a review-complete visual artifact from the Design Proposal.
 inputs:
   - .aria/[feature-name]/design-proposal.md
+  - .aria/[feature-name]/project-context.md, for existing-project work.
   - Current-state capture or screenshots, when useful.
   - Existing design-system and project visual conventions.
 outputs:
@@ -145,6 +148,7 @@ outputs:
   - Optional preview assets under .aria/[feature-name]/preview/assets/
 done_when:
   - The preview represents the latest Design Proposal.
+  - The preview visually fits the target project's existing app shell, components, density, and design tokens unless the proposal explicitly approves a visual departure.
   - The preview covers the primary screen or flow.
   - The preview shows key state and interaction surfaces needed for review.
   - Approval-relevant interactions work, or are explicitly marked `not demonstrated`.
@@ -157,6 +161,10 @@ Rules:
 
 - Required by default for existing page refactors, new pages inside existing projects, dense admin screens, dashboards, tables, navigation changes, and material layout changes.
 - The preview must be rendered from the Design Proposal.
+- For existing-project work, the preview must also be rendered from Project Context and nearby source evidence. Re-open the referenced source files before rendering.
+- Match the existing app's visual language: layout shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, controls, tables, dialogs, forms, and state styling.
+- Do not invent a new sidebar, header, accent color, decorative state section, card treatment, or component primitive unless the Design Proposal explicitly calls for that visual change.
+- If static HTML cannot use the target framework directly, translate the target project's visible tokens and component signatures into local CSS variables and plain CSS.
 - Do not edit the preview as the design source.
 - Overwrite the existing preview in place when design changes.
 - Do not create versioned preview folders.

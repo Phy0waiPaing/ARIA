@@ -6,12 +6,47 @@ export interface PhasePromptInput extends RuntimePhaseInput {
   packageRoot: string;
 }
 
+function phaseExecutionNotes(input: PhasePromptInput): string[] {
+  const featureRoot = `.aria/${input.feature}`;
+
+  switch (input.phase.id) {
+    case "project-context":
+      return [
+        "Project-context requirements:",
+        "- For existing-project UI work, capture concrete visual evidence, not only file names.",
+        "- Record the app shell, navigation, page container, spacing, typography, colors, borders, radius, shadows, icon usage, and density that the preview must preserve.",
+        "- Record reusable component names and their visible signatures, including nearby page patterns, button variants, table patterns, dialogs, form fields, empty/error/loading states, and action placement.",
+        "- Cite source files for every visual convention that will constrain the Design Proposal or HTML Preview.",
+      ];
+    case "html-preview":
+      return [
+        "HTML-preview requirements:",
+        `- Read ${featureRoot}/design-proposal.md and ${featureRoot}/project-context.md before rendering the preview.`,
+        "- Re-open the project-context evidence source files that define the current app shell, components, tokens, and nearby page patterns.",
+        "- Render the preview as a visual fit for the target app, not as a generic standalone mockup.",
+        "- Reuse the target app's visual language: shell structure, navigation style, page padding, typography scale, colors, borders, radius, shadows, density, icon treatment, table pattern, dialog pattern, form controls, and state styling.",
+        "- Do not invent a new sidebar, header, accent color, card treatment, decorative section, or component primitive unless the Design Proposal explicitly approves that visual change.",
+        "- If exact framework classes cannot be used in static HTML, translate the target project's tokens and component signatures into local CSS variables and plain CSS that visually match them.",
+        "- Keep review-only state samples compact and visually subordinate so they do not become a second page design.",
+      ];
+    case "review":
+      return [
+        "Review requirements:",
+        "- Compare the preview against project-context evidence and referenced source files, not only against the proposal prose.",
+        "- Treat invented shell structure, invented color tokens, invented component primitives, or decorative sections that conflict with the target app as design-system failures.",
+      ];
+    default:
+      return [];
+  }
+}
+
 export function buildPhasePrompt(input: PhasePromptInput): string {
   const featureRoot = `.aria/${input.feature}`;
   const allowedOutputs = input.phase.allowedOutputs.map((output) => `- ${featureRoot}/${output}`).join("\n") || "- None";
   const answers = Object.entries(input.answers)
     .map(([id, choice]) => `- ${id}: ${choice}`)
     .join("\n") || "- None";
+  const executionNotes = phaseExecutionNotes(input).join("\n") || "- No additional phase-specific notes.";
 
   return [
     "You are the Codex runtime for one bounded ARIA workflow phase.",
@@ -27,7 +62,11 @@ export function buildPhasePrompt(input: PhasePromptInput): string {
     `- ${path.join(input.packageRoot, "design-system", "principles.md")}`,
     `- ${path.join(input.packageRoot, "design-system", "components.md")}`,
     `- ${path.join(input.packageRoot, "design-system", "patterns.md")}`,
+    `- ${path.join(input.packageRoot, "policies", "visual-review.md")}`,
     `- ${path.join(input.packageRoot, "policies", "review", "default.yaml")}`,
+    "",
+    "Phase-specific execution notes:",
+    executionNotes,
     "",
     "Selected material-question answers:",
     answers,

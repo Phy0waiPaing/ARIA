@@ -30,15 +30,16 @@ Do not require production implementation, production code, or target UISpec for 
 3. Check required artifacts exist and are in the expected phase.
 4. Run every applicable deterministic check from the policy and record boolean evidence before subjective scoring.
 5. Check the HTML Preview renders and represents the latest Design Proposal.
-6. Exercise each approval-relevant interaction through click or keyboard input and record the resulting state. If behavior is absent, record `not_demonstrated`; do not infer it from markup or proposal prose.
-7. Inspect computed typography at required viewports and apply the policy floors to body, help, state, error, label, caption, and metadata text according to their actual purpose.
-8. Check whether required `.aria/` artifacts are tracked, trackable-untracked, explicitly local-only, or accidentally ignored. Use `git check-ignore -v` when Git is available.
-9. Evaluate proposal completeness, design-system compliance, information architecture, visual hierarchy, state and interaction coverage, accessibility, responsive behavior, interaction clarity, AI-slop risk, and verification evidence.
-10. Apply the policy weights and result multipliers exactly as written and record a score out of 100. Do not invent alternate scoring math.
-11. Check policy blocking issues and record whether any are present. Deterministic blockers override the weighted score.
-12. Distinguish acceptable design choices from design gaps.
-13. Surface unresolved decisions that must be answered before approval.
-14. Produce a gate result from the policy.
+6. For existing-project work, compare the preview against Project Context and the referenced source files for the current app shell, tokens, reusable components, nearby pages, and state patterns.
+7. Exercise each approval-relevant interaction through click or keyboard input and record the resulting state. If behavior is absent, record `not_demonstrated`; do not infer it from markup or proposal prose.
+8. Inspect computed typography at required viewports and apply the policy floors to body, help, state, error, label, caption, and metadata text according to their actual purpose.
+9. Check whether required `.aria/` artifacts are tracked, trackable-untracked, explicitly local-only, or accidentally ignored. Use `git check-ignore -v` when Git is available.
+10. Evaluate proposal completeness, design-system compliance, information architecture, visual hierarchy, state and interaction coverage, accessibility, responsive behavior, interaction clarity, AI-slop risk, and verification evidence.
+11. Apply the policy weights and result multipliers exactly as written and record a score out of 100. Do not invent alternate scoring math.
+12. Check policy blocking issues and record whether any are present. Deterministic blockers override the weighted score.
+13. Distinguish acceptable design choices from design gaps.
+14. Surface unresolved decisions that must be answered before approval.
+15. Produce a gate result from the policy.
 
 Review the artifacts and rendered browser state fresh. Generator confidence, previous self-review statements, and claims that an issue was fixed are context only, not evidence.
 
@@ -64,6 +65,7 @@ Check for:
 - Any visible content text falls below 12px computed size.
 - Mobile/tablet behavior described only as generic stacking.
 - Keyboard, focus, visible labels, contrast, non-color status communication, or touch-target gaps.
+- Existing-project preview invents a different shell, navigation model, accent palette, component style, density, or decorative state section without proposal approval.
 - App UI rendered as decorative card mosaics instead of task-focused workspace.
 - Marketing UI with weak brand signal, generic hero copy, busy imagery behind text, or feature grids without narrative purpose.
 - Generic AI UI patterns such as purple gradients, icon-in-circle feature cards, centered everything, ornamental blobs, uniform large border radius, and vague copy.

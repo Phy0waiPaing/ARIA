@@ -40,6 +40,36 @@ test("runs codex exec in the target without a shell", async () => {
   }]);
 });
 
+test("captures codex output without streaming it by default", async () => {
+  const runtime = new CodexRuntime({
+    executable: "codex-bin",
+    spawnImpl() {
+      const child = Object.assign(new EventEmitter(), {
+        stdin: new PassThrough(),
+        stdout: new PassThrough(),
+        stderr: new PassThrough(),
+      });
+      process.nextTick(() => {
+        child.stdout.write("stdout details");
+        child.stderr.write("stderr details");
+        child.emit("close", 1);
+      });
+      return child as never;
+    },
+  });
+
+  const result = await runtime.runPhase({
+    targetRoot: "C:/repo",
+    feature: "monitoring-dashboard-v2",
+    phase: getPhase("project-context"),
+    artifactMode: "local",
+    answers: {},
+  });
+
+  assert.equal(result.stdout, "stdout details");
+  assert.equal(result.stderr, "stderr details");
+});
+
 test("finds the Windows Codex Node script rather than a command shim", () => {
   const first = path.join("C:", "tools");
   const second = path.join("C:", "codex");
@@ -63,5 +93,7 @@ test("phase prompt names the feature, allowed outputs, and stop boundary", () =>
 
   assert.match(prompt, /monitoring-dashboard-v2/);
   assert.match(prompt, /project-context\.md/);
+  assert.match(prompt, /visual-review\.md/);
+  assert.match(prompt, /concrete visual evidence/);
   assert.match(prompt, /Do not create artifacts from later phases/);
 });

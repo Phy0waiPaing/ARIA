@@ -103,7 +103,7 @@ criteria:
       - not_reviewed
 
   design_system_compliance:
-    description: Proposal and preview reuse existing project components, primitives, patterns, tokens, density, and layout conventions instead of inventing unnecessary UI.
+    description: Proposal and preview reuse existing project components, primitives, patterns, tokens, density, shell, navigation, and layout conventions instead of inventing unnecessary UI.
     weight: 15
     result_values:
       - pass
@@ -218,6 +218,7 @@ blocking_issues:
   - destructive_action_without_confirmation_design
   - permission_or_readonly_behavior_unspecified
   - invented_design_primitive_that_breaks_project_conventions
+  - preview_visual_system_mismatch
   - app_ui_as_decorative_card_mosaic
   - generic_saas_card_grid_as_first_impression
   - generic_copy_or_brandless_first_viewport

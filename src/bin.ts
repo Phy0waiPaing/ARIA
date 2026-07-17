@@ -113,7 +113,7 @@ async function main(argv: string[]): Promise<void> {
       feature: command.feature,
       phase: phaseId(command.phase),
     }, {
-      runtime: new CodexRuntime(),
+      runtime: new CodexRuntime({ verbose: command.verbose }),
       selectQuestion: chooseQuestion,
       requestApproval,
     });

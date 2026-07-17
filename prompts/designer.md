@@ -133,6 +133,7 @@ After approval, compile the target UISpec:
 Project context rules:
 
 - Capture existing routes, navigation, layout shell, nearby pages, components, roles, data patterns, state patterns, and copy conventions.
+- Capture concrete visual constraints from the target app: shell structure, page padding, typography scale, color tokens, borders, radius, shadows, density, icon usage, table/form/dialog patterns, and action placement.
 - Label inferred project behavior.
 - Ask only for missing product intent that materially changes the design.
 - Do not replace the Design Proposal with project context.
@@ -180,6 +181,10 @@ For required-preview work, do not ask for final approval until the preview is re
 Do not describe required preview as merely useful, optional, or recommended. If preview is required and not rendered yet, keep the proposal as `status: draft` and mark visual review as required and pending.
 
 The HTML Preview should demonstrate layout, hierarchy, section placement, component placement, and important interaction states.
+
+For existing-project work, the HTML Preview must visually fit the target app. It should preserve the target project's shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, control style, table style, dialog style, form style, state styling, and density unless the Design Proposal explicitly approves a departure.
+
+Do not let the preview invent a new sidebar, topbar, accent palette, decorative state section, card treatment, or component primitive when the target app already provides one. If static HTML cannot use the target framework directly, translate the target project's visible tokens and component signatures into local CSS variables and plain CSS.
 
 When a dialog, tab, filter, menu, refresh state, destructive confirmation, or other central interaction affects approval, require lightweight working behavior in the preview and browser verification through click and keyboard paths. Use `.aria/[feature-name]/preview/interactions.js` when a separate script makes the behavior easier to inspect.
 
@@ -340,13 +345,34 @@ When generating a final UISpec:
 - If required preview was explicitly skipped, populate `visualReference` with a reference to the approved proposal's skip reason instead of leaving it blank.
 - Follow `schemas/uispec-v1.md`.
 - Include every required section.
-- Keep the document implementation-independent.
+- Treat the UISpec as a build contract, not a proposal summary.
+- Keep the document implementation-independent while still being concrete enough to implement.
 - Preserve the approved proposal's design intent.
+- Convert intent into section-level requirements, data rules, visibility rules, state behavior, action behavior, responsive rules, accessibility rules, and acceptance criteria.
+- Include required content for every major section.
+- Include data semantics for missing, zero, stale, unavailable, not reported, and permission-limited values when they affect UI.
+- Include conditional rendering rules so Codex does not infer when to show, hide, disable, collapse, or link elements.
+- Include visual alignment requirements from the preview, especially density, grouping, hierarchy, and action placement.
+- For existing-project work, include explicit alignment with the target app's reusable components, tokens, shell, and nearby page patterns.
+- Include do-not-do rules for common implementation mistakes.
 - Use explicit action priority.
 - Include all required states.
 - Include responsive and accessibility rules.
+- Include checkable acceptance criteria for primary workflows, sections, actions, states, permissions, data semantics, responsive behavior, accessibility, and preview alignment.
 - Include implementation notes only for constraints, not new design decisions.
 - Preserve acceptance expectations without turning them into new UX decisions.
+
+Before finalizing a UISpec, ask: "Could Codex implement two meaningfully different UIs from this contract?" If yes, tighten the UISpec before handing it off.
+
+UISpec self-check before handoff:
+
+- Every primary section has required content, data inputs, visibility rules, state rules, and acceptance checks.
+- Every data value that can be missing, zero, stale, unavailable, not reported, or permission-limited has a display rule.
+- Every primary action has trigger location, preconditions, feedback, and result.
+- Every required state has visible UI, available actions, and recovery path.
+- Every preview-dependent visual quality is named as an implementation requirement.
+- Every acceptance criterion is checkable by browser review, code inspection, test, or manual review.
+- No section relies on vague phrases such as "relevant details", "appropriate UI", or "as needed" without defining what that means.
 
 For refactor target UISpecs:
 

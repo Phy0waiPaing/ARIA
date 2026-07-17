@@ -82,6 +82,15 @@ function result(state: WorkflowState, message: string): RunResult {
   return { state, status: state.status, message };
 }
 
+function summarizeRuntimeFailure(runtimeResult: { exitCode: number; stdout: string; stderr: string }): string {
+  const output = (runtimeResult.stderr || runtimeResult.stdout).trim();
+  if (!output) return `exit ${runtimeResult.exitCode}`;
+
+  const lines = output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  const summary = lines.slice(-8).join("\n");
+  return summary.length > 1200 ? `${summary.slice(0, 1200)}...` : summary;
+}
+
 export async function runWorkflow(options: RunWorkflowOptions, dependencies: WorkflowDependencies): Promise<RunResult> {
   const paths = resolveFeaturePaths(options.targetRoot, options.feature);
   const artifactMode = await resolveArtifactMode(options.targetRoot, paths);
@@ -149,7 +158,7 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
     }
     if (runtimeResult.exitCode !== 0) {
       state = await persist(paths, nextState(state, phase.id, "failed"));
-      return result(state, `Codex failed during ${phase.displayName}: ${runtimeResult.stderr || runtimeResult.stdout || `exit ${runtimeResult.exitCode}`}`);
+      return result(state, `Codex failed during ${phase.displayName}: ${summarizeRuntimeFailure(runtimeResult)}`);
     }
 
     try {

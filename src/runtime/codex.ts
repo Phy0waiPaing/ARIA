@@ -16,6 +16,7 @@ export interface CodexRuntimeOptions {
   executable?: string;
   packageRoot?: string;
   spawnImpl?: SpawnImplementation;
+  verbose?: boolean;
 }
 
 export function findWindowsCodexScript(
@@ -39,12 +40,14 @@ export class CodexRuntime implements RuntimeAdapter {
   private readonly executable: string;
   private readonly packageRoot: string;
   private readonly spawnImpl: SpawnImplementation;
+  private readonly verbose: boolean;
   private resolvedInvocation: CodexInvocation | undefined;
 
   constructor(options: CodexRuntimeOptions = {}) {
     this.executable = options.executable ?? "codex";
     this.packageRoot = options.packageRoot ?? path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
     this.spawnImpl = options.spawnImpl ?? (spawn as SpawnImplementation);
+    this.verbose = options.verbose ?? process.env.ARIA_VERBOSE === "1";
   }
 
   async ensureAvailable(): Promise<void> {
@@ -76,11 +79,11 @@ export class CodexRuntime implements RuntimeAdapter {
       child.stderr?.setEncoding("utf8");
       child.stdout?.on("data", (chunk: string) => {
         stdout += chunk;
-        process.stdout.write(chunk);
+        if (this.verbose) process.stdout.write(chunk);
       });
       child.stderr?.on("data", (chunk: string) => {
         stderr += chunk;
-        process.stderr.write(chunk);
+        if (this.verbose) process.stderr.write(chunk);
       });
       child.once("error", reject);
       child.once("close", (exitCode) => {

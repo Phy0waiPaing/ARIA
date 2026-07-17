@@ -5,6 +5,7 @@ export interface ParsedCommand {
   feature: string | undefined;
   target: string;
   phase: string | undefined;
+  verbose: boolean;
 }
 
 export class CliUsageError extends Error {}
@@ -12,7 +13,7 @@ export class CliUsageError extends Error {}
 export function formatUsage(): string {
   return [
     "Usage:",
-    "  aria run --feature <slug> [--phase <phase>] [--target <path>]",
+    "  aria run --feature <slug> [--phase <phase>] [--target <path>] [--verbose]",
     "  aria status --feature <slug> [--target <path>]",
     "  aria upgrade",
     "  aria uninstall",
@@ -34,6 +35,7 @@ export function parseArgs(argv: string[]): ParsedCommand {
   let target = process.cwd();
   let phase: string | undefined;
   let targetProvided = false;
+  let verbose = false;
 
   for (let index = 0; index < rest.length; index += 1) {
     const option = rest[index];
@@ -41,6 +43,12 @@ export function parseArgs(argv: string[]): ParsedCommand {
 
     if (!option?.startsWith("--")) {
       throw new CliUsageError(`Unexpected argument: ${option ?? ""}`.trim());
+    }
+
+    if (option === "--verbose") {
+      if (verbose) throw new CliUsageError("--verbose may be provided once");
+      verbose = true;
+      continue;
     }
 
     if (value === undefined || value.startsWith("--")) {
@@ -76,5 +84,9 @@ export function parseArgs(argv: string[]): ParsedCommand {
     throw new CliUsageError("--phase is only valid with run");
   }
 
-  return { command, feature, target, phase };
+  if (command !== "run" && verbose) {
+    throw new CliUsageError("--verbose is only valid with run");
+  }
+
+  return { command, feature, target, phase, verbose };
 }

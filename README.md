@@ -80,11 +80,13 @@ Useful commands:
 aria status --feature monitoring-dashboard-v2
 aria run --feature monitoring-dashboard-v2 --phase review
 aria run --feature monitoring-dashboard-v2 --target <target-project>
+aria run --feature monitoring-dashboard-v2 --verbose
 aria upgrade
 aria uninstall
 ```
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
+ARIA hides raw Codex phase output during normal runs so the terminal shows only workflow status, questions, gates, and final artifact paths. Use `--verbose` or set `ARIA_VERBOSE=1` when you need the underlying Codex transcript for diagnostics.
 
 `aria upgrade` reinstalls the CLI from the public `release` branch. `aria uninstall`
 asks for confirmation, then removes only ARIA's global npm package.

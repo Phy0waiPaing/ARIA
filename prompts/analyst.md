@@ -61,6 +61,7 @@ Capture:
 - Existing layout shell.
 - Nearby pages or features the new page should match.
 - Existing components, tables, forms, dialogs, toolbars, and state patterns.
+- Existing visual tokens and component signatures that must constrain visual review: colors, typography scale, spacing, borders, radius, shadows, density, icon usage, page container, table styling, form styling, dialog styling, and action placement.
 - Existing auth, roles, or permissions.
 - Existing data and API/client support when visible.
 - Existing naming, copy, and visual conventions.
@@ -105,6 +106,8 @@ Common design-framing fields:
 - `scope`: what to include now versus defer.
 
 For existing-project work, inspect repo context before asking design-framing questions. Do not ask for framing details already implied by routes, neighboring pages, components, roles, or APIs. If only one or two framing details are missing, ask only those.
+
+For visual UI work inside an existing app, do not stop at naming nearby files. Extract the visible design contract those files establish so the HTML Preview can match the product instead of becoming a generic mockup.
 
 Example zero-shot framing question block:
 
