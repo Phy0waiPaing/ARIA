@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 
 import { resolveFeaturePaths } from "../src/core/paths.js";
 import { runWorkflow } from "../src/core/runner.js";
-import { loadOrCreateState, recordRevisionRequest, setRequirementBrief } from "../src/core/state.js";
+import { DEFAULT_REVISION_LIMIT, loadOrCreateState, recordRevisionRequest, setRequirementBrief } from "../src/core/state.js";
 import type { RuntimeAdapter, RuntimePhaseInput, RuntimeResult } from "../src/core/types.js";
 
 const QUESTION_FENCE = `### Material Questions (CLI)
@@ -60,7 +60,7 @@ class FakeRuntime implements RuntimeAdapter {
         break;
     }
 
-    return { exitCode: 0, stdout: "", stderr: "" };
+    return { exitCode: 0, stdout: `stdout ${input.phase.id}`, stderr: `stderr ${input.phase.id}` };
   }
 }
 
@@ -85,6 +85,50 @@ test("automatically advances context through preview then waits for human previe
   assert.deepEqual(runtime.phases, ["project-context", "design-proposal", "html-preview"]);
   assert.equal(result.state.phase, "review");
   assert.match(result.message, /HTML Preview ready/);
+});
+
+test("records workflow events and raw phase logs", async () => {
+  const targetRoot = await createTarget();
+  const runtime = new FakeRuntime();
+  const result = await runWorkflow({
+    targetRoot,
+    feature: "monitoring-dashboard-v2",
+    modelLabel: "test-model",
+  }, {
+    runtime,
+    requestApproval: async () => false,
+  });
+  const paths = resolveFeaturePaths(targetRoot, "monitoring-dashboard-v2");
+  const events = (await readFile(paths.events, "utf8"))
+    .trim()
+    .split(/\r?\n/)
+    .map((line) => JSON.parse(line) as { event: string; phase?: string; raw?: { stdout: string } });
+  const rawFiles = await readdir(paths.raw);
+  const usage = JSON.parse(await readFile(paths.usage, "utf8")) as {
+    status: string;
+    coverage: string;
+    invocations: Array<{ phase: string; model: string; raw: { stdout: string } }>;
+  };
+
+  assert.equal(result.status, "waiting-for-preview-review");
+  assert.deepEqual(events.map((event) => event.event), [
+    "phase_started",
+    "phase_completed",
+    "phase_started",
+    "phase_completed",
+    "phase_started",
+    "phase_completed",
+    "preview_waiting",
+  ]);
+  assert.equal(events.filter((event) => event.event === "phase_completed").length, 3);
+  assert.equal(rawFiles.length, 6);
+  assert.equal(usage.status, "partial");
+  assert.equal(usage.coverage, "unavailable");
+  assert.deepEqual(usage.invocations.map((invocation) => invocation.phase), ["project-context", "design-proposal", "html-preview"]);
+  assert.deepEqual([...new Set(usage.invocations.map((invocation) => invocation.model))], ["test-model"]);
+  const firstStdout = events.find((event) => event.event === "phase_completed")?.raw?.stdout;
+  assert.ok(firstStdout);
+  assert.match(await readFile(path.join(paths.root, firstStdout), "utf8"), /stdout project-context/);
 });
 
 test("continues to review and approval after human preview review", async () => {
@@ -151,6 +195,23 @@ test("revision request returns to proposal and rerenders preview", async () => {
   assert.deepEqual(runtime.revisions, [1, 1]);
 });
 
+test("revision requests stop at the default limit unless extra iteration is authorized", async () => {
+  const targetRoot = await createTarget();
+  const paths = resolveFeaturePaths(targetRoot, "role-crud-v2");
+  let state = await loadOrCreateState(paths, "trackable", true);
+  for (let index = 0; index < DEFAULT_REVISION_LIMIT; index += 1) {
+    state = await recordRevisionRequest(paths, state, `Revision ${index + 1}`);
+  }
+
+  await assert.rejects(
+    () => recordRevisionRequest(paths, state, "One more"),
+    /Revision limit reached/,
+  );
+
+  const continued = await recordRevisionRequest(paths, state, "One more", { allowExtra: true });
+  assert.equal(continued.revisionRequests?.length, DEFAULT_REVISION_LIMIT + 1);
+});
+
 test("status displays artifacts, gate, and next action", async () => {
   const targetRoot = await createTarget();
   const paths = resolveFeaturePaths(targetRoot, "monitoring-dashboard-v2");
@@ -170,6 +231,8 @@ test("status displays artifacts, gate, and next action", async () => {
   }, paths, "PASS_WITH_NOTES", []);
 
   assert.match(output, /Current phase: Human Approval/);
+  assert.match(output, /events\.jsonl/);
+  assert.match(output, /usage\.json/);
   assert.match(output, /Next: aria run/);
 });
 

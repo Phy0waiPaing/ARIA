@@ -91,6 +91,9 @@ export interface FeaturePaths {
   feature: string;
   root: string;
   state: string;
+  events: string;
+  raw: string;
+  usage: string;
   projectContext: string;
   proposal: string;
   preview: string;

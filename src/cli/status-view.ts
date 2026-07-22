@@ -31,6 +31,10 @@ export function renderStatus(
     `- ${paths.preview}`,
     `- ${paths.review}`,
     `- ${paths.targetUispec}`,
+    "Diagnostics:",
+    `- ${paths.events}`,
+    `- ${paths.usage}`,
+    `- ${paths.raw}`,
   ];
 
   if (questions.length > 0) {

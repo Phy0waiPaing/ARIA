@@ -10,6 +10,7 @@ export interface ParsedCommand {
   message: string | undefined;
   strict: boolean;
   json: boolean;
+  allowExtra: boolean;
   verbose: boolean;
 }
 
@@ -19,7 +20,7 @@ export function formatUsage(): string {
   return [
     "Usage:",
     "  aria run --feature <slug> [--brief <text>] [--phase <phase>] [--target <path>] [--model <model>] [--verbose]",
-    "  aria revise --feature <slug> --message <text> [--target <path>] [--model <model>] [--verbose]",
+    "  aria revise --feature <slug> --message <text> [--target <path>] [--model <model>] [--allow-extra] [--verbose]",
     "  aria status --feature <slug> [--target <path>]",
     "  aria doctor [--target <path>] [--strict] [--json]",
     "  aria upgrade",
@@ -48,6 +49,7 @@ export function parseArgs(argv: string[]): ParsedCommand {
   let verbose = false;
   let strict = false;
   let json = false;
+  let allowExtra = false;
 
   for (let index = 0; index < rest.length; index += 1) {
     const option = rest[index];
@@ -72,6 +74,12 @@ export function parseArgs(argv: string[]): ParsedCommand {
     if (option === "--json") {
       if (json) throw new CliUsageError("--json may be provided once");
       json = true;
+      continue;
+    }
+
+    if (option === "--allow-extra") {
+      if (allowExtra) throw new CliUsageError("--allow-extra may be provided once");
+      allowExtra = true;
       continue;
     }
 
@@ -136,6 +144,10 @@ export function parseArgs(argv: string[]): ParsedCommand {
     throw new CliUsageError("--json is only valid with doctor");
   }
 
+  if (command !== "revise" && allowExtra) {
+    throw new CliUsageError("--allow-extra is only valid with revise");
+  }
+
   if (command !== "run" && brief !== undefined) {
     throw new CliUsageError("--brief is only valid with run");
   }
@@ -148,5 +160,5 @@ export function parseArgs(argv: string[]): ParsedCommand {
     throw new CliUsageError("--message is required with revise");
   }
 
-  return { command, feature, target, phase, model, brief, message, strict, json, verbose };
+  return { command, feature, target, phase, model, brief, message, strict, json, allowExtra, verbose };
 }

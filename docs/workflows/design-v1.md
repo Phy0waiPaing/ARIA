@@ -174,6 +174,7 @@ Rules:
 - The preview must be rendered from the Design Proposal.
 - The runner should stop after rendering the preview so the human can inspect visual direction before ARIA Review runs.
 - If the human requests changes after preview, return to Design Proposal first, then re-render the preview from the revised proposal.
+- Do not continue preview revision loops indefinitely. After the configured revision limit, pause until the human explicitly authorizes another loop.
 - For existing-project work, the preview must also be rendered from Project Context and nearby source evidence. Re-open the referenced source files before rendering.
 - Match the existing app's visual language: layout shell, navigation treatment, page container, spacing, typography, colors, borders, radius, shadows, icon treatment, controls, tables, dialogs, forms, and state styling.
 - Do not invent a new sidebar, header, accent color, decorative state section, card treatment, or component primitive unless the Design Proposal explicitly calls for that visual change.

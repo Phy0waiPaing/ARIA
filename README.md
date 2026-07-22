@@ -81,6 +81,8 @@ aria run --feature role-crud-v2 --brief "Role create should collect only a name 
 
 The runner advances automatically through Project Context, Design Proposal, and HTML Preview. It presents numbered material-question choices in the terminal, then pauses so the human can inspect the rendered preview before Review. A later run continues through Review and pauses again at Human Approval with a default-no `[y/N]` prompt before compiling the UISpec. Production implementation remains outside ARIA v0.
 
+Each feature folder also keeps operational diagnostics: `.aria/[feature]/events.jsonl` records the phase audit trail, `.aria/[feature]/usage.json` summarizes phase invocations and model labels, and `.aria/[feature]/raw/` stores per-phase Codex stdout/stderr logs for debugging.
+
 If the preview is wrong, do not edit the preview manually. Record design feedback and let ARIA return to Design Proposal, re-render HTML Preview, and pause again:
 
 ```powershell
@@ -99,6 +101,7 @@ aria run --feature monitoring-dashboard-v2 --target <target-project>
 aria run --feature monitoring-dashboard-v2 --model gpt-5
 aria run --feature monitoring-dashboard-v2 --verbose
 aria revise --feature monitoring-dashboard-v2 --message "Use the existing table toolbar pattern."
+aria revise --feature monitoring-dashboard-v2 --message "Continue one more design loop." --allow-extra
 aria upgrade
 aria uninstall
 ```
@@ -106,7 +109,7 @@ aria uninstall
 `aria doctor` checks the target Git root, write access, `.aria` artifact mode, ARIA workflow authority files, release source metadata, and Codex runtime availability. Use `--strict` in scripts when attention-required checks should fail the command.
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
-`--brief` is initial business intent, not a replacement for the feature slug. `aria revise --message` is for human feedback after a proposal, preview, or review needs changes.
+`--brief` is initial business intent, not a replacement for the feature slug. `aria revise --message` is for human feedback after a proposal, preview, or review needs changes. ARIA allows four normal revision loops, then requires `--allow-extra` as explicit human authorization.
 ARIA hides raw Codex phase output during normal runs so the terminal shows only workflow status, running phase progress, questions, gates, and final artifact paths. Use `--model` or `ARIA_MODEL` to select the Codex model for phase execution. When no model is set, ARIA uses the Codex config default. Use `--verbose` or set `ARIA_VERBOSE=1` when you need the underlying Codex transcript for diagnostics.
 
 `aria upgrade` reinstalls the CLI from the public `release` branch. `aria uninstall`

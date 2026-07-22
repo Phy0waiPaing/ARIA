@@ -2,10 +2,12 @@ import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { getPhase, assertPhaseEligible } from "./phases.js";
+import { appendWorkflowEvent, writeRawPhaseLogs } from "./events.js";
 import { resolveArtifactMode, resolveFeaturePaths } from "./paths.js";
 import { parseMaterialQuestions } from "./questions.js";
 import { assertScopeIntegrity, captureSnapshot } from "./scope-integrity.js";
 import { loadOrCreateState, saveState } from "./state.js";
+import { recordPhaseUsage } from "./usage.js";
 import type {
   ArtifactMode,
   FeaturePaths,
@@ -24,6 +26,7 @@ export interface RunWorkflowOptions {
   targetRoot: string;
   feature: string;
   phase?: PhaseId;
+  modelLabel?: string;
 }
 
 export interface WorkflowDependencies {
@@ -101,6 +104,7 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
   const onlySelectedPhase = options.phase !== undefined;
   const snapshot = dependencies.captureSnapshot ?? captureSnapshot;
   const verifyScope = dependencies.assertScopeIntegrity ?? assertScopeIntegrity;
+  const modelLabel = options.modelLabel ?? "Codex config default";
   let runtimeChecked = false;
 
   if (options.phase !== undefined) {
@@ -124,9 +128,11 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
       const approved = dependencies.requestApproval ? await dependencies.requestApproval(gate) : false;
       if (!approved) {
         state = await persist(paths, nextState(state, "human-approval", "waiting-for-approval"));
+        await appendWorkflowEvent(paths, { event: "approval_waiting", phase: "human-approval", gate });
         return result(state, "Waiting for human approval.");
       }
 
+      await appendWorkflowEvent(paths, { event: "approval_recorded", phase: "human-approval", gate });
       state = await persist(paths, {
         ...state,
         phase: "uispec",
@@ -144,9 +150,12 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
     }
 
     state = await persist(paths, nextState(state, phase.id, "running"));
+    await appendWorkflowEvent(paths, { event: "phase_started", phase: phase.id, status: state.status });
     dependencies.onPhaseStart?.(phase);
     let runtimeResult!: RuntimeResult;
     let scope!: ScopeIntegrityResult;
+    const startedAt = new Date().toISOString();
+    const started = Date.now();
     try {
       const before = await snapshot(options.targetRoot);
       runtimeResult = await dependencies.runtime.runPhase({
@@ -163,15 +172,30 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
     } finally {
       dependencies.onPhaseEnd?.(phase);
     }
+    const completedAt = new Date().toISOString();
+    const durationMs = Date.now() - started;
 
     if (scope.unexpectedPaths.length > 0) {
       state = await persist(paths, nextState(state, phase.id, "blocked"));
       return result(state, `Scope integrity blocked this phase: ${scope.unexpectedPaths.join(", ")}`);
     }
+    const raw = await writeRawPhaseLogs(paths, phase.id, runtimeResult);
+    await recordPhaseUsage(paths, {
+      phase: phase.id,
+      model: modelLabel,
+      startedAt,
+      completedAt,
+      durationMs,
+      exitCode: runtimeResult.exitCode,
+      raw,
+      complete: runtimeResult.exitCode === 0 && phase.nextPhase === null,
+    });
     if (runtimeResult.exitCode !== 0) {
       state = await persist(paths, nextState(state, phase.id, "failed"));
+      await appendWorkflowEvent(paths, { event: "phase_failed", phase: phase.id, exitCode: runtimeResult.exitCode, raw });
       return result(state, `Codex failed during ${phase.displayName}: ${summarizeRuntimeFailure(runtimeResult)}`);
     }
+    await appendWorkflowEvent(paths, { event: "phase_completed", phase: phase.id, exitCode: runtimeResult.exitCode, raw });
 
     try {
       await assertRequiredOutputs(paths, phase);
@@ -188,6 +212,7 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
         const selected = dependencies.selectQuestion ? await dependencies.selectQuestion(question) : undefined;
         if (selected === undefined) {
           state = await persist(paths, nextState(state, "design-proposal", "waiting-for-questions"));
+          await appendWorkflowEvent(paths, { event: "question_waiting", phase: "design-proposal", questionId: question.id });
           return result(state, `Paused for answer to: ${question.id}. Re-run ARIA and choose an option number at the prompt.`);
         }
         if (!question.choices.some((choice) => choice.id === selected)) {
@@ -199,6 +224,7 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
           status: "ready",
           answers: { ...state.answers, [question.id]: selected },
         });
+        await appendWorkflowEvent(paths, { event: "answer_recorded", phase: "design-proposal", questionId: question.id, answerId: selected });
         if (onlySelectedPhase) return result(state, `Answer recorded for ${question.id}. Run again to regenerate the proposal.`);
         continue;
       }
@@ -219,11 +245,13 @@ export async function runWorkflow(options: RunWorkflowOptions, dependencies: Wor
     const next = phase.nextPhase;
     if (next === null) {
       state = await persist(paths, nextState(state, phase.id, "complete"));
+      await appendWorkflowEvent(paths, { event: "workflow_completed", phase: phase.id, targetUispec: path.relative(paths.root, paths.targetUispec) });
       return result(state, `Design package complete: ${paths.targetUispec}`);
     }
 
     if (phase.id === "html-preview") {
       state = await persist(paths, nextState(state, next, "waiting-for-preview-review"));
+      await appendWorkflowEvent(paths, { event: "preview_waiting", phase: "html-preview", previewPath: path.relative(paths.root, path.join(paths.preview, "index.html")) });
       return result(state, `HTML Preview ready for human review: ${path.join(paths.preview, "index.html")}. Review the preview, then run ARIA again to continue to Review.`);
     }
 

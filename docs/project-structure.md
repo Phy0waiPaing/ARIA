@@ -75,11 +75,16 @@ target-project/
   .aria/
     [feature-name]/
       workflow-state.json
+      events.jsonl
+      usage.json
       project-context.md
       design-proposal.md
       current.uispec.md
       target.uispec.md
       review.md
+      raw/
+        [timestamp]-[phase].stdout.log
+        [timestamp]-[phase].stderr.log
       preview/
         index.html
         styles.css
@@ -97,6 +102,9 @@ Rules:
 - Store generated artifacts in the target project, not the ARIA methodology repository.
 - Keep all artifacts for one feature or test slug together under `.aria/[feature-name]/`.
 - `workflow-state.json` is operational metadata only. It stores phase progression, initial requirement brief, revision requests, selected answers, approval time, and artifact mode; it never replaces the proposal, review, or UISpec.
+- `events.jsonl` is an append-only workflow audit trail. It records phase starts, phase results, pause points, answers, approval, and completion.
+- `usage.json` aggregates phase invocations, duration, model label, raw log references, and token-usage coverage. Token counts may be `unavailable` when the underlying runtime does not expose reliable per-phase usage.
+- `raw/` contains per-phase runtime stdout/stderr logs for diagnostics. These logs are not user-facing design artifacts and should not be treated as design source of truth.
 - Treat `.aria/` as version-controlled project content by default. It must not be ignored accidentally.
 - A newly generated artifact may be `trackable-untracked` before commit. An ignored required artifact blocks the Review gate unless the user explicitly chose local-only artifacts.
 - Record an explicit local-only decision in `project-context.md` and `review.md`; do not infer it from `.gitignore`.
@@ -116,6 +124,9 @@ Use these target-project conventions unless a project already has stronger local
 | Artifact | Path |
 | --- | --- |
 | Workflow State | `.aria/[feature-name]/workflow-state.json` |
+| Workflow Events | `.aria/[feature-name]/events.jsonl` |
+| Usage Summary | `.aria/[feature-name]/usage.json` |
+| Raw Runtime Logs | `.aria/[feature-name]/raw/` |
 | Project Context Capture | `.aria/[feature-name]/project-context.md` |
 | Design Proposal | `.aria/[feature-name]/design-proposal.md` |
 | Current-State UISpec | `.aria/[feature-name]/current.uispec.md` |

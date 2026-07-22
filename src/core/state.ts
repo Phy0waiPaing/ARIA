@@ -2,6 +2,8 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 
 import type { ArtifactMode, FeaturePaths, WorkflowState } from "./types.js";
 
+export const DEFAULT_REVISION_LIMIT = 4;
+
 function initialState(feature: string, artifactMode: ArtifactMode): WorkflowState {
   return {
     version: 1,
@@ -56,14 +58,25 @@ export async function setRequirementBrief(paths: FeaturePaths, state: WorkflowSt
   return next;
 }
 
-export async function recordRevisionRequest(paths: FeaturePaths, state: WorkflowState, message: string): Promise<WorkflowState> {
+export async function recordRevisionRequest(
+  paths: FeaturePaths,
+  state: WorkflowState,
+  message: string,
+  options: { allowExtra?: boolean; limit?: number } = {},
+): Promise<WorkflowState> {
+  const limit = options.limit ?? DEFAULT_REVISION_LIMIT;
+  const previousRequests = state.revisionRequests ?? [];
+  if (previousRequests.length >= limit && !options.allowExtra) {
+    throw new Error(`Revision limit reached (${limit}). Re-run revise with --allow-extra to authorize another design loop.`);
+  }
+
   const next = {
     ...state,
     phase: "design-proposal" as const,
     status: "ready" as const,
     approvedAt: null,
     revisionRequests: [
-      ...(state.revisionRequests ?? []),
+      ...previousRequests,
       { createdAt: new Date().toISOString(), message },
     ],
   };

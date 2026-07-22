@@ -14,6 +14,7 @@ test("parses run with feature and defaults target to cwd", () => {
     message: undefined,
     strict: false,
     json: false,
+    allowExtra: false,
     verbose: false,
   });
 });
@@ -38,6 +39,7 @@ test("parses release-management commands without a feature", () => {
     message: undefined,
     strict: false,
     json: false,
+    allowExtra: false,
     verbose: false,
   });
   assert.deepEqual(parseArgs(["uninstall"]), {
@@ -50,6 +52,7 @@ test("parses release-management commands without a feature", () => {
     message: undefined,
     strict: false,
     json: false,
+    allowExtra: false,
     verbose: false,
   });
 });
@@ -65,6 +68,7 @@ test("parses model as an opt-in run value", () => {
     message: undefined,
     strict: false,
     json: false,
+    allowExtra: false,
     verbose: false,
   });
 });
@@ -80,6 +84,7 @@ test("parses verbose as an opt-in run flag", () => {
     message: undefined,
     strict: false,
     json: false,
+    allowExtra: false,
     verbose: true,
   });
 });
@@ -95,12 +100,13 @@ test("parses initial requirement brief for run", () => {
     message: undefined,
     strict: false,
     json: false,
+    allowExtra: false,
     verbose: false,
   });
 });
 
 test("parses revise feedback as a runnable command", () => {
-  assert.deepEqual(parseArgs(["revise", "--feature", "role-crud-v2", "--message", "Use the existing SVMP table density."]), {
+  assert.deepEqual(parseArgs(["revise", "--feature", "role-crud-v2", "--message", "Use the existing SVMP table density.", "--allow-extra"]), {
     command: "revise",
     feature: "role-crud-v2",
     target: process.cwd(),
@@ -110,6 +116,7 @@ test("parses revise feedback as a runnable command", () => {
     message: "Use the existing SVMP table density.",
     strict: false,
     json: false,
+    allowExtra: true,
     verbose: false,
   });
 });
@@ -125,6 +132,7 @@ test("parses doctor with target and strict json output", () => {
     message: undefined,
     strict: true,
     json: true,
+    allowExtra: false,
     verbose: false,
   });
 });
@@ -172,5 +180,12 @@ test("rejects doctor flags outside doctor", () => {
   assert.throws(
     () => parseArgs(["status", "--feature", "role-crud-v2", "--json"]),
     /--json is only valid with doctor/,
+  );
+});
+
+test("rejects allow-extra outside revise", () => {
+  assert.throws(
+    () => parseArgs(["run", "--feature", "role-crud-v2", "--allow-extra"]),
+    /--allow-extra is only valid with revise/,
   );
 });

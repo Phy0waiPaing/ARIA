@@ -8,11 +8,12 @@ import { fileURLToPath } from "node:url";
 import { CliUsageError, formatUsage, parseArgs } from "./cli/args.js";
 import { renderStatus } from "./cli/status-view.js";
 import { formatDoctorReport, runDoctor } from "./core/doctor.js";
+import { appendWorkflowEvent } from "./core/events.js";
 import { PHASES } from "./core/phases.js";
 import { resolveArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "./core/paths.js";
 import { parseMaterialQuestions } from "./core/questions.js";
 import { readReviewGate, runWorkflow } from "./core/runner.js";
-import { loadOrCreateState, recordRevisionRequest, setRequirementBrief } from "./core/state.js";
+import { DEFAULT_REVISION_LIMIT, loadOrCreateState, recordRevisionRequest, setRequirementBrief } from "./core/state.js";
 import type { MaterialQuestion, PhaseDefinition, PhaseId } from "./core/types.js";
 import { ReleaseManager } from "./core/release.js";
 import { CodexRuntime } from "./runtime/codex.js";
@@ -177,7 +178,14 @@ async function main(argv: string[]): Promise<void> {
     }
 
     if (command.command === "revise") {
-      state = await recordRevisionRequest(paths, state, command.message!);
+      state = await recordRevisionRequest(paths, state, command.message!, { allowExtra: command.allowExtra });
+      await appendWorkflowEvent(paths, {
+        event: "revision_requested",
+        phase: "design-proposal",
+        revisionNumber: state.revisionRequests?.length ?? 1,
+        limit: DEFAULT_REVISION_LIMIT,
+        allowExtra: command.allowExtra,
+      });
       console.log("Recorded revision request. Returning to Design Proposal and re-rendering the preview.");
     }
 
@@ -185,6 +193,7 @@ async function main(argv: string[]): Promise<void> {
       targetRoot,
       feature: command.feature,
       phase: phaseId(command.phase),
+      modelLabel,
     }, {
       runtime: new CodexRuntime({ model, verbose: command.verbose }),
       selectQuestion: chooseQuestion,
