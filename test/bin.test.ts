@@ -10,4 +10,5 @@ test("help output documents aria invocations", () => {
 
   assert.match(output, /aria run --feature <slug>/);
   assert.match(output, /aria status --feature <slug>/);
+  assert.match(output, /aria doctor/);
 });

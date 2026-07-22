@@ -1,4 +1,4 @@
-export type CommandName = "run" | "revise" | "status" | "upgrade" | "uninstall";
+export type CommandName = "run" | "revise" | "status" | "doctor" | "upgrade" | "uninstall";
 
 export interface ParsedCommand {
   command: CommandName;
@@ -8,6 +8,8 @@ export interface ParsedCommand {
   model: string | undefined;
   brief: string | undefined;
   message: string | undefined;
+  strict: boolean;
+  json: boolean;
   verbose: boolean;
 }
 
@@ -19,6 +21,7 @@ export function formatUsage(): string {
     "  aria run --feature <slug> [--brief <text>] [--phase <phase>] [--target <path>] [--model <model>] [--verbose]",
     "  aria revise --feature <slug> --message <text> [--target <path>] [--model <model>] [--verbose]",
     "  aria status --feature <slug> [--target <path>]",
+    "  aria doctor [--target <path>] [--strict] [--json]",
     "  aria upgrade",
     "  aria uninstall",
   ].join("\n");
@@ -27,7 +30,7 @@ export function formatUsage(): string {
 export function parseArgs(argv: string[]): ParsedCommand {
   const [command, ...rest] = argv;
 
-  if (command !== "run" && command !== "revise" && command !== "status" && command !== "upgrade" && command !== "uninstall") {
+  if (command !== "run" && command !== "revise" && command !== "status" && command !== "doctor" && command !== "upgrade" && command !== "uninstall") {
     throw new CliUsageError(`Unknown command: ${command ?? ""}`.trim());
   }
 
@@ -43,6 +46,8 @@ export function parseArgs(argv: string[]): ParsedCommand {
   let message: string | undefined;
   let targetProvided = false;
   let verbose = false;
+  let strict = false;
+  let json = false;
 
   for (let index = 0; index < rest.length; index += 1) {
     const option = rest[index];
@@ -55,6 +60,18 @@ export function parseArgs(argv: string[]): ParsedCommand {
     if (option === "--verbose") {
       if (verbose) throw new CliUsageError("--verbose may be provided once");
       verbose = true;
+      continue;
+    }
+
+    if (option === "--strict") {
+      if (strict) throw new CliUsageError("--strict may be provided once");
+      strict = true;
+      continue;
+    }
+
+    if (option === "--json") {
+      if (json) throw new CliUsageError("--json may be provided once");
+      json = true;
       continue;
     }
 
@@ -111,6 +128,14 @@ export function parseArgs(argv: string[]): ParsedCommand {
     throw new CliUsageError("--verbose is only valid with run or revise");
   }
 
+  if (command !== "doctor" && strict) {
+    throw new CliUsageError("--strict is only valid with doctor");
+  }
+
+  if (command !== "doctor" && json) {
+    throw new CliUsageError("--json is only valid with doctor");
+  }
+
   if (command !== "run" && brief !== undefined) {
     throw new CliUsageError("--brief is only valid with run");
   }
@@ -123,5 +148,5 @@ export function parseArgs(argv: string[]): ParsedCommand {
     throw new CliUsageError("--message is required with revise");
   }
 
-  return { command, feature, target, phase, model, brief, message, verbose };
+  return { command, feature, target, phase, model, brief, message, strict, json, verbose };
 }

@@ -61,6 +61,7 @@ ARIA runs from the target repository. The current directory is the target by def
 npm install -g --install-links=true github:Phy0waiPaing/ARIA#release
 
 cd <target-project>
+aria doctor
 aria run --feature monitoring-dashboard-v2
 ```
 
@@ -89,6 +90,9 @@ aria revise --feature role-crud-v2 --message "The create role flow should only a
 Useful commands:
 
 ```powershell
+aria doctor
+aria doctor --strict
+aria doctor --json
 aria status --feature monitoring-dashboard-v2
 aria run --feature monitoring-dashboard-v2 --phase review
 aria run --feature monitoring-dashboard-v2 --target <target-project>
@@ -98,6 +102,8 @@ aria revise --feature monitoring-dashboard-v2 --message "Use the existing table 
 aria upgrade
 aria uninstall
 ```
+
+`aria doctor` checks the target Git root, write access, `.aria` artifact mode, ARIA workflow authority files, release source metadata, and Codex runtime availability. Use `--strict` in scripts when attention-required checks should fail the command.
 
 `--phase` is an advanced retry/testing control: it runs only the current eligible phase and never bypasses a gate.
 `--brief` is initial business intent, not a replacement for the feature slug. `aria revise --message` is for human feedback after a proposal, preview, or review needs changes.

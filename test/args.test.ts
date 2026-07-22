@@ -12,6 +12,8 @@ test("parses run with feature and defaults target to cwd", () => {
     model: undefined,
     brief: undefined,
     message: undefined,
+    strict: false,
+    json: false,
     verbose: false,
   });
 });
@@ -20,6 +22,7 @@ test("usage documents run and status", () => {
   assert.match(formatUsage(), /aria run --feature <slug>/);
   assert.match(formatUsage(), /aria revise --feature <slug>/);
   assert.match(formatUsage(), /aria status --feature <slug>/);
+  assert.match(formatUsage(), /aria doctor/);
   assert.match(formatUsage(), /aria upgrade/);
   assert.match(formatUsage(), /aria uninstall/);
 });
@@ -33,6 +36,8 @@ test("parses release-management commands without a feature", () => {
     model: undefined,
     brief: undefined,
     message: undefined,
+    strict: false,
+    json: false,
     verbose: false,
   });
   assert.deepEqual(parseArgs(["uninstall"]), {
@@ -43,6 +48,8 @@ test("parses release-management commands without a feature", () => {
     model: undefined,
     brief: undefined,
     message: undefined,
+    strict: false,
+    json: false,
     verbose: false,
   });
 });
@@ -56,6 +63,8 @@ test("parses model as an opt-in run value", () => {
     model: "gpt-5",
     brief: undefined,
     message: undefined,
+    strict: false,
+    json: false,
     verbose: false,
   });
 });
@@ -69,6 +78,8 @@ test("parses verbose as an opt-in run flag", () => {
     model: undefined,
     brief: undefined,
     message: undefined,
+    strict: false,
+    json: false,
     verbose: true,
   });
 });
@@ -82,6 +93,8 @@ test("parses initial requirement brief for run", () => {
     model: undefined,
     brief: "Create role only needs a name for now. Permissions come later.",
     message: undefined,
+    strict: false,
+    json: false,
     verbose: false,
   });
 });
@@ -95,6 +108,23 @@ test("parses revise feedback as a runnable command", () => {
     model: undefined,
     brief: undefined,
     message: "Use the existing SVMP table density.",
+    strict: false,
+    json: false,
+    verbose: false,
+  });
+});
+
+test("parses doctor with target and strict json output", () => {
+  assert.deepEqual(parseArgs(["doctor", "--target", "D:/repo", "--strict", "--json"]), {
+    command: "doctor",
+    feature: undefined,
+    target: "D:/repo",
+    phase: undefined,
+    model: undefined,
+    brief: undefined,
+    message: undefined,
+    strict: true,
+    json: true,
     verbose: false,
   });
 });
@@ -131,5 +161,16 @@ test("rejects missing revise message", () => {
   assert.throws(
     () => parseArgs(["revise", "--feature", "role-crud-v2"]),
     /--message is required with revise/,
+  );
+});
+
+test("rejects doctor flags outside doctor", () => {
+  assert.throws(
+    () => parseArgs(["run", "--feature", "role-crud-v2", "--strict"]),
+    /--strict is only valid with doctor/,
+  );
+  assert.throws(
+    () => parseArgs(["status", "--feature", "role-crud-v2", "--json"]),
+    /--json is only valid with doctor/,
   );
 });

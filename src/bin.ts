@@ -2,9 +2,12 @@
 
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { CliUsageError, formatUsage, parseArgs } from "./cli/args.js";
 import { renderStatus } from "./cli/status-view.js";
+import { formatDoctorReport, runDoctor } from "./core/doctor.js";
 import { PHASES } from "./core/phases.js";
 import { resolveArtifactMode, resolveFeaturePaths, resolveTargetRoot } from "./core/paths.js";
 import { parseMaterialQuestions } from "./core/questions.js";
@@ -13,6 +16,10 @@ import { loadOrCreateState, recordRevisionRequest, setRequirementBrief } from ".
 import type { MaterialQuestion, PhaseDefinition, PhaseId } from "./core/types.js";
 import { ReleaseManager } from "./core/release.js";
 import { CodexRuntime } from "./runtime/codex.js";
+
+function packageRoot(): string {
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+}
 
 function phaseId(value: string | undefined): PhaseId | undefined {
   if (value === undefined) return undefined;
@@ -130,6 +137,17 @@ async function main(argv: string[]): Promise<void> {
       } else {
         process.exitCode = result.exitCode;
       }
+      return;
+    }
+
+    if (command.command === "doctor") {
+      const report = await runDoctor({
+        targetInput: command.target,
+        packageRoot: packageRoot(),
+        runtime: new CodexRuntime(),
+      });
+      console.log(command.json ? JSON.stringify(report, null, 2) : formatDoctorReport(report));
+      if (command.strict && report.status !== "ok") process.exitCode = 1;
       return;
     }
 
